@@ -1,0 +1,29 @@
+{
+  "name": "@tayemno/backend",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "@fastify/env": "^5.0.0",
+    "@tayemno/shared": "*",
+    "drizzle-orm": "^1.0.0-rc.5-ab785fc",
+    "fastify": "^5.1.0",
+    "postgres": "^3.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "dotenv": "^16.4.0",
+    "drizzle-kit": "^1.0.0-rc.5-ab785fc",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}
