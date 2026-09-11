@@ -11,7 +11,9 @@
   "dependencies": {
     "@mantine/core": "^7.15.0",
     "@mantine/hooks": "^7.15.0",
+    "@tanstack/react-query": "^5.102.8",
     "@tayemno/shared": "*",
+    "axios": "^1.20.0",
     "formik": "^2.4.9",
     "i18next": "^26.4.2",
     "react": "^19.0.0",
