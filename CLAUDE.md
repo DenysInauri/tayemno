@@ -20,6 +20,10 @@ packages/
 - [API Guide](docs/api-guide.md) — two-layer hook pattern, QueryKeyEnum, EndpointEnum, mutation/query examples
 - [Encryption Key Hierarchy](docs/encryption-key-hierarchy.md) — E2EE key derivation, hierarchy, sharing model, storage mapping
 
+## Responsive Design
+
+All UI pages and layouts must support desktop, tablet, and mobile viewports. Use Mantine's responsive props (e.g., `span={{ base: 12, md: 6 }}`, `ta={{ base: "center", md: "left" }}`) to adapt layouts per breakpoint. Never build desktop-only designs.
+
 ## Quick Start
 
 ```bash

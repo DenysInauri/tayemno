@@ -6,6 +6,8 @@ import { Loader } from "@mantine/core";
 import { Anchor } from "../../components/ui/Anchor";
 import { Button } from "../../components/ui/Button";
 import { Container } from "../../components/ui/Container";
+import { Grid } from "../../components/ui/Grid";
+import { GridCol } from "../../components/ui/GridCol";
 import { Paper } from "../../components/ui/Paper";
 import { PasswordInput } from "../../components/ui/PasswordInput";
 import { PasswordStrengthInput } from "../../components/ui/PasswordStrengthInput";
@@ -83,95 +85,101 @@ export const RegisterPage = () => {
   };
 
   return (
-    <Container size={420} py={SizeEnum.XL}>
-      <Title ta="center" order={1}>
-        {t("register.title")}
-      </Title>
-      <Text c="dimmed" size="sm" ta="center" mt={SizeEnum.XS}>
-        {t("register.subtitle")}{" "}
-        <Anchor size="sm" component="button" type="button">
-          {t("register.signInLink")}
-        </Anchor>
-      </Text>
-
-      <Paper
-        withBorder
-        shadow="md"
-        p={SizeEnum.LG}
-        mt={SizeEnum.LG}
-        radius="md"
-      >
-        <form onSubmit={formik.handleSubmit}>
-          <Stack>
-            <TextInput
-              label={t("register.fields.name.label")}
-              placeholder={t("register.fields.name.placeholder")}
-              name="name"
-              value={formik.values.name}
-              onChange={formik.handleChange}
-              onBlur={handleBlur("name")}
-              error={
-                formik.touched.name &&
-                formik.errors.name &&
-                t(formik.errors.name)
-              }
-            />
-            <TextInput
-              label={t("register.fields.username.label")}
-              placeholder={t("register.fields.username.placeholder")}
-              name="username"
-              value={formik.values.username}
-              onChange={handleUsernameChange}
-              onBlur={handleBlur("username")}
-              maxLength={255}
-              error={usernameError}
-              successHighlight={isUsernameAvailable}
-              rightSection={
-                isCheckingUsername ? <Loader size={16} /> : undefined
-              }
-            />
-            <TextInput
-              label={t("register.fields.email.label")}
-              placeholder={t("register.fields.email.placeholder")}
-              name="email"
-              value={formik.values.email}
-              onChange={formik.handleChange}
-              onBlur={handleBlur("email")}
-              error={
-                formik.touched.email &&
-                formik.errors.email &&
-                t(formik.errors.email)
-              }
-            />
-            <PasswordStrengthInput
-              label={t("register.fields.password.label")}
-              placeholder={t("register.fields.password.placeholder")}
-              name="password"
-              value={formik.values.password}
-              onChange={handlePasswordChange}
-              onBlur={handleBlur("password")}
-              touched={!!formik.touched.password}
-            />
-            <PasswordInput
-              label={t("register.fields.confirmPassword.label")}
-              placeholder={t("register.fields.confirmPassword.placeholder")}
-              name="confirmPassword"
-              value={formik.values.confirmPassword}
-              onChange={formik.handleChange}
-              onBlur={handleBlur("confirmPassword")}
-              error={
-                (formik.values.confirmPassword.length > 0 ||
-                  formik.touched.confirmPassword) &&
-                formik.errors.confirmPassword &&
-                t(formik.errors.confirmPassword)
-              }
-            />
-            <Button type="submit" fullWidth mt="xl">
-              {t("register.submitButton")}
-            </Button>
-          </Stack>
-        </form>
-      </Paper>
+    <Container size={900} px={SizeEnum.LG}>
+      <Stack justify="center" mih="100vh" py={SizeEnum.XL}>
+        <Grid gutter={SizeEnum.XL} align="flex-start">
+        <GridCol span={{ base: 12, md: 5 }}>
+          <Title ta={{ base: "center", md: "left" }} order={1}>
+            {t("register.title")}
+          </Title>
+          <Text
+            c="dimmed"
+            size="sm"
+            ta={{ base: "center", md: "left" }}
+            mt={SizeEnum.XS}
+          >
+            {t("register.subtitle")}{" "}
+            <Anchor size="sm" component="button" type="button">
+              {t("register.signInLink")}
+            </Anchor>
+          </Text>
+        </GridCol>
+        <GridCol span={{ base: 12, md: 7 }}>
+          <Paper withBorder shadow="md" p={SizeEnum.LG} radius="md">
+            <form onSubmit={formik.handleSubmit}>
+              <Stack>
+                <TextInput
+                  label={t("register.fields.name.label")}
+                  placeholder={t("register.fields.name.placeholder")}
+                  name="name"
+                  value={formik.values.name}
+                  onChange={formik.handleChange}
+                  onBlur={handleBlur("name")}
+                  error={
+                    formik.touched.name &&
+                    formik.errors.name &&
+                    t(formik.errors.name)
+                  }
+                />
+                <TextInput
+                  label={t("register.fields.username.label")}
+                  placeholder={t("register.fields.username.placeholder")}
+                  name="username"
+                  value={formik.values.username}
+                  onChange={handleUsernameChange}
+                  onBlur={handleBlur("username")}
+                  maxLength={255}
+                  error={usernameError}
+                  successHighlight={isUsernameAvailable}
+                  rightSection={
+                    isCheckingUsername ? <Loader size={16} /> : undefined
+                  }
+                />
+                <TextInput
+                  label={t("register.fields.email.label")}
+                  placeholder={t("register.fields.email.placeholder")}
+                  name="email"
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  onBlur={handleBlur("email")}
+                  error={
+                    formik.touched.email &&
+                    formik.errors.email &&
+                    t(formik.errors.email)
+                  }
+                />
+                <PasswordStrengthInput
+                  label={t("register.fields.password.label")}
+                  placeholder={t("register.fields.password.placeholder")}
+                  name="password"
+                  value={formik.values.password}
+                  onChange={handlePasswordChange}
+                  onBlur={handleBlur("password")}
+                  touched={!!formik.touched.password}
+                />
+                <PasswordInput
+                  label={t("register.fields.confirmPassword.label")}
+                  placeholder={t("register.fields.confirmPassword.placeholder")}
+                  name="confirmPassword"
+                  value={formik.values.confirmPassword}
+                  onChange={formik.handleChange}
+                  onBlur={handleBlur("confirmPassword")}
+                  error={
+                    (formik.values.confirmPassword.length > 0 ||
+                      formik.touched.confirmPassword) &&
+                    formik.errors.confirmPassword &&
+                    t(formik.errors.confirmPassword)
+                  }
+                />
+                <Button type="submit" fullWidth mt="xl">
+                  {t("register.submitButton")}
+                </Button>
+              </Stack>
+            </form>
+          </Paper>
+        </GridCol>
+        </Grid>
+      </Stack>
     </Container>
   );
 };
