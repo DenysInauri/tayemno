@@ -7,6 +7,7 @@ import {
   bigint,
   text,
   timestamp,
+  unique,
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
@@ -63,6 +64,28 @@ export const folders = pgTable("folders", {
     .$onUpdate(() => new Date()),
 });
 
+export const folderKeyShares = pgTable(
+  "folder_key_shares",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    folderId: uuid("folder_id")
+      .notNull()
+      .references(() => folders.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    symmetricKey: text("symmetric_key").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => [unique().on(t.folderId, t.userId)],
+);
+
 export const vaults = pgTable("vaults", {
   id: uuid("id").defaultRandom().primaryKey(),
   ownerId: uuid("owner_id")
@@ -72,15 +95,16 @@ export const vaults = pgTable("vaults", {
     onDelete: "cascade",
   }),
 
-  // Open metadata for search/filtering
   name: varchar("name", { length: 255 }).notNull(),
   mimeType: varchar("mime_type", { length: 255 }).notNull(),
   extension: varchar("extension", { length: 64 }).notNull(),
   sizeBytes: bigint("size_bytes", { mode: "number" }).notNull(),
 
-  // Encrypted content location
   s3Key: text("s3_key").notNull(),
   contentNonce: text("content_nonce").notNull(),
+
+  encryptedName: text("encrypted_name").notNull(),
+  symmetricKey: text("symmetric_key"),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
@@ -90,3 +114,25 @@ export const vaults = pgTable("vaults", {
     .notNull()
     .$onUpdate(() => new Date()),
 });
+
+export const vaultKeyShares = pgTable(
+  "vault_key_shares",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    vaultId: uuid("vault_id")
+      .notNull()
+      .references(() => vaults.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    symmetricKey: text("symmetric_key").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => [unique().on(t.vaultId, t.userId)],
+);

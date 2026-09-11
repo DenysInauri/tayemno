@@ -53,6 +53,21 @@ export interface NewFolder {
   name: string;
 }
 
+export interface FolderKeyShare {
+  id: string;
+  folderId: string;
+  userId: string;
+  symmetricKey: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NewFolderKeyShare {
+  folderId: string;
+  userId: string;
+  symmetricKey: string;
+}
+
 export interface Vault {
   id: string;
   ownerId: string;
@@ -63,6 +78,8 @@ export interface Vault {
   sizeBytes: number;
   s3Key: string;
   contentNonce: string;
+  encryptedName: string;
+  symmetricKey: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -76,6 +93,23 @@ export interface NewVault {
   sizeBytes: number;
   s3Key: string;
   contentNonce: string;
+  encryptedName: string;
+  symmetricKey?: string | null;
+}
+
+export interface VaultKeyShare {
+  id: string;
+  vaultId: string;
+  userId: string;
+  symmetricKey: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NewVaultKeyShare {
+  vaultId: string;
+  userId: string;
+  symmetricKey: string;
 }
 
 export interface HealthCheckResponse {
