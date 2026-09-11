@@ -8,6 +8,7 @@ import { Button } from "../../components/ui/Button";
 import { Container } from "../../components/ui/Container";
 import { Paper } from "../../components/ui/Paper";
 import { PasswordInput } from "../../components/ui/PasswordInput";
+import { PasswordStrengthInput } from "../../components/ui/PasswordStrengthInput";
 import { Stack } from "../../components/ui/Stack";
 import { Text } from "../../components/ui/Text";
 import { TextInput } from "../../components/ui/TextInput";
@@ -75,6 +76,10 @@ export const RegisterPage = () => {
     formik.setFieldValue("username", e.target.value.toLowerCase());
   };
 
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    formik.setFieldValue("password", e.target.value.replace(/\s/g, ""));
+  };
+
 
   const handleBlur = (fieldName: string) => () => {
     formik.setFieldTouched(fieldName, true);
@@ -126,14 +131,14 @@ export const RegisterPage = () => {
               onBlur={handleBlur('email')}
               error={formik.touched.email && formik.errors.email && t(formik.errors.email)}
             />
-            <PasswordInput
+            <PasswordStrengthInput
               label={t("register.fields.password.label")}
               placeholder={t("register.fields.password.placeholder")}
               name="password"
               value={formik.values.password}
-              onChange={formik.handleChange}
+              onChange={handlePasswordChange}
               onBlur={handleBlur('password')}
-              error={formik.touched.password && formik.errors.password && t(formik.errors.password)}
+              touched={!!formik.touched.password}
             />
             <PasswordInput
               label={t("register.fields.confirmPassword.label")}
@@ -143,7 +148,9 @@ export const RegisterPage = () => {
               onChange={formik.handleChange}
               onBlur={handleBlur('confirmPassword')}
               error={
-                formik.touched.confirmPassword && formik.errors.confirmPassword && t(formik.errors.confirmPassword)
+                (formik.values.confirmPassword.length > 0 || formik.touched.confirmPassword) &&
+                formik.errors.confirmPassword &&
+                t(formik.errors.confirmPassword)
               }
             />
             <Button type="submit" fullWidth mt="xl">
