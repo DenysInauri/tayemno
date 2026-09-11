@@ -7,6 +7,8 @@ Monorepo with a React (Vite + Mantine) frontend, Fastify backend, and shared pac
 ```
 packages/
   frontend/   # React SPA (Vite, Mantine, Formik, Yup, i18next)
+    src/
+      validations/   # Yup schemas (one per form, i18n keys as error messages)
   backend/    # Fastify REST API (Drizzle ORM, PostgreSQL)
   shared/     # Shared types and utilities
 ```
@@ -14,7 +16,7 @@ packages/
 ## Documentation
 
 - [UI Guide](docs/ui-guide.md) — wrapper component patterns, folder conventions, SizeEnum usage
-- [Code Style Guide](docs/code-style-guide.md) — arrow functions, interface naming, form patterns, i18n key structure
+- [Code Style Guide](docs/code-style-guide.md) — arrow functions, interface naming, form patterns, validation schemas, i18n key structure
 - [API Guide](docs/api-guide.md) — two-layer hook pattern, QueryKeyEnum, EndpointEnum, mutation/query examples
 - [Encryption Key Hierarchy](docs/encryption-key-hierarchy.md) — E2EE key derivation, hierarchy, sharing model, storage mapping
 

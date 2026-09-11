@@ -1,4 +1,5 @@
 import Fastify from "fastify";
+import cors from "@fastify/cors";
 import type { HealthCheckResponse } from "@tayemno/shared";
 import { registerConfig } from "./config.js";
 import { createDb, type Database } from "./db";
@@ -13,6 +14,7 @@ declare module "fastify" {
 const app = Fastify({ logger: true });
 
 await registerConfig(app);
+await app.register(cors);
 
 app.decorate("db", createDb(app.config.DATABASE_URL));
 
