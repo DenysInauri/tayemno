@@ -10,7 +10,7 @@ export const usersRoutes = async (app: FastifyInstance) => {
     "/check-username/:username",
     async (request): Promise<ICheckUsernameResponse> => {
       const { username } = request.params;
-      return isUsernameFree(app.db, username);
+      return isUsernameFree(app.db, username.toLowerCase());
     },
   );
 };
