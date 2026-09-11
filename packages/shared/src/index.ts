@@ -124,3 +124,11 @@ export interface ICheckUsernameParams {
 export interface ICheckUsernameResponse {
   isFree: boolean;
 }
+
+export interface ICheckPasswordBreachParams {
+  hash: string;
+}
+
+export interface ICheckPasswordBreachResponse {
+  count: number;
+}

@@ -4,6 +4,7 @@ import type { HealthCheckResponse } from "@tayemno/shared";
 import { registerConfig } from "./config.js";
 import { createDb, type Database } from "./db";
 import { usersRoutes } from "./routes/users";
+import { securityRoutes } from "./routes/security";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -26,6 +27,7 @@ app.get("/health", async (): Promise<HealthCheckResponse> => {
 });
 
 await app.register(usersRoutes, { prefix: "/users" });
+await app.register(securityRoutes, { prefix: "/security" });
 
 const start = async () => {
   try {
