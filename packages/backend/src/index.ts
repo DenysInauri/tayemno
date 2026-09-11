@@ -2,6 +2,7 @@ import Fastify from "fastify";
 import type { HealthCheckResponse } from "@tayemno/shared";
 import { registerConfig } from "./config.js";
 import { createDb, type Database } from "./db";
+import { usersRoutes } from "./routes/users";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -21,6 +22,8 @@ app.get("/health", async (): Promise<HealthCheckResponse> => {
     timestamp: new Date().toISOString(),
   };
 });
+
+await app.register(usersRoutes, { prefix: "/users" });
 
 const start = async () => {
   try {

@@ -116,3 +116,11 @@ export interface HealthCheckResponse {
   status: "ok" | "error";
   timestamp: string;
 }
+
+export interface ICheckUsernameParams {
+  username: string;
+}
+
+export interface ICheckUsernameResponse {
+  isFree: boolean;
+}
