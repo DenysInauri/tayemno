@@ -12,8 +12,12 @@
     "@mantine/core": "^7.15.0",
     "@mantine/hooks": "^7.15.0",
     "@tayemno/shared": "*",
+    "formik": "^2.4.9",
+    "i18next": "^26.4.2",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-i18next": "^17.0.13",
+    "yup": "^1.7.1"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

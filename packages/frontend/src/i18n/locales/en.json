@@ -1,0 +1,41 @@
+{
+  "register": {
+    "title": "Create your account",
+    "subtitle": "Already have an account?",
+    "signInLink": "Sign in",
+    "submitButton": "Register",
+    "fields": {
+      "name": {
+        "label": "Name",
+        "placeholder": "Your full name"
+      },
+      "username": {
+        "label": "Username",
+        "placeholder": "Choose a username"
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "you@example.com"
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Your password"
+      },
+      "confirmPassword": {
+        "label": "Confirm password",
+        "placeholder": "Confirm your password"
+      }
+    },
+    "validation": {
+      "nameRequired": "Name is required",
+      "usernameRequired": "Username is required",
+      "usernameMinLength": "Username must be at least 3 characters",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address",
+      "passwordRequired": "Password is required",
+      "passwordMinLength": "Password must be at least 8 characters",
+      "confirmPasswordRequired": "Please confirm your password",
+      "confirmPasswordMismatch": "Passwords do not match"
+    }
+  }
+}
