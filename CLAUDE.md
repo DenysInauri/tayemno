@@ -1,12 +1,13 @@
 # Tayemno
 
-Monorepo with a React (Vite + Mantine) frontend and shared packages.
+Monorepo with a React (Vite + Mantine) frontend, Fastify backend, and shared packages.
 
 ## Project Structure
 
 ```
 packages/
   frontend/   # React SPA (Vite, Mantine, Formik, Yup, i18next)
+  backend/    # Fastify REST API (Drizzle ORM, PostgreSQL)
   shared/     # Shared types and utilities
 ```
 
