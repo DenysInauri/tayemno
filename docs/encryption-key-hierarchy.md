@@ -49,11 +49,11 @@ When sharing a folder or standalone vault with another user:
 
 ## Where keys are stored
 
-| Key | Storage | Encrypted with |
-|-----|---------|----------------|
-| KEK | Never stored (derived in memory) | N/A |
-| User private key | `users.encrypted_private_key` | KEK |
-| User public key | `users.public_key` | Plaintext |
-| Folder symmetric key | `folder_key_shares.symmetric_key` | User public key (per user) |
-| Vault symmetric key (in folder) | `vaults.symmetric_key` | Folder symmetric key |
-| Vault symmetric key (standalone) | `vault_key_shares.symmetric_key` | User public key (per user) |
+| Key                              | Storage                           | Encrypted with             |
+| -------------------------------- | --------------------------------- | -------------------------- |
+| KEK                              | Never stored (derived in memory)  | N/A                        |
+| User private key                 | `users.encrypted_private_key`     | KEK                        |
+| User public key                  | `users.public_key`                | Plaintext                  |
+| Folder symmetric key             | `folder_key_shares.symmetric_key` | User public key (per user) |
+| Vault symmetric key (in folder)  | `vaults.symmetric_key`            | Folder symmetric key       |
+| Vault symmetric key (standalone) | `vault_key_shares.symmetric_key`  | User public key (per user) |

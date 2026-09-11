@@ -112,7 +112,7 @@ Use `useTranslation()` from `react-i18next` to access the `t` function:
 ```tsx
 const { t } = useTranslation();
 // ...
-<Title>{t("register.title")}</Title>
+<Title>{t("register.title")}</Title>;
 ```
 
 ## SizeEnum for Numeric Layout Values

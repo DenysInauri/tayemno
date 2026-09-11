@@ -2,7 +2,9 @@ import type { ICheckPasswordBreachResponse } from "@tayemno/shared";
 
 const HIBP_API_URL = "https://api.pwnedpasswords.com/range";
 
-export const checkPasswordBreach = async (hash: string): Promise<ICheckPasswordBreachResponse> => {
+export const checkPasswordBreach = async (
+  hash: string,
+): Promise<ICheckPasswordBreachResponse> => {
   const prefix = hash.slice(0, 5);
   const suffix = hash.slice(5);
 

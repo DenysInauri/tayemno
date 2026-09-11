@@ -125,7 +125,10 @@ Separate groups with a blank line when it aids readability.
 Request/response interfaces used by both frontend and backend live in `@tayemno/shared`. Import them — don't duplicate.
 
 ```ts
-import type { ICheckUsernameParams, ICheckUsernameResponse } from "@tayemno/shared";
+import type {
+  ICheckUsernameParams,
+  ICheckUsernameResponse,
+} from "@tayemno/shared";
 ```
 
 ## Database
@@ -166,8 +169,10 @@ npm run start          # Run compiled output
 Configuration is loaded via `@fastify/env` from the root `.env` file.
 
 Required variables:
+
 - `DATABASE_URL` — PostgreSQL connection string
 
 Optional variables:
+
 - `PORT` — server port (default: `3000`)
 - `NODE_ENV` — environment (default: `"development"`)

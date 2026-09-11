@@ -6,7 +6,6 @@ const PASSWORD_LOWERCASE_REGEX = /[a-z]/;
 const PASSWORD_UPPERCASE_REGEX = /[A-Z]/;
 const PASSWORD_SPECIAL_REGEX = /[$&+,:;=?@#|'<>.^*()%!-]/;
 
-
 export const registerSchema = yup.object().shape({
   name: yup.string().trim().required("register.validation.nameRequired"),
   username: yup
@@ -32,10 +31,22 @@ export const registerSchema = yup.object().shape({
     .string()
     .required("register.validation.passwordRequired")
     .min(6, "register.validation.passwordMinLength")
-    .matches(PASSWORD_NUMBER_REGEX, "register.validation.passwordIncludesNumber")
-    .matches(PASSWORD_LOWERCASE_REGEX, "register.validation.passwordIncludesLowercase")
-    .matches(PASSWORD_UPPERCASE_REGEX, "register.validation.passwordIncludesUppercase")
-    .matches(PASSWORD_SPECIAL_REGEX, "register.validation.passwordIncludesSpecial"),
+    .matches(
+      PASSWORD_NUMBER_REGEX,
+      "register.validation.passwordIncludesNumber",
+    )
+    .matches(
+      PASSWORD_LOWERCASE_REGEX,
+      "register.validation.passwordIncludesLowercase",
+    )
+    .matches(
+      PASSWORD_UPPERCASE_REGEX,
+      "register.validation.passwordIncludesUppercase",
+    )
+    .matches(
+      PASSWORD_SPECIAL_REGEX,
+      "register.validation.passwordIncludesSpecial",
+    ),
   confirmPassword: yup
     .string()
     .required("register.validation.confirmPasswordRequired")

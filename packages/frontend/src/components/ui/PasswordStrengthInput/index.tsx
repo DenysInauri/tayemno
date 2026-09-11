@@ -1,5 +1,11 @@
 import { useTranslation } from "react-i18next";
-import { Box, Center, Group, PasswordInputProps, Progress } from "@mantine/core";
+import {
+  Box,
+  Center,
+  Group,
+  PasswordInputProps,
+  Progress,
+} from "@mantine/core";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { PasswordInput } from "../PasswordInput";
 import { Text } from "../Text";
@@ -11,7 +17,10 @@ const PASSWORD_REQUIREMENTS = [
   { re: /[0-9]/, label: "register.validation.passwordIncludesNumber" },
   { re: /[a-z]/, label: "register.validation.passwordIncludesLowercase" },
   { re: /[A-Z]/, label: "register.validation.passwordIncludesUppercase" },
-  { re: /[$&+,:;=?@#|'<>.^*()%!-]/, label: "register.validation.passwordIncludesSpecial" },
+  {
+    re: /[$&+,:;=?@#|'<>.^*()%!-]/,
+    label: "register.validation.passwordIncludesSpecial",
+  },
 ];
 
 interface IProps extends PasswordInputProps {
@@ -27,7 +36,10 @@ const getStrength = (password: string) => {
     }
   });
 
-  return Math.max(100 - (100 / (PASSWORD_REQUIREMENTS.length + 1)) * multiplier, 0);
+  return Math.max(
+    100 - (100 / (PASSWORD_REQUIREMENTS.length + 1)) * multiplier,
+    0,
+  );
 };
 
 const getRequirementColor = (meets: boolean, touched: boolean) => {
@@ -36,10 +48,27 @@ const getRequirementColor = (meets: boolean, touched: boolean) => {
   return "dimmed";
 };
 
-const PasswordRequirement = ({ meets, label, touched }: { meets: boolean; label: string; touched: boolean }) => (
-  <Text component="div" c={getRequirementColor(meets, touched)} mt={SizeEnum.XS} size="sm">
+const PasswordRequirement = ({
+  meets,
+  label,
+  touched,
+}: {
+  meets: boolean;
+  label: string;
+  touched: boolean;
+}) => (
+  <Text
+    component="div"
+    c={getRequirementColor(meets, touched)}
+    mt={SizeEnum.XS}
+    size="sm"
+  >
     <Center inline>
-      {meets ? <IconCheck size={14} stroke={1.5} /> : <IconX size={14} stroke={1.5} />}
+      {meets ? (
+        <IconCheck size={14} stroke={1.5} />
+      ) : (
+        <IconX size={14} stroke={1.5} />
+      )}
       <Box ml={SizeEnum.XS}>{label}</Box>
     </Center>
   </Text>
@@ -50,7 +79,10 @@ export const PasswordStrengthInput = ({
   ...passwordInputProps
 }: IProps) => {
   const { t } = useTranslation();
-  const value = typeof passwordInputProps.value === "string" ? passwordInputProps.value : "";
+  const value =
+    typeof passwordInputProps.value === "string"
+      ? passwordInputProps.value
+      : "";
   const strength = getStrength(value);
 
   const checks = PASSWORD_REQUIREMENTS.map((requirement) => (
@@ -68,7 +100,11 @@ export const PasswordStrengthInput = ({
       <Progress
         styles={{ section: { transitionDuration: "0ms" } }}
         value={
-          value.length > 0 && index === 0 ? 100 : strength >= ((index + 1) / 4) * 100 ? 100 : 0
+          value.length > 0 && index === 0
+            ? 100
+            : strength >= ((index + 1) / 4) * 100
+              ? 100
+              : 0
         }
         color={strength > 80 ? "teal" : strength > 50 ? "yellow" : "red"}
         key={index}

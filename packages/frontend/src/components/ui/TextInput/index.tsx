@@ -10,7 +10,10 @@ export const TextInput = ({ successHighlight, styles, ...rest }: IProps) => {
         ...styles,
         input: {
           ...(typeof styles === "object" && styles !== null && "input" in styles
-            ? ((styles as Record<string, unknown>).input as Record<string, unknown>)
+            ? ((styles as Record<string, unknown>).input as Record<
+                string,
+                unknown
+              >)
             : {}),
           borderColor: "var(--mantine-color-green-6)",
         },

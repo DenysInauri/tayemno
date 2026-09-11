@@ -86,9 +86,7 @@ interface IRegisterResponse {
 }
 
 export const usePostRegister = () => {
-  return useApiPost<IRegisterRequest, IRegisterResponse>(
-    EndpointEnum.REGISTER,
-  );
+  return useApiPost<IRegisterRequest, IRegisterResponse>(EndpointEnum.REGISTER);
 };
 ```
 

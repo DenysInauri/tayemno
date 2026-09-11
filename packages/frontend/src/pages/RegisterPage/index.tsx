@@ -51,13 +51,11 @@ export const RegisterPage = () => {
   const [debouncedUsername] = useDebouncedValue(formik.values.username, 250);
 
   const hasUsernameValidationError = Boolean(
-    formik.touched.username &&
-    formik.errors.username,
+    formik.touched.username && formik.errors.username,
   );
 
-  const { data: usernameCheck, isLoading: isCheckingUsername } = useGetIsUsernameFree(
-      hasUsernameValidationError ? "" : debouncedUsername,
-    );
+  const { data: usernameCheck, isLoading: isCheckingUsername } =
+    useGetIsUsernameFree(hasUsernameValidationError ? "" : debouncedUsername);
 
   const isUsernameTaken = !!usernameCheck && !usernameCheck.isFree;
 
@@ -70,7 +68,7 @@ export const RegisterPage = () => {
   const usernameError = useMemo(() => {
     if (hasUsernameValidationError) return t(formik.errors.username!);
     if (isUsernameTaken) return t("register.validation.usernameTaken");
-  }, [hasUsernameValidationError, formik.errors.username, t, isUsernameTaken])
+  }, [hasUsernameValidationError, formik.errors.username, t, isUsernameTaken]);
 
   const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
     formik.setFieldValue("username", e.target.value.toLowerCase());
@@ -80,11 +78,9 @@ export const RegisterPage = () => {
     formik.setFieldValue("password", e.target.value.replace(/\s/g, ""));
   };
 
-
   const handleBlur = (fieldName: string) => () => {
     formik.setFieldTouched(fieldName, true);
-  }
-
+  };
 
   return (
     <Container size={420} py={SizeEnum.XL}>
@@ -98,7 +94,13 @@ export const RegisterPage = () => {
         </Anchor>
       </Text>
 
-      <Paper withBorder shadow="md" p={SizeEnum.LG} mt={SizeEnum.LG} radius="md">
+      <Paper
+        withBorder
+        shadow="md"
+        p={SizeEnum.LG}
+        mt={SizeEnum.LG}
+        radius="md"
+      >
         <form onSubmit={formik.handleSubmit}>
           <Stack>
             <TextInput
@@ -107,8 +109,12 @@ export const RegisterPage = () => {
               name="name"
               value={formik.values.name}
               onChange={formik.handleChange}
-              onBlur={handleBlur('name')}
-              error={formik.touched.name && formik.errors.name && t(formik.errors.name)}
+              onBlur={handleBlur("name")}
+              error={
+                formik.touched.name &&
+                formik.errors.name &&
+                t(formik.errors.name)
+              }
             />
             <TextInput
               label={t("register.fields.username.label")}
@@ -116,11 +122,13 @@ export const RegisterPage = () => {
               name="username"
               value={formik.values.username}
               onChange={handleUsernameChange}
-              onBlur={handleBlur('username')}
+              onBlur={handleBlur("username")}
               maxLength={255}
               error={usernameError}
               successHighlight={isUsernameAvailable}
-              rightSection={isCheckingUsername ? <Loader size={16} /> : undefined}
+              rightSection={
+                isCheckingUsername ? <Loader size={16} /> : undefined
+              }
             />
             <TextInput
               label={t("register.fields.email.label")}
@@ -128,8 +136,12 @@ export const RegisterPage = () => {
               name="email"
               value={formik.values.email}
               onChange={formik.handleChange}
-              onBlur={handleBlur('email')}
-              error={formik.touched.email && formik.errors.email && t(formik.errors.email)}
+              onBlur={handleBlur("email")}
+              error={
+                formik.touched.email &&
+                formik.errors.email &&
+                t(formik.errors.email)
+              }
             />
             <PasswordStrengthInput
               label={t("register.fields.password.label")}
@@ -137,7 +149,7 @@ export const RegisterPage = () => {
               name="password"
               value={formik.values.password}
               onChange={handlePasswordChange}
-              onBlur={handleBlur('password')}
+              onBlur={handleBlur("password")}
               touched={!!formik.touched.password}
             />
             <PasswordInput
@@ -146,9 +158,10 @@ export const RegisterPage = () => {
               name="confirmPassword"
               value={formik.values.confirmPassword}
               onChange={formik.handleChange}
-              onBlur={handleBlur('confirmPassword')}
+              onBlur={handleBlur("confirmPassword")}
               error={
-                (formik.values.confirmPassword.length > 0 || formik.touched.confirmPassword) &&
+                (formik.values.confirmPassword.length > 0 ||
+                  formik.touched.confirmPassword) &&
                 formik.errors.confirmPassword &&
                 t(formik.errors.confirmPassword)
               }

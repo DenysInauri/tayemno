@@ -90,12 +90,12 @@ import { SizeEnum } from "../../enums/ui/SizeEnum";
 <Text mt={SizeEnum.XS}>
 ```
 
-| Name | Value | Typical Use |
-|------|-------|-------------|
-| `XS` | 5     | Small gaps, minor spacing |
-| `SM` | 10    | Default small spacing |
-| `MD` | 20    | Medium spacing |
+| Name | Value | Typical Use                         |
+| ---- | ----- | ----------------------------------- |
+| `XS` | 5     | Small gaps, minor spacing           |
+| `SM` | 10    | Default small spacing               |
+| `MD` | 20    | Medium spacing                      |
 | `LG` | 30    | Large padding/margins, card padding |
-| `XL` | 40    | Page-level vertical padding |
+| `XL` | 40    | Page-level vertical padding         |
 
 String-based Mantine size tokens (`"xs"`, `"sm"`, `"md"`, `"xl"`) are still used for component-level sizing (e.g., `mt="xl"` on a `Button`). `SizeEnum` is strictly for numeric layout values.
