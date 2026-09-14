@@ -5,4 +5,4 @@ dist
 !.env.example
 *.tsbuildinfo
 .idea
-.claude
+.claude/settings.local.json

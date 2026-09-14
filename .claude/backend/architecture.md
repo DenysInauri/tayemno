@@ -1,4 +1,4 @@
-# Backend
+# Backend Architecture
 
 Fastify REST API with Drizzle ORM and PostgreSQL.
 
@@ -14,7 +14,7 @@ Fastify REST API with Drizzle ORM and PostgreSQL.
 ## Project Structure
 
 ```
-src/
+packages/backend/src/
 ├── index.ts                  # App bootstrap, register plugins and routes
 ├── config.ts                 # Env schema + Fastify config plugin (@fastify/env)
 ├── db/

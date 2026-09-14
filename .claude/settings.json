@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:orm.drizzle.team)",
+      "WebFetch(domain:mantine.dev)",
+      "WebSearch",
+      "Bash(npx tsc:*)",
+      "Bash(npm run db:push:*)",
+      "Bash(npm info:*)",
+      "Bash(npm install:*)"
+    ]
+  }
+}

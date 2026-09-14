@@ -15,10 +15,11 @@ packages/
 
 ## Documentation
 
-- [UI Guide](docs/ui-guide.md) — wrapper component patterns, folder conventions, SizeEnum usage
-- [Code Style Guide](docs/code-style-guide.md) — arrow functions, interface naming, form patterns, validation schemas, i18n key structure
-- [API Guide](docs/api-guide.md) — two-layer hook pattern, QueryKeyEnum, EndpointEnum, mutation/query examples
-- [Encryption Key Hierarchy](docs/encryption-key-hierarchy.md) — E2EE key derivation, hierarchy, sharing model, storage mapping
+- [Frontend Code Style](frontend/code-style.md) — arrow functions, interface naming, form patterns, validation schemas, i18n key structure
+- [Frontend UI Guide](frontend/ui-guide.md) — wrapper component patterns, folder conventions, SizeEnum usage
+- [Frontend API Guide](frontend/api-guide.md) — two-layer hook pattern, QueryKeyEnum, EndpointEnum, mutation/query examples
+- [Backend Architecture](backend/architecture.md) — three-layer architecture, routes/services/repositories, Drizzle ORM, code style
+- [Encryption Key Hierarchy](encryption-key-hierarchy.md) — E2EE key derivation, hierarchy, sharing model, storage mapping
 
 ## Responsive Design
 
