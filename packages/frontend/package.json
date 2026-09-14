@@ -17,10 +17,12 @@
     "axios": "^1.20.0",
     "formik": "^2.4.9",
     "i18next": "^26.4.2",
+    "libsodium-wrappers-sumo": "^0.8.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-i18next": "^17.0.13",
     "react-router-dom": "^7.18.3",
+    "secure-remote-password": "https://github.com/LinusU/secure-remote-password.git#73e5f732b6ca0cdbdc19da1a0c5f48cdbad2cbf0",
     "yup": "^1.7.1"
   },
   "devDependencies": {
