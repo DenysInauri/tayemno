@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/Button";
 import { Container } from "../../components/ui/Container";
 import { Paper } from "../../components/ui/Paper";
@@ -7,18 +8,20 @@ import { PinInput } from "../../components/ui/PinInput";
 import { Stack } from "../../components/ui/Stack";
 import { Text } from "../../components/ui/Text";
 import { Title } from "../../components/ui/Title";
+import { RouteEnum } from "../../enums/routing/RouteEnum";
 import { SizeEnum } from "../../enums/ui/SizeEnum";
 import { usePostVerifyEmail } from "../../api/hooks/usePostVerifyEmail";
 import { usePostResendVerification } from "../../api/hooks/usePostResendVerification";
 import { getApiErrorMessage } from "../../utils/getApiErrorMessage";
 
-interface IProps {
-  email: string;
-  onVerified?: (userId: string) => void;
-}
-
-export const VerifyEmailPage = ({ email, onVerified }: IProps) => {
+export const VerifyEmailPage = () => {
   const { t } = useTranslation();
+  const location = useLocation();
+  const email = (location.state as { email?: string })?.email;
+
+  if (!email) return <Navigate to={RouteEnum.SIGN_UP} replace />;
+
+  const navigate = useNavigate();
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
 
@@ -33,8 +36,8 @@ export const VerifyEmailPage = ({ email, onVerified }: IProps) => {
     verify(
       { email, code },
       {
-        onSuccess: (data) => {
-          onVerified?.(data.userId);
+        onSuccess: () => {
+          navigate(RouteEnum.SIGN_IN);
         },
         onError: (err) => {
           setError(getApiErrorMessage(err, t));

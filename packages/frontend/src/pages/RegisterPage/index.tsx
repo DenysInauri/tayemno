@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import { useDebouncedValue } from "@mantine/hooks";
 import { Loader } from "@mantine/core";
+import { useNavigate } from "react-router-dom";
 import { Anchor } from "../../components/ui/Anchor";
 import { Button } from "../../components/ui/Button";
 import { Container } from "../../components/ui/Container";
@@ -15,6 +16,7 @@ import { Stack } from "../../components/ui/Stack";
 import { Text } from "../../components/ui/Text";
 import { TextInput } from "../../components/ui/TextInput";
 import { Title } from "../../components/ui/Title";
+import { RouteEnum } from "../../enums/routing/RouteEnum";
 import { SizeEnum } from "../../enums/ui/SizeEnum";
 import { useGetIsUsernameFree } from "../../api/hooks/useGetIsUsernameFree";
 import { usePostRegister } from "../../api/hooks/usePostRegister";
@@ -29,14 +31,11 @@ interface IRegisterFormValues {
   confirmPassword: string;
 }
 
-interface IProps {
-  onRegistered?: (email: string) => void;
-}
-
-export const RegisterPage = ({ onRegistered }: IProps) => {
+export const RegisterPage = () => {
   const { t } = useTranslation();
   const [submitError, setSubmitError] = useState("");
   const { mutate: register, isPending } = usePostRegister();
+  const navigate = useNavigate();
 
   const formik = useFormik<IRegisterFormValues>({
     initialValues: {
@@ -69,7 +68,9 @@ export const RegisterPage = ({ onRegistered }: IProps) => {
         },
         {
           onSuccess: (data) => {
-            onRegistered?.(data.email);
+            navigate(RouteEnum.VERIFY_EMAIL, {
+              state: { email: data.email },
+            });
           },
           onError: (err) => {
             setSubmitError(getApiErrorMessage(err, t));
@@ -128,7 +129,12 @@ export const RegisterPage = ({ onRegistered }: IProps) => {
               mt={SizeEnum.XS}
             >
               {t("register.subtitle")}{" "}
-              <Anchor size="sm" component="button" type="button">
+              <Anchor
+                size="sm"
+                component="button"
+                type="button"
+                onClick={() => navigate(RouteEnum.SIGN_IN)}
+              >
                 {t("register.signInLink")}
               </Anchor>
             </Text>

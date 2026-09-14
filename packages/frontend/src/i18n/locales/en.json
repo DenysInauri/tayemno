@@ -61,5 +61,14 @@
       "resendCooldown": "Please wait before requesting a new code",
       "noPendingRegistration": "No pending registration found"
     }
+  },
+  "signIn": {
+    "title": "Sign in",
+    "noAccount": "Don't have an account?",
+    "signUpLink": "Sign up",
+    "forgotPasswordLink": "Forgot master password?"
+  },
+  "forgotPassword": {
+    "title": "Forgot master password"
   }
 }

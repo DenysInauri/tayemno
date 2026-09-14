@@ -5,6 +5,7 @@ interface IProps extends AnchorProps {
   children?: ReactNode;
   component?: ElementType;
   type?: string;
+  onClick?: () => void;
 }
 
 export const Anchor = (props: IProps) => (
