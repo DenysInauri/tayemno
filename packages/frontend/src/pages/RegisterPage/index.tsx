@@ -1,6 +1,7 @@
 import { type ChangeEvent, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
+import srp from "secure-remote-password/client";
 import { useDebouncedValue } from "@mantine/hooks";
 import { Loader } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
@@ -22,6 +23,13 @@ import { useGetIsUsernameFree } from "../../api/hooks/useGetIsUsernameFree";
 import { usePostRegister } from "../../api/hooks/usePostRegister";
 import { registerSchema } from "../../validations/registerSchema";
 import { getApiErrorMessage } from "../../utils/getApiErrorMessage";
+import {
+  generateSalt,
+  deriveKey,
+  MemLimit,
+} from "../../utils/crypto/deriveKey";
+import { AsymmetricCrypto } from "../../utils/crypto/AsymmetricCrypto";
+import { SymmetricCrypto } from "../../utils/crypto/SymmetricCrypto";
 
 interface IRegisterFormValues {
   name: string;
@@ -48,23 +56,44 @@ export const RegisterPage = () => {
     validationSchema: registerSchema,
     validateOnChange: true,
     validateOnBlur: false,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       setSubmitError("");
+
+      const srpSalt = srp.generateSalt();
+      const srpPrivateKey = srp.derivePrivateKey(
+        srpSalt,
+        values.username,
+        values.password,
+      );
+      const srpVerifier = srp.deriveVerifier(srpPrivateKey);
+
+      const deriveKeySalt = await generateSalt();
+      const userDeriveKey = await deriveKey({
+        password: values.password,
+        saltHex: deriveKeySalt,
+      });
+
+      const userKeyPair = await AsymmetricCrypto.generateKeyPair();
+      const encryptedPrivateKey = await SymmetricCrypto.encrypt(
+        userKeyPair.privateKey,
+        userDeriveKey,
+      );
+
       register(
         {
           name: values.name,
           username: values.username,
           email: values.email,
-          srpSalt: "placeholder",
-          srpVerifier: "placeholder",
-          kdfSalt: "placeholder",
+          srpSalt,
+          srpVerifier,
+          kdfSalt: deriveKeySalt,
           kdfAlgorithm: "argon2id",
-          kdfMemoryKib: 65536,
+          kdfMemoryKib: MemLimit.m64,
           kdfIterations: 3,
           kdfParallelism: 4,
-          publicKey: "placeholder",
-          encryptedPrivateKey: "placeholder",
-          privateKeyNonce: "placeholder",
+          publicKey: userKeyPair.publicKey,
+          encryptedPrivateKey: encryptedPrivateKey.ciphertext,
+          privateKeyNonce: encryptedPrivateKey.nonce,
         },
         {
           onSuccess: (data) => {
