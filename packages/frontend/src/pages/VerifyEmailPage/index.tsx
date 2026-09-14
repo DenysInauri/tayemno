@@ -84,11 +84,9 @@ export const VerifyEmailPage = () => {
               onChange={setCode}
             />
 
-            {error && (
-              <Text c="red" size="sm" ta="center">
-                {error}
-              </Text>
-            )}
+            <Text c="red" size="sm" ta="center" opacity={error ? 1 : 0}>
+              {error || "\u00A0"}
+            </Text>
 
             <Button
               fullWidth

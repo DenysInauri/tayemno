@@ -6,6 +6,4 @@ interface IProps extends TextProps {
   component?: ElementType;
 }
 
-export const Text = (props: IProps) => (
-  <MantineText {...(props as TextProps)} />
-);
+export const Text = (props: IProps) => <MantineText {...(props as TextProps)} />;
