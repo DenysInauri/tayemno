@@ -4,6 +4,7 @@ import { Button as MantineButton, ButtonProps } from "@mantine/core";
 interface IProps extends ButtonProps {
   children?: ReactNode;
   type?: "submit" | "button" | "reset";
+  onClick?: () => void;
 }
 
 export const Button = (props: IProps) => <MantineButton {...props} />;

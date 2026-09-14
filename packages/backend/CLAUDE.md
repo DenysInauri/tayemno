@@ -22,13 +22,20 @@ src/
 │   └── schema.ts             # Drizzle table definitions
 ├── routes/
 │   └── <domain>/
-│       └── index.ts          # Fastify plugin: /<domain>/* endpoints
+│       ├── index.ts           # Composes sub-route plugins
+│       └── <endpoint>/
+│           └── index.ts       # Single endpoint handler
 ├── services/
 │   └── <domain>/
-│       └── index.ts          # Business logic
-└── repositories/
+│       ├── index.ts           # Re-exports all functions
+│       └── <function>/
+│           └── index.ts       # Single service function
+├── repositories/
+│   └── <domain>/
+│       └── index.ts           # All query functions in one file
+└── utils/
     └── <domain>/
-        └── index.ts          # Drizzle DB queries
+        └── index.ts          # Pure utility functions
 ```
 
 ## Architecture: Routes -> Services -> Repositories
@@ -43,20 +50,56 @@ Routes (Fastify plugins)
 
 ### Routes
 
-- Exported as Fastify plugin arrow functions (`async (app: FastifyInstance) => { ... }`)
-- Registered in `index.ts` with `app.register(plugin, { prefix: "/<domain>" })`
+- Each domain has a folder under `routes/` with an `index.ts` that composes sub-route plugins
+- Each endpoint lives in its own subfolder (`routes/<domain>/<endpoint>/index.ts`)
+- The domain `index.ts` registers sub-routes via `app.register(subRoute)` — no prefix needed since paths are defined in each endpoint file
+- Registered in the app entrypoint with `app.register(domainRoutes, { prefix: "/<domain>" })`
 - Handle request/response typing using generics (`app.get<{ Params: IType }>`)
 - Call service functions, passing `app.db` as the first argument
 - Import request/response interfaces from `@tayemno/shared`
 
+```
+routes/auth/
+  index.ts                      # registers all sub-routes
+  register/index.ts             # POST /register
+  verifyEmail/index.ts          # POST /verify-email
+  resendVerification/index.ts   # POST /resend-verification
+```
+
+```ts
+// routes/auth/index.ts
+export const authRoutes = async (app: FastifyInstance) => {
+  await app.register(registerRoute);
+  await app.register(verifyEmailRoute);
+};
+
+// routes/auth/register/index.ts
+export const registerRoute = async (app: FastifyInstance) => {
+  app.post<{ Body: IRegisterRequest }>("/register", async (request, reply) => {
+    // ...
+  });
+};
+```
+
 ### Services
 
+- Each function lives in its own subfolder (`services/<domain>/<function>/index.ts`)
+- The domain `index.ts` re-exports all functions for convenient imports
 - Arrow functions that receive `db: Database` as the first argument
 - Contain business logic, call repository functions
 - Return typed response objects (interfaces from `@tayemno/shared`)
 
+```
+services/auth/
+  index.ts                      # re-exports register, verifyEmail, resendVerification
+  register/index.ts             # register()
+  verifyEmail/index.ts          # verifyEmail()
+  resendVerification/index.ts   # resendVerification()
+```
+
 ### Repositories
 
+- All functions for a domain live in a single `index.ts` file (`repositories/<domain>/index.ts`)
 - Arrow functions that receive `db: Database` as the first argument
 - Contain only Drizzle query logic (select, insert, update, delete)
 - Import table definitions from `../../db/schema.js`

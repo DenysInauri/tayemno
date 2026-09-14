@@ -1,4 +1,4 @@
-import { type ChangeEvent, useMemo } from "react";
+import { type ChangeEvent, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import { useDebouncedValue } from "@mantine/hooks";
@@ -17,7 +17,9 @@ import { TextInput } from "../../components/ui/TextInput";
 import { Title } from "../../components/ui/Title";
 import { SizeEnum } from "../../enums/ui/SizeEnum";
 import { useGetIsUsernameFree } from "../../api/hooks/useGetIsUsernameFree";
+import { usePostRegister } from "../../api/hooks/usePostRegister";
 import { registerSchema } from "../../validations/registerSchema";
+import { getApiErrorMessage } from "../../utils/getApiErrorMessage";
 
 interface IRegisterFormValues {
   name: string;
@@ -27,8 +29,14 @@ interface IRegisterFormValues {
   confirmPassword: string;
 }
 
-export const RegisterPage = () => {
+interface IProps {
+  onRegistered?: (email: string) => void;
+}
+
+export const RegisterPage = ({ onRegistered }: IProps) => {
   const { t } = useTranslation();
+  const [submitError, setSubmitError] = useState("");
+  const { mutate: register, isPending } = usePostRegister();
 
   const formik = useFormik<IRegisterFormValues>({
     initialValues: {
@@ -42,11 +50,32 @@ export const RegisterPage = () => {
     validateOnChange: true,
     validateOnBlur: false,
     onSubmit: (values) => {
-      console.log("Registration form submitted:", {
-        name: values.name,
-        username: values.username,
-        email: values.email,
-      });
+      setSubmitError("");
+      register(
+        {
+          name: values.name,
+          username: values.username,
+          email: values.email,
+          srpSalt: "placeholder",
+          srpVerifier: "placeholder",
+          kdfSalt: "placeholder",
+          kdfAlgorithm: "argon2id",
+          kdfMemoryKib: 65536,
+          kdfIterations: 3,
+          kdfParallelism: 4,
+          publicKey: "placeholder",
+          encryptedPrivateKey: "placeholder",
+          privateKeyNonce: "placeholder",
+        },
+        {
+          onSuccess: (data) => {
+            onRegistered?.(data.email);
+          },
+          onError: (err) => {
+            setSubmitError(getApiErrorMessage(err, t));
+          },
+        },
+      );
     },
   });
 
@@ -88,96 +117,103 @@ export const RegisterPage = () => {
     <Container size={900} px={SizeEnum.LG}>
       <Stack justify="center" mih="100vh" py={SizeEnum.XL}>
         <Grid gutter={SizeEnum.XL} align="flex-start">
-        <GridCol span={{ base: 12, md: 5 }}>
-          <Title ta={{ base: "center", md: "left" }} order={1}>
-            {t("register.title")}
-          </Title>
-          <Text
-            c="dimmed"
-            size="sm"
-            ta={{ base: "center", md: "left" }}
-            mt={SizeEnum.XS}
-          >
-            {t("register.subtitle")}{" "}
-            <Anchor size="sm" component="button" type="button">
-              {t("register.signInLink")}
-            </Anchor>
-          </Text>
-        </GridCol>
-        <GridCol span={{ base: 12, md: 7 }}>
-          <Paper withBorder shadow="md" p={SizeEnum.LG} radius="md">
-            <form onSubmit={formik.handleSubmit}>
-              <Stack>
-                <TextInput
-                  label={t("register.fields.name.label")}
-                  placeholder={t("register.fields.name.placeholder")}
-                  name="name"
-                  value={formik.values.name}
-                  onChange={formik.handleChange}
-                  onBlur={handleBlur("name")}
-                  error={
-                    formik.touched.name &&
-                    formik.errors.name &&
-                    t(formik.errors.name)
-                  }
-                />
-                <TextInput
-                  label={t("register.fields.username.label")}
-                  placeholder={t("register.fields.username.placeholder")}
-                  name="username"
-                  value={formik.values.username}
-                  onChange={handleUsernameChange}
-                  onBlur={handleBlur("username")}
-                  maxLength={255}
-                  error={usernameError}
-                  successHighlight={isUsernameAvailable}
-                  rightSection={
-                    isCheckingUsername ? <Loader size={16} /> : undefined
-                  }
-                />
-                <TextInput
-                  label={t("register.fields.email.label")}
-                  placeholder={t("register.fields.email.placeholder")}
-                  name="email"
-                  value={formik.values.email}
-                  onChange={formik.handleChange}
-                  onBlur={handleBlur("email")}
-                  error={
-                    formik.touched.email &&
-                    formik.errors.email &&
-                    t(formik.errors.email)
-                  }
-                />
-                <PasswordStrengthInput
-                  label={t("register.fields.password.label")}
-                  placeholder={t("register.fields.password.placeholder")}
-                  name="password"
-                  value={formik.values.password}
-                  onChange={handlePasswordChange}
-                  onBlur={handleBlur("password")}
-                  touched={!!formik.touched.password}
-                />
-                <PasswordInput
-                  label={t("register.fields.confirmPassword.label")}
-                  placeholder={t("register.fields.confirmPassword.placeholder")}
-                  name="confirmPassword"
-                  value={formik.values.confirmPassword}
-                  onChange={formik.handleChange}
-                  onBlur={handleBlur("confirmPassword")}
-                  error={
-                    (formik.values.confirmPassword.length > 0 ||
-                      formik.touched.confirmPassword) &&
-                    formik.errors.confirmPassword &&
-                    t(formik.errors.confirmPassword)
-                  }
-                />
-                <Button type="submit" fullWidth mt="xl">
-                  {t("register.submitButton")}
-                </Button>
-              </Stack>
-            </form>
-          </Paper>
-        </GridCol>
+          <GridCol span={{ base: 12, md: 5 }}>
+            <Title ta={{ base: "center", md: "left" }} order={1}>
+              {t("register.title")}
+            </Title>
+            <Text
+              c="dimmed"
+              size="sm"
+              ta={{ base: "center", md: "left" }}
+              mt={SizeEnum.XS}
+            >
+              {t("register.subtitle")}{" "}
+              <Anchor size="sm" component="button" type="button">
+                {t("register.signInLink")}
+              </Anchor>
+            </Text>
+          </GridCol>
+          <GridCol span={{ base: 12, md: 7 }}>
+            <Paper withBorder shadow="md" p={SizeEnum.LG} radius="md">
+              <form onSubmit={formik.handleSubmit}>
+                <Stack>
+                  <TextInput
+                    label={t("register.fields.name.label")}
+                    placeholder={t("register.fields.name.placeholder")}
+                    name="name"
+                    value={formik.values.name}
+                    onChange={formik.handleChange}
+                    onBlur={handleBlur("name")}
+                    error={
+                      formik.touched.name &&
+                      formik.errors.name &&
+                      t(formik.errors.name)
+                    }
+                  />
+                  <TextInput
+                    label={t("register.fields.username.label")}
+                    placeholder={t("register.fields.username.placeholder")}
+                    name="username"
+                    value={formik.values.username}
+                    onChange={handleUsernameChange}
+                    onBlur={handleBlur("username")}
+                    maxLength={255}
+                    error={usernameError}
+                    successHighlight={isUsernameAvailable}
+                    rightSection={
+                      isCheckingUsername ? <Loader size={16} /> : undefined
+                    }
+                  />
+                  <TextInput
+                    label={t("register.fields.email.label")}
+                    placeholder={t("register.fields.email.placeholder")}
+                    name="email"
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    onBlur={handleBlur("email")}
+                    error={
+                      formik.touched.email &&
+                      formik.errors.email &&
+                      t(formik.errors.email)
+                    }
+                  />
+                  <PasswordStrengthInput
+                    label={t("register.fields.password.label")}
+                    placeholder={t("register.fields.password.placeholder")}
+                    name="password"
+                    value={formik.values.password}
+                    onChange={handlePasswordChange}
+                    onBlur={handleBlur("password")}
+                    touched={!!formik.touched.password}
+                  />
+                  <PasswordInput
+                    label={t("register.fields.confirmPassword.label")}
+                    placeholder={t(
+                      "register.fields.confirmPassword.placeholder",
+                    )}
+                    name="confirmPassword"
+                    value={formik.values.confirmPassword}
+                    onChange={formik.handleChange}
+                    onBlur={handleBlur("confirmPassword")}
+                    error={
+                      (formik.values.confirmPassword.length > 0 ||
+                        formik.touched.confirmPassword) &&
+                      formik.errors.confirmPassword &&
+                      t(formik.errors.confirmPassword)
+                    }
+                  />
+                  {submitError && (
+                    <Text c="red" size="sm" ta="center">
+                      {submitError}
+                    </Text>
+                  )}
+                  <Button type="submit" fullWidth mt="xl" loading={isPending}>
+                    {t("register.submitButton")}
+                  </Button>
+                </Stack>
+              </form>
+            </Paper>
+          </GridCol>
         </Grid>
       </Stack>
     </Container>

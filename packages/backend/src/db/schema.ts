@@ -44,6 +44,37 @@ export const users = pgTable("users", {
     .$onUpdate(() => new Date()),
 });
 
+export const pendingRegistrations = pgTable("pending_registrations", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  username: varchar("username", { length: 255 }).notNull().unique(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  name: varchar("name", { length: 255 }).notNull(),
+
+  srpSalt: text("srp_salt").notNull(),
+  srpVerifier: text("srp_verifier").notNull(),
+
+  kdfSalt: text("kdf_salt").notNull(),
+  kdfAlgorithm: varchar("kdf_algorithm", { length: 32 })
+    .default("argon2id")
+    .notNull(),
+  kdfMemoryKib: integer("kdf_memory_kib").notNull(),
+  kdfIterations: integer("kdf_iterations").notNull(),
+  kdfParallelism: integer("kdf_parallelism").notNull(),
+
+  publicKey: text("public_key").notNull(),
+  encryptedPrivateKey: text("encrypted_private_key").notNull(),
+  privateKeyNonce: text("private_key_nonce").notNull(),
+
+  verificationCodeHash: text("verification_code_hash").notNull(),
+  codeExpiresAt: timestamp("code_expires_at", { withTimezone: true }).notNull(),
+  attempts: integer("attempts").default(0).notNull(),
+  lastSentAt: timestamp("last_sent_at", { withTimezone: true }).notNull(),
+
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
 export const folders = pgTable("folders", {
   id: uuid("id").defaultRandom().primaryKey(),
   ownerId: uuid("owner_id")

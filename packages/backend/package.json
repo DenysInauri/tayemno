@@ -16,8 +16,10 @@
     "@fastify/cors": "^11.3.0",
     "@fastify/env": "^5.0.0",
     "@tayemno/shared": "*",
+    "@types/nodemailer": "^8.0.1",
     "drizzle-orm": "^1.0.0-rc.5-ab785fc",
     "fastify": "^5.1.0",
+    "nodemailer": "^10.0.9",
     "postgres": "^3.4.0"
   },
   "devDependencies": {

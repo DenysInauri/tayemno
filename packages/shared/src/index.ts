@@ -132,3 +132,36 @@ export interface ICheckPasswordBreachParams {
 export interface ICheckPasswordBreachResponse {
   count: number;
 }
+
+export interface IRegisterRequest extends NewUser {}
+
+export interface IRegisterResponse {
+  message: string;
+  email: string;
+}
+
+export interface IVerifyEmailRequest {
+  email: string;
+  code: string;
+}
+
+export interface IVerifyEmailResponse {
+  message: string;
+  userId: string;
+}
+
+export interface IResendVerificationRequest {
+  email: string;
+}
+
+export interface IResendVerificationResponse {
+  message: string;
+}
+
+export interface ICheckEmailParams {
+  email: string;
+}
+
+export interface ICheckEmailResponse {
+  isFree: boolean;
+}

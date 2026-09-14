@@ -1,4 +1,7 @@
 {
+  "errors": {
+    "genericError": "Something went wrong. Please try again later"
+  },
   "register": {
     "title": "Create your account",
     "subtitle": "Already have an account?",
@@ -42,7 +45,21 @@
       "passwordIncludesUppercase": "Includes uppercase letter",
       "passwordIncludesSpecial": "Includes special symbol",
       "confirmPasswordRequired": "Please confirm your password",
-      "confirmPasswordMismatch": "Passwords do not match"
+      "confirmPasswordMismatch": "Passwords do not match",
+      "emailTaken": "This email is already registered"
+    }
+  },
+  "verify": {
+    "title": "Verify your email",
+    "subtitle": "We sent a 6-digit code to {{email}}",
+    "submitButton": "Verify",
+    "resendButton": "Resend code",
+    "validation": {
+      "invalidCode": "Invalid verification code",
+      "codeExpired": "Verification code has expired",
+      "tooManyAttempts": "Too many failed attempts. Please request a new code",
+      "resendCooldown": "Please wait before requesting a new code",
+      "noPendingRegistration": "No pending registration found"
     }
   }
 }

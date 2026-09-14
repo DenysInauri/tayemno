@@ -115,6 +115,33 @@ const { t } = useTranslation();
 <Title>{t("register.title")}</Title>;
 ```
 
+## API Error Handling
+
+All API mutation error handlers must use the `getApiErrorMessage` utility (`utils/getApiErrorMessage`). Never display raw backend error messages to the user.
+
+The utility maps known backend error messages to i18n keys. Unknown errors fall back to `errors.genericError`.
+
+```tsx
+import { getApiErrorMessage } from "../../utils/getApiErrorMessage";
+
+// In a mutation onError callback:
+onError: (err) => {
+  setError(getApiErrorMessage(err, t));
+},
+```
+
+When adding new backend error messages, add a mapping entry in `getApiErrorMessage/index.ts` and the corresponding i18n key in `en.json`:
+
+```ts
+// utils/getApiErrorMessage/index.ts
+const ERROR_MESSAGE_TO_I18N: Record<string, string> = {
+  "Username is already taken": "register.validation.usernameTaken",
+  // add new mappings here
+};
+```
+
+Never check for specific error messages inline in components — always go through `getApiErrorMessage`.
+
 ## SizeEnum for Numeric Layout Values
 
 Never use raw numbers for spacing/padding/margin. Use `SizeEnum`:

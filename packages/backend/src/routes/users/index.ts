@@ -1,16 +1,8 @@
 import type { FastifyInstance } from "fastify";
-import type {
-  ICheckUsernameParams,
-  ICheckUsernameResponse,
-} from "@tayemno/shared";
-import { isUsernameFree } from "../../services/users";
+import { checkUsernameRoute } from "./checkUsername";
+import { checkEmailRoute } from "./checkEmail";
 
 export const usersRoutes = async (app: FastifyInstance) => {
-  app.get<{ Params: ICheckUsernameParams }>(
-    "/check-username/:username",
-    async (request): Promise<ICheckUsernameResponse> => {
-      const { username } = request.params;
-      return isUsernameFree(app.db, username.toLowerCase());
-    },
-  );
+  await app.register(checkUsernameRoute);
+  await app.register(checkEmailRoute);
 };
