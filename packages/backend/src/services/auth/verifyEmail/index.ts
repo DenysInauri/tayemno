@@ -1,4 +1,4 @@
-import type { IVerifyEmailRequest, IVerifyEmailResponse } from "@tayemno/shared";
+import type { IVerifyEmailRequest, ISignInUserData } from "@tayemno/shared";
 import type { Database } from "../../../db";
 import * as usersRepo from "../../../repositories/users";
 import * as pendingRepo from "../../../repositories/pendingRegistrations";
@@ -9,10 +9,15 @@ import {
 } from "../../../utils/verification";
 import { HttpError } from "../../../utils/httpError";
 
+export interface IVerifyEmailResult {
+  message: string;
+  user: ISignInUserData;
+}
+
 export const verifyEmail = async (
   db: Database,
   data: IVerifyEmailRequest,
-): Promise<IVerifyEmailResponse> => {
+): Promise<IVerifyEmailResult> => {
   const email = data.email.toLowerCase();
   const pending = await pendingRepo.findByEmail(db, email);
 
@@ -56,5 +61,21 @@ export const verifyEmail = async (
 
   await pendingRepo.deleteByEmail(db, email);
 
-  return { message: "Email verified successfully", userId: user.id };
+  return {
+    message: "Email verified successfully",
+    user: {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      name: user.name,
+      publicKey: user.publicKey,
+      encryptedPrivateKey: user.encryptedPrivateKey,
+      privateKeyNonce: user.privateKeyNonce,
+      kdfSalt: user.kdfSalt,
+      kdfAlgorithm: user.kdfAlgorithm as "argon2id",
+      kdfMemoryKib: user.kdfMemoryKib,
+      kdfIterations: user.kdfIterations,
+      kdfParallelism: user.kdfParallelism,
+    },
+  };
 };

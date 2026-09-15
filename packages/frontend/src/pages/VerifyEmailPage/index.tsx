@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate, Location } from "react-router-dom";
 import { Button } from "../../components/ui/Button";
 import { Container } from "../../components/ui/Container";
 import { Paper } from "../../components/ui/Paper";
@@ -13,13 +13,24 @@ import { SizeEnum } from "../../enums/ui/SizeEnum";
 import { usePostVerifyEmail } from "../../api/hooks/usePostVerifyEmail";
 import { usePostResendVerification } from "../../api/hooks/usePostResendVerification";
 import { getApiErrorMessage } from "../../utils/getApiErrorMessage";
+import { useAuth } from "../../contexts/AuthContext";
+
+const PIN_INPUT_LENGTH = 6;
+
+interface IVerifyEmailLocationState {
+  email: string;
+  privateKey: string;
+  publicKey: string;
+}
 
 export const VerifyEmailPage = () => {
   const { t } = useTranslation();
-  const location = useLocation();
-  const email = (location.state as { email?: string })?.email;
+  const { signIn } = useAuth();
+  const location: Location<IVerifyEmailLocationState> = useLocation();
+  const { email, privateKey, publicKey } = location.state;
 
-  if (!email) return <Navigate to={RouteEnum.SIGN_UP} replace />;
+  if (!email || !privateKey || !publicKey)
+    return <Navigate to={RouteEnum.SIGN_UP} replace />;
 
   const navigate = useNavigate();
   const [code, setCode] = useState("");
@@ -30,14 +41,15 @@ export const VerifyEmailPage = () => {
     usePostResendVerification();
 
   const handleVerify = () => {
-    if (code.length !== 6) return;
+    if (code.length !== PIN_INPUT_LENGTH) return;
 
     setError("");
     verify(
       { email, code },
       {
-        onSuccess: () => {
-          navigate(RouteEnum.SIGN_IN);
+        onSuccess: (data) => {
+          signIn(data.token, data.user, { publicKey, privateKey });
+          navigate(RouteEnum.HOME);
         },
         onError: (err) => {
           setError(getApiErrorMessage(err, t));
@@ -77,7 +89,7 @@ export const VerifyEmailPage = () => {
         >
           <Stack align="center">
             <PinInput
-              length={6}
+              length={PIN_INPUT_LENGTH}
               type="number"
               size="lg"
               value={code}
@@ -93,7 +105,7 @@ export const VerifyEmailPage = () => {
               mt={SizeEnum.SM}
               onClick={handleVerify}
               loading={isVerifying}
-              disabled={code.length !== 6}
+              disabled={code.length !== PIN_INPUT_LENGTH}
             >
               {t("verify.submitButton")}
             </Button>

@@ -147,7 +147,8 @@ export interface IVerifyEmailRequest {
 
 export interface IVerifyEmailResponse {
   message: string;
-  userId: string;
+  token: string;
+  user: ISignInUserData;
 }
 
 export interface IResendVerificationRequest {

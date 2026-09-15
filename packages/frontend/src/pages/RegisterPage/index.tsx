@@ -104,7 +104,11 @@ export const RegisterPage = () => {
         {
           onSuccess: (data) => {
             navigate(RouteEnum.VERIFY_EMAIL, {
-              state: { email: data.email },
+              state: {
+                email: data.email,
+                privateKey: userKeyPair.privateKey,
+                publicKey: userKeyPair.publicKey,
+              },
             });
           },
           onError: (err) => {
