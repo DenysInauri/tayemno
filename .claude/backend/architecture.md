@@ -132,6 +132,16 @@ interface ICheckUsernameParams {
 
 Type aliases do not use the `I` prefix.
 
+### HTTP Errors
+
+Use the `HttpError` class from `utils/httpError` to throw errors with HTTP status codes in services. Do not throw plain objects (`throw { statusCode, message }`) or use `Object.assign(new Error(...), { statusCode })`.
+
+```ts
+import { HttpError } from "../../../utils/httpError";
+
+throw new HttpError(409, "Username is already taken");
+```
+
 ### Folder-Based File Structure
 
 Every module uses `ModuleName/index.ts`:

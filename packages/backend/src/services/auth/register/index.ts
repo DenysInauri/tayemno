@@ -9,6 +9,7 @@ import {
   hashVerificationCode,
   getCodeExpirationDate,
 } from "../../../utils/verification";
+import { HttpError } from "../../../utils/httpError";
 
 export const register = async (
   db: Database,
@@ -21,12 +22,12 @@ export const register = async (
 
   const existingUserByUsername = await usersRepo.findByUsername(db, username);
   if (existingUserByUsername) {
-    throw { statusCode: 409, message: "Username is already taken" };
+    throw new HttpError(409, "Username is already taken");
   }
 
   const existingUserByEmail = await usersRepo.findByEmail(db, email);
   if (existingUserByEmail) {
-    throw { statusCode: 409, message: "Email is already registered" };
+    throw new HttpError(409, "Email is already registered");
   }
 
   const existingPending = await pendingRepo.findByEmailOrUsername(

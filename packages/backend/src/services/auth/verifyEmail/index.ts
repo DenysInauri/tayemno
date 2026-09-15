@@ -7,6 +7,7 @@ import {
   isCodeExpired,
   hasExceededAttempts,
 } from "../../../utils/verification";
+import { HttpError } from "../../../utils/httpError";
 
 export const verifyEmail = async (
   db: Database,
@@ -16,24 +17,24 @@ export const verifyEmail = async (
   const pending = await pendingRepo.findByEmail(db, email);
 
   if (!pending) {
-    throw { statusCode: 404, message: "No pending registration found" };
+    throw new HttpError(404, "No pending registration found");
   }
 
   if (isCodeExpired(pending.codeExpiresAt)) {
-    throw { statusCode: 410, message: "Verification code has expired" };
+    throw new HttpError(410, "Verification code has expired");
   }
 
   if (hasExceededAttempts(pending.attempts)) {
-    throw {
-      statusCode: 429,
-      message: "Too many failed attempts. Please request a new code",
-    };
+    throw new HttpError(
+      429,
+      "Too many failed attempts. Please request a new code",
+    );
   }
 
   const providedHash = hashVerificationCode(data.code);
   if (providedHash !== pending.verificationCodeHash) {
     await pendingRepo.incrementAttempts(db, pending.id);
-    throw { statusCode: 400, message: "Invalid verification code" };
+    throw new HttpError(400, "Invalid verification code");
   }
 
   const user = await usersRepo.create(db, {

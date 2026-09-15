@@ -12,6 +12,7 @@ import {
   getCodeExpirationDate,
   canResendCode,
 } from "../../../utils/verification";
+import { HttpError } from "../../../utils/httpError";
 
 export const resendVerification = async (
   db: Database,
@@ -23,14 +24,11 @@ export const resendVerification = async (
   const pending = await pendingRepo.findByEmail(db, email);
 
   if (!pending) {
-    throw { statusCode: 404, message: "No pending registration found" };
+    throw new HttpError(404, "No pending registration found");
   }
 
   if (!canResendCode(pending.lastSentAt)) {
-    throw {
-      statusCode: 429,
-      message: "Please wait before requesting a new code",
-    };
+    throw new HttpError(429, "Please wait before requesting a new code");
   }
 
   const code = generateVerificationCode();
