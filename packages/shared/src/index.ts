@@ -167,10 +167,11 @@ export interface ICheckEmailResponse {
 }
 
 export interface ISignInInitRequest {
-  username: string;
+  identifier: string;
 }
 
 export interface ISignInInitResponse {
+  username: string;
   srpSalt: string;
   serverPublicEphemeral: string;
 }
@@ -200,4 +201,9 @@ export interface ISignInVerifyResponse {
   serverSessionProof: string;
   token: string;
   user: ISignInUserData;
+}
+
+export interface IKeyPair {
+  publicKey: string;
+  privateKey: string;
 }

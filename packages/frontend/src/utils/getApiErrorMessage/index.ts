@@ -11,6 +11,7 @@ const ERROR_MESSAGE_TO_I18N: Record<string, string> = {
   "Please wait before requesting a new code":
     "verify.validation.resendCooldown",
   "No pending registration found": "verify.validation.noPendingRegistration",
+  "Invalid credentials": "signIn.errors.invalidCredentials",
 };
 
 export const getApiErrorMessage = (err: Error, t: TFunction): string => {

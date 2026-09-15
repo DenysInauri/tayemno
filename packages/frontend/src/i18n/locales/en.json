@@ -66,7 +66,25 @@
     "title": "Sign in",
     "noAccount": "Don't have an account?",
     "signUpLink": "Sign up",
-    "forgotPasswordLink": "Forgot master password?"
+    "forgotPasswordLink": "Forgot master password?",
+    "fields": {
+      "identifier": {
+        "label": "Email or username",
+        "placeholder": "Your email or username"
+      },
+      "password": {
+        "label": "Master password",
+        "placeholder": "Your master password"
+      }
+    },
+    "validation": {
+      "identifierRequired": "Email or username is required",
+      "passwordRequired": "Password is required"
+    },
+    "errors": {
+      "invalidCredentials": "Invalid username or password"
+    },
+    "submitButton": "Sign in"
   },
   "forgotPassword": {
     "title": "Forgot master password"
