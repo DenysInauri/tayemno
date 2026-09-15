@@ -26,7 +26,9 @@ import { getApiErrorMessage } from "../../utils/getApiErrorMessage";
 import {
   generateSalt,
   deriveKey,
-  MemLimit,
+  KDF_ITERATIONS,
+  KDF_MEMORY_BYTES,
+  KDF_PARALLELISM,
 } from "../../utils/crypto/deriveKey";
 import { AsymmetricCrypto } from "../../utils/crypto/AsymmetricCrypto";
 import { SymmetricCrypto } from "../../utils/crypto/SymmetricCrypto";
@@ -59,6 +61,8 @@ export const RegisterPage = () => {
     onSubmit: async (values) => {
       setSubmitError("");
 
+      if (isUsernameTaken) return;
+
       const srpSalt = srp.generateSalt();
       const srpPrivateKey = srp.derivePrivateKey(
         srpSalt,
@@ -71,6 +75,8 @@ export const RegisterPage = () => {
       const userDeriveKey = await deriveKey({
         password: values.password,
         saltHex: deriveKeySalt,
+        iterations: KDF_ITERATIONS,
+        memoryLimit: KDF_MEMORY_BYTES,
       });
 
       const userKeyPair = await AsymmetricCrypto.generateKeyPair();
@@ -88,9 +94,9 @@ export const RegisterPage = () => {
           srpVerifier,
           kdfSalt: deriveKeySalt,
           kdfAlgorithm: "argon2id",
-          kdfMemoryKib: MemLimit.m64,
-          kdfIterations: 3,
-          kdfParallelism: 4,
+          kdfMemoryKib: KDF_MEMORY_BYTES / 1024,
+          kdfIterations: KDF_ITERATIONS,
+          kdfParallelism: KDF_PARALLELISM,
           publicKey: userKeyPair.publicKey,
           encryptedPrivateKey: encryptedPrivateKey.ciphertext,
           privateKeyNonce: encryptedPrivateKey.nonce,

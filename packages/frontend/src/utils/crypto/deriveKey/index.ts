@@ -1,11 +1,8 @@
 import sodium from "libsodium-wrappers-sumo";
 
-export enum MemLimit {
-  m64 = 67108864,
-  m32 = m64 / 2,
-  m16 = m32 / 2,
-  m8 = m16 / 2,
-}
+export const KDF_ITERATIONS = 2;
+export const KDF_MEMORY_BYTES = 67108864;
+export const KDF_PARALLELISM = 1;
 
 export const generateSalt = async (): Promise<string> => {
   await sodium.ready;
@@ -18,11 +15,15 @@ export const generateSalt = async (): Promise<string> => {
 interface IDeriveKeyParams {
   password: string;
   saltHex: string;
+  iterations: number;
+  memoryLimit: number;
 }
 
 export const deriveKey = async ({
   password,
   saltHex,
+  iterations,
+  memoryLimit,
 }: IDeriveKeyParams): Promise<string> => {
   await sodium.ready;
 
@@ -36,8 +37,8 @@ export const deriveKey = async ({
     32,
     password,
     salt,
-    10,
-    MemLimit.m64,
+    iterations,
+    memoryLimit,
     sodium.crypto_pwhash_ALG_ARGON2ID13,
     "hex",
   );
