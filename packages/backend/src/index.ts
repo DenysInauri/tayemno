@@ -1,5 +1,6 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
+import jwt from "@fastify/jwt";
 import type { Transporter } from "nodemailer";
 import type { HealthCheckResponse } from "@tayemno/shared";
 import { registerConfig } from "./config.js";
@@ -9,6 +10,7 @@ import { securityRoutes } from "./routes/security";
 import { authRoutes } from "./routes/auth";
 import { createTransport } from "./services/email";
 import { deleteExpired } from "./repositories/pendingRegistrations";
+import { cleanupExpiredChallenges } from "./utils/srpChallengeStore";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -21,6 +23,7 @@ const app = Fastify({ logger: true });
 
 await registerConfig(app);
 await app.register(cors);
+await app.register(jwt, { secret: app.config.JWT_SECRET });
 
 app.decorate("db", createDb(app.config.DATABASE_URL));
 
@@ -44,6 +47,11 @@ setInterval(() => {
     app.log.error(err, "Failed to clean up expired pending registrations");
   });
 }, CLEANUP_INTERVAL_MS);
+
+const CHALLENGE_CLEANUP_INTERVAL_MS = 60 * 1000;
+setInterval(() => {
+  cleanupExpiredChallenges();
+}, CHALLENGE_CLEANUP_INTERVAL_MS);
 
 const start = async () => {
   try {

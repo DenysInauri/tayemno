@@ -165,3 +165,39 @@ export interface ICheckEmailParams {
 export interface ICheckEmailResponse {
   isFree: boolean;
 }
+
+export interface ISignInInitRequest {
+  username: string;
+}
+
+export interface ISignInInitResponse {
+  srpSalt: string;
+  serverPublicEphemeral: string;
+}
+
+export interface ISignInVerifyRequest {
+  username: string;
+  clientPublicEphemeral: string;
+  clientSessionProof: string;
+}
+
+export interface ISignInUserData {
+  id: string;
+  username: string;
+  email: string;
+  name: string;
+  publicKey: string;
+  encryptedPrivateKey: string;
+  privateKeyNonce: string;
+  kdfSalt: string;
+  kdfAlgorithm: "argon2id";
+  kdfMemoryKib: number;
+  kdfIterations: number;
+  kdfParallelism: number;
+}
+
+export interface ISignInVerifyResponse {
+  serverSessionProof: string;
+  token: string;
+  user: ISignInUserData;
+}

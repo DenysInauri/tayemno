@@ -15,12 +15,14 @@
   "dependencies": {
     "@fastify/cors": "^11.3.0",
     "@fastify/env": "^5.0.0",
+    "@fastify/jwt": "^10.2.2",
     "@tayemno/shared": "*",
     "@types/nodemailer": "^8.0.1",
     "drizzle-orm": "^1.0.0-rc.5-ab785fc",
     "fastify": "^5.1.0",
     "nodemailer": "^10.0.9",
-    "postgres": "^3.4.0"
+    "postgres": "^3.4.0",
+    "secure-remote-password": "github:LinusU/secure-remote-password#73e5f732b6ca0cdbdc19da1a0c5f48cdbad2cbf0"
   },
   "devDependencies": {
     "@types/node": "^22.9.0",

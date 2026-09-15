@@ -3,11 +3,12 @@ import fastifyEnv from "@fastify/env";
 
 const schema = {
   type: "object" as const,
-  required: ["DATABASE_URL"],
+  required: ["DATABASE_URL", "JWT_SECRET"],
   properties: {
     DATABASE_URL: { type: "string" },
     PORT: { type: "number", default: 3000 },
     NODE_ENV: { type: "string", default: "development" },
+    JWT_SECRET: { type: "string" },
     SMTP_HOST: { type: "string", default: "smtp.ethereal.email" },
     SMTP_PORT: { type: "number", default: 587 },
     SMTP_USER: { type: "string", default: "dangelo.wyman69@ethereal.email" },
@@ -20,6 +21,7 @@ type Config = {
   DATABASE_URL: string;
   PORT: number;
   NODE_ENV: string;
+  JWT_SECRET: string;
   SMTP_HOST: string;
   SMTP_PORT: number;
   SMTP_USER: string;
