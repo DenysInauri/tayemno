@@ -41,8 +41,6 @@ export const VerifyEmailPage = () => {
     usePostResendVerification();
 
   const handleVerify = () => {
-    if (code.length !== PIN_INPUT_LENGTH) return;
-
     setError("");
     verify(
       { email, code },
