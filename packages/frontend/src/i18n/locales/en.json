@@ -88,5 +88,13 @@
   },
   "forgotPassword": {
     "title": "Forgot master password"
+  },
+  "nav": {
+    "files": "Files",
+    "settings": "Settings",
+    "signOut": "Sign out"
+  },
+  "settings": {
+    "title": "Settings"
   }
 }

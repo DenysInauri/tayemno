@@ -8,6 +8,8 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { GuestRoute } from "./components/routing/GuestRoute";
 import { ProtectedRoute } from "./components/routing/ProtectedRoute";
 import { HomePage } from "./pages/HomePage";
+import { AppShellLayout } from "./components/layout/AppShell";
+import { SettingsPage } from "./pages/SettingsPage";
 
 export const App = () => (
   <BrowserRouter>
@@ -23,7 +25,11 @@ export const App = () => (
           />
         </Route>
         <Route element={<ProtectedRoute />}>
-          <Route path={RouteEnum.HOME} element={<HomePage />} />
+          <Route element={<AppShellLayout />}>
+            <Route path={RouteEnum.HOME} element={<HomePage />} />
+            <Route path={RouteEnum.FOLDER} element={<HomePage />} />
+            <Route path={RouteEnum.SETTINGS} element={<SettingsPage />} />
+          </Route>
         </Route>
         <Route path="*" element={<Navigate to={RouteEnum.HOME} replace />} />
       </Routes>
