@@ -1,4 +1,9 @@
-import { AppShell as MantineAppShell, NavLink, Burger, Group } from "@mantine/core";
+import {
+  AppShell as MantineAppShell,
+  NavLink,
+  Burger,
+  Group,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -35,8 +40,8 @@ export const AppShellLayout = () => {
             label={t("nav.files")}
             leftSection={<IconFolder size={20} />}
             active={
-              location.pathname === "/" ||
-              location.pathname.startsWith("/folders")
+              location.pathname === RouteEnum.HOME ||
+              location.pathname.startsWith(RouteEnum.FOLDERS)
             }
             onClick={() => {
               navigate(RouteEnum.HOME);

@@ -1,6 +1,7 @@
 export enum RouteEnum {
   HOME = "/",
-  FOLDER = "/folders/:folderId",
+  FOLDERS = "/folders",
+  FOLDER = `${RouteEnum.FOLDERS}/:folderId`,
   SETTINGS = "/settings",
   SIGN_IN = "/sign-in",
   SIGN_UP = "/sign-up",
