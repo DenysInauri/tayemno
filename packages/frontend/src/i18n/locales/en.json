@@ -96,5 +96,41 @@
   },
   "settings": {
     "title": "Settings"
+  },
+  "files": {
+    "breadcrumb": {
+      "root": "Files"
+    },
+    "columns": {
+      "name": "Name",
+      "size": "Size",
+      "modified": "Modified"
+    },
+    "addNew": "Add new",
+    "menu": {
+      "folder": "Folder",
+      "file": "File"
+    },
+    "empty": {
+      "title": "No files or folders yet",
+      "createFolder": "Create a folder"
+    },
+    "createFolder": {
+      "title": "Create folder",
+      "fields": {
+        "name": {
+          "label": "Folder name",
+          "placeholder": "Enter folder name"
+        }
+      },
+      "submit": "Create"
+    },
+    "uploadFile": {
+      "title": "Upload file",
+      "placeholder": "File upload coming soon"
+    },
+    "validation": {
+      "folderNameRequired": "Folder name is required"
+    }
   }
 }
