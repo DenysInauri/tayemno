@@ -8,6 +8,7 @@ import { createDb, type Database } from "./db";
 import { usersRoutes } from "./routes/users";
 import { securityRoutes } from "./routes/security";
 import { authRoutes } from "./routes/auth";
+import { foldersRoutes } from "./routes/folders";
 import { createTransport } from "./services/email";
 import { deleteExpired } from "./repositories/pendingRegistrations";
 import { cleanupExpiredChallenges } from "./utils/srpChallengeStore";
@@ -16,6 +17,13 @@ declare module "fastify" {
   interface FastifyInstance {
     db: Database;
     mailTransport: Transporter;
+  }
+}
+
+declare module "@fastify/jwt" {
+  interface FastifyJWT {
+    payload: { sub: string; username: string };
+    user: { sub: string; username: string };
   }
 }
 
@@ -40,6 +48,7 @@ app.get("/health", async (): Promise<HealthCheckResponse> => {
 await app.register(usersRoutes, { prefix: "/users" });
 await app.register(securityRoutes, { prefix: "/security" });
 await app.register(authRoutes, { prefix: "/auth" });
+await app.register(foldersRoutes, { prefix: "/folders" });
 
 const CLEANUP_INTERVAL_MS = 5 * 60 * 1000;
 setInterval(() => {

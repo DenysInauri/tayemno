@@ -80,9 +80,6 @@ export const folders = pgTable("folders", {
   ownerId: uuid("owner_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-  parentId: uuid("parent_id").references((): any => folders.id, {
-    onDelete: "cascade",
-  }),
 
   name: varchar("name", { length: 255 }).notNull(),
 

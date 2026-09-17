@@ -41,7 +41,6 @@ export interface NewUser {
 export interface Folder {
   id: string;
   ownerId: string;
-  parentId: string | null;
   name: string;
   createdAt: string;
   updatedAt: string;
@@ -49,7 +48,6 @@ export interface Folder {
 
 export interface NewFolder {
   ownerId: string;
-  parentId?: string | null;
   name: string;
 }
 
@@ -207,4 +205,18 @@ export interface ISignInVerifyResponse {
 export interface IKeyPair {
   publicKey: string;
   privateKey: string;
+}
+
+export interface ICreateFolderRequest {
+  name: string;
+  symmetricKey: string;
+}
+
+export interface ICreateFolderResponse {
+  folder: Folder;
+  folderKeyShare: FolderKeyShare;
+}
+
+export interface IGetFoldersResponse {
+  folders: (Folder & { symmetricKey: string })[];
 }
