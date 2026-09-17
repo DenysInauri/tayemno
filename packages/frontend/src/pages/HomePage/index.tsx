@@ -16,9 +16,11 @@ import { RouteEnum } from "../../enums/routing/RouteEnum";
 import { SizeEnum } from "../../enums/ui/SizeEnum";
 
 export const HomePage = () => {
-  const { folderId } = useParams<{ folderId?: string }>();
+  const routeParams = useParams<{ folderId: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  const folderId = routeParams.folderId ?? null;
 
   const folders: Folder[] = [];
   const vaults: Vault[] = [];
@@ -38,7 +40,7 @@ export const HomePage = () => {
           </Anchor>
           {folderId && <Text size="sm">...</Text>}
         </Breadcrumbs>
-        <AddNewEntity />
+        <AddNewEntity folderId={folderId} />
       </Group>
 
       {isEmpty ? (

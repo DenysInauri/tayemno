@@ -7,10 +7,16 @@ import { Button } from "../../ui/Button";
 import { CreateFolderModal } from "../CreateFolderModal";
 import { UploadFileModal } from "../UploadFileModal";
 
-export const AddNewEntity = () => {
+interface IProps {
+  folderId: string | null;
+}
+
+export const AddNewEntity = (props: IProps) => {
   const { t } = useTranslation();
-  const [folderModalOpened, { open: openFolderModal, close: closeFolderModal }] =
-    useDisclosure();
+  const [
+    folderModalOpened,
+    { open: openFolderModal, close: closeFolderModal },
+  ] = useDisclosure();
   const [fileModalOpened, { open: openFileModal, close: closeFileModal }] =
     useDisclosure();
 
@@ -23,12 +29,14 @@ export const AddNewEntity = () => {
           </Button>
         </Menu.Target>
         <Menu.Dropdown>
-          <Menu.Item
-            leftSection={<IconFolder size={16} />}
-            onClick={openFolderModal}
-          >
-            {t("files.menu.folder")}
-          </Menu.Item>
+          {!props.folderId && (
+            <Menu.Item
+              leftSection={<IconFolder size={16} />}
+              onClick={openFolderModal}
+            >
+              {t("files.menu.folder")}
+            </Menu.Item>
+          )}
           <Menu.Item
             leftSection={<IconUpload size={16} />}
             onClick={openFileModal}
