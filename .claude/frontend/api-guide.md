@@ -106,6 +106,57 @@ const onSubmit = (values: IRegisterFormValues) => {
 };
 ```
 
+## Response parsing with `select` + fallback
+
+`useApiGet` supports a second generic `TData` and TanStack Query's `select` option. Layer 2 hooks use this to extract the relevant data from the API response wrapper and provide a fallback so `data` is never `undefined` in components.
+
+### List hook — fallback `[]`
+
+```ts
+// api/hooks/useGetFolders/index.ts
+import type { IGetFoldersResponse, Folder } from "@tayemno/shared";
+
+type FolderWithKey = Folder & { symmetricKey: string };
+
+export const useGetFolders = () => {
+  const query = useApiGet<IGetFoldersResponse, FolderWithKey[]>(
+    [QueryKeyEnum.FOLDERS],
+    EndpointEnum.FOLDERS,
+    { select: (data) => data.folders },
+  );
+
+  return { ...query, data: query.data ?? [] };
+};
+```
+
+```tsx
+// In a component — data is always FolderWithKey[], even during initial loading:
+const { data: folders } = useGetFolders();
+```
+
+### Single-item hook — fallback `null`
+
+```ts
+// api/hooks/useGetFolderById/index.ts
+export const useGetFolderById = (id: string) => {
+  const query = useApiGet<IGetFolderByIdResponse, FolderWithKey | null>(
+    [QueryKeyEnum.FOLDER, id],
+    `${EndpointEnum.FOLDERS}/${id}`,
+    {
+      select: (data) => data.folder,
+      enabled: !!id,
+    },
+  );
+
+  return { ...query, data: query.data ?? null };
+};
+```
+
+```tsx
+// In a component — data is always FolderWithKey | null:
+const { data: folder } = useGetFolderById(folderId);
+```
+
 ## Rules
 
 1. **Always use enums** — never hardcode query keys or endpoint paths as strings.
@@ -113,3 +164,4 @@ const onSubmit = (values: IRegisterFormValues) => {
 3. **Naming convention** — prefix with HTTP method: `useGet...`, `usePost...`, `usePatch...`.
 4. **Response/Request interfaces** — declare `I...Response` and `I...Request` interfaces in the hook file (or import from `@tayemno/shared` if shared with the backend).
 5. **No direct axios calls in components** — always go through a Layer 2 hook.
+6. **Always use `select` + fallback** — Layer 2 GET hooks must use `select` to extract data from the response wrapper and provide a fallback (`[]` for lists, `null` for single items) so `data` is never `undefined` in components.

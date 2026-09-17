@@ -6,6 +6,10 @@ import { IconPlus, IconFolder, IconUpload } from "@tabler/icons-react";
 import { Button } from "../../ui/Button";
 import { CreateFolderModal } from "../CreateFolderModal";
 import { UploadFileModal } from "../UploadFileModal";
+import { usePostCreateFolder } from "../../../api/hooks/usePostCreateFolder";
+import { useAuth } from "../../../contexts/AuthContext";
+import { SymmetricCrypto } from "../../../utils/crypto/SymmetricCrypto";
+import { AsymmetricCrypto } from "../../../utils/crypto/AsymmetricCrypto";
 
 interface IProps {
   folderId: string | null;
@@ -13,12 +17,26 @@ interface IProps {
 
 export const AddNewEntity = (props: IProps) => {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const createFolder = usePostCreateFolder();
   const [
     folderModalOpened,
     { open: openFolderModal, close: closeFolderModal },
   ] = useDisclosure();
   const [fileModalOpened, { open: openFileModal, close: closeFileModal }] =
     useDisclosure();
+
+  const handleCreateFolder = async (name: string) => {
+    if (!user) return;
+
+    const folderKey = await SymmetricCrypto.generateKey();
+    const encryptedKey = await AsymmetricCrypto.encrypt(
+      folderKey,
+      user.publicKey,
+    );
+
+    createFolder.mutate({ name, symmetricKey: encryptedKey });
+  };
 
   return (
     <>
@@ -49,7 +67,7 @@ export const AddNewEntity = (props: IProps) => {
       <CreateFolderModal
         opened={folderModalOpened}
         onClose={closeFolderModal}
-        onSubmit={(name) => console.log("Create folder:", name)}
+        onSubmit={handleCreateFolder}
       />
       <UploadFileModal opened={fileModalOpened} onClose={closeFileModal} />
     </>

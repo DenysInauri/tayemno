@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Table } from "@mantine/core";
-import type { Folder, Vault } from "@tayemno/shared";
+import type { Vault } from "@tayemno/shared";
 
 import { Stack } from "../../components/ui/Stack";
 import { Group } from "../../components/ui/Group";
@@ -12,6 +12,7 @@ import { EmptyState } from "../../components/files/EmptyState";
 import { FoldersList } from "../../components/files/FoldersList";
 import { VaultsList } from "../../components/files/VaultsList";
 import { AddNewEntity } from "../../components/files/AddNewEntity";
+import { useGetFolders } from "../../api/hooks/useGetFolders";
 import { RouteEnum } from "../../enums/routing/RouteEnum";
 import { SizeEnum } from "../../enums/ui/SizeEnum";
 
@@ -22,7 +23,7 @@ export const HomePage = () => {
 
   const folderId = routeParams.folderId ?? null;
 
-  const folders: Folder[] = [];
+  const { data: folders } = useGetFolders();
   const vaults: Vault[] = [];
   const isEmpty = folders.length === 0 && vaults.length === 0;
 

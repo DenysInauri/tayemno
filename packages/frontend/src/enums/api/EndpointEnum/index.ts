@@ -6,4 +6,5 @@ export enum EndpointEnum {
   RESEND_VERIFICATION = "/auth/resend-verification",
   SIGN_IN_INIT = "/auth/sign-in/init",
   SIGN_IN_VERIFY = "/auth/sign-in/verify",
+  FOLDERS = "/folders",
 }
