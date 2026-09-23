@@ -131,7 +131,6 @@ export const vaults = pgTable("vaults", {
   s3Key: text("s3_key").notNull(),
   contentNonce: text("content_nonce").notNull(),
 
-  encryptedName: text("encrypted_name").notNull(),
   symmetricKey: text("symmetric_key"),
 
   createdAt: timestamp("created_at", { withTimezone: true })

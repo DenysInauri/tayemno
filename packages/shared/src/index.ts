@@ -76,7 +76,6 @@ export interface Vault {
   sizeBytes: number;
   s3Key: string;
   contentNonce: string;
-  encryptedName: string;
   symmetricKey: string | null;
   createdAt: string;
   updatedAt: string;
@@ -91,7 +90,6 @@ export interface NewVault {
   sizeBytes: number;
   s3Key: string;
   contentNonce: string;
-  encryptedName: string;
   symmetricKey?: string | null;
 }
 
@@ -219,4 +217,30 @@ export interface ICreateFolderResponse {
 
 export interface IGetFoldersResponse {
   folders: (Folder & { symmetricKey: string })[];
+}
+
+export interface IPresignVaultRequest {
+  folderId: string;
+  fileName: string;
+  mimeType: string;
+}
+
+export interface IPresignVaultResponse {
+  presignedUrl: string;
+  s3Key: string;
+}
+
+export interface ICreateVaultRequest {
+  folderId: string;
+  name: string;
+  mimeType: string;
+  extension: string;
+  sizeBytes: number;
+  s3Key: string;
+  contentNonce: string;
+  symmetricKey: string;
+}
+
+export interface ICreateVaultResponse {
+  vault: Vault;
 }

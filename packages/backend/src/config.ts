@@ -3,7 +3,7 @@ import fastifyEnv from "@fastify/env";
 
 const schema = {
   type: "object" as const,
-  required: ["DATABASE_URL", "JWT_SECRET"],
+  required: ["DATABASE_URL", "JWT_SECRET", "S3_ENDPOINT", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY", "S3_BUCKET"],
   properties: {
     DATABASE_URL: { type: "string" },
     PORT: { type: "number", default: 3000 },
@@ -14,6 +14,11 @@ const schema = {
     SMTP_USER: { type: "string", default: "dangelo.wyman69@ethereal.email" },
     SMTP_PASS: { type: "string", default: "kENsNCdet2jn9eGWq2" },
     SMTP_FROM: { type: "string", default: "noreply@tayemno.com" },
+    S3_ENDPOINT: { type: "string" },
+    S3_REGION: { type: "string", default: "auto" },
+    S3_ACCESS_KEY_ID: { type: "string" },
+    S3_SECRET_ACCESS_KEY: { type: "string" },
+    S3_BUCKET: { type: "string" },
   },
 };
 
@@ -27,6 +32,11 @@ type Config = {
   SMTP_USER: string;
   SMTP_PASS: string;
   SMTP_FROM: string;
+  S3_ENDPOINT: string;
+  S3_REGION: string;
+  S3_ACCESS_KEY_ID: string;
+  S3_SECRET_ACCESS_KEY: string;
+  S3_BUCKET: string;
 };
 
 declare module "fastify" {

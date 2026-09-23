@@ -13,6 +13,8 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1135.0",
+    "@aws-sdk/s3-request-presigner": "^3.1135.0",
     "@fastify/cors": "^11.3.0",
     "@fastify/env": "^5.0.0",
     "@fastify/jwt": "^10.2.2",

@@ -1,4 +1,4 @@
-import { eq, asc, sql } from "drizzle-orm";
+import { eq, and, asc, sql } from "drizzle-orm";
 import type { Database } from "../../db";
 import { folderKeyShares, folders } from "../../db/schema.js";
 
@@ -32,4 +32,23 @@ export const findWithFoldersByUserId = async (
         sql`COALESCE(NULLIF(regexp_replace(${folders.name}, '\\D', '', 'g'), ''), '0')::bigint`,
       ),
     );
+};
+
+export const findByFolderIdAndUserId = async (
+  db: Database,
+  folderId: string,
+  userId: string,
+) => {
+  const result = await db
+    .select()
+    .from(folderKeyShares)
+    .where(
+      and(
+        eq(folderKeyShares.folderId, folderId),
+        eq(folderKeyShares.userId, userId),
+      ),
+    )
+    .limit(1);
+
+  return result[0];
 };
