@@ -12,7 +12,6 @@ import {
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
-  username: varchar("username", { length: 255 }).notNull().unique(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   emailVerified: boolean("email_verified").default(false).notNull(),
   name: varchar("name", { length: 255 }).notNull(),
@@ -46,7 +45,6 @@ export const users = pgTable("users", {
 
 export const pendingRegistrations = pgTable("pending_registrations", {
   id: uuid("id").defaultRandom().primaryKey(),
-  username: varchar("username", { length: 255 }).notNull().unique(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   name: varchar("name", { length: 255 }).notNull(),
 

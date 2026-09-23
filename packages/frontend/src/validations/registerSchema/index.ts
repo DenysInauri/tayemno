@@ -1,6 +1,5 @@
 import * as yup from "yup";
 
-const USERNAME_REGEX = /^[a-z0-9._-]+$/;
 const PASSWORD_NUMBER_REGEX = /[0-9]/;
 const PASSWORD_LOWERCASE_REGEX = /[a-z]/;
 const PASSWORD_UPPERCASE_REGEX = /[A-Z]/;
@@ -8,20 +7,6 @@ const PASSWORD_SPECIAL_REGEX = /[$&+,:;=?@#|'<>.^*()%!-]/;
 
 export const registerSchema = yup.object().shape({
   name: yup.string().trim().required("register.validation.nameRequired"),
-  username: yup
-    .string()
-    .trim()
-    .required("register.validation.usernameRequired")
-    .min(3, "register.validation.usernameMinLength")
-    .matches(USERNAME_REGEX, "register.validation.usernameInvalidFormat")
-    .test(
-      "no-special-edges",
-      "register.validation.usernameInvalidEdges",
-      (value) => {
-        if (!value) return true;
-        return !/^[._-]|[._-]$/.test(value);
-      },
-    ),
   email: yup
     .string()
     .trim()

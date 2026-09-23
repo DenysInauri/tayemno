@@ -43,7 +43,6 @@ export const verifyEmail = async (
   }
 
   const user = await usersRepo.create(db, {
-    username: pending.username,
     email: pending.email,
     emailVerified: true,
     name: pending.name,
@@ -65,7 +64,6 @@ export const verifyEmail = async (
     message: "Email verified successfully",
     user: {
       id: user.id,
-      username: user.username,
       email: user.email,
       name: user.name,
       publicKey: user.publicKey,

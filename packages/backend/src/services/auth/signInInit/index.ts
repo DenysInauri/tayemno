@@ -1,7 +1,7 @@
 import srp from "secure-remote-password/server";
 import type { ISignInInitRequest, ISignInInitResponse } from "@tayemno/shared";
 import type { Database } from "../../../db";
-import { findByUsernameOrEmail } from "../../../repositories/users";
+import { findByEmail } from "../../../repositories/users";
 import { setSrpChallenge } from "../../../utils/srpChallengeStore";
 import { HttpError } from "../../../utils/httpError";
 
@@ -11,7 +11,7 @@ export const signInInit = async (
 ): Promise<ISignInInitResponse> => {
   const identifier = data.identifier.toLowerCase();
 
-  const user = await findByUsernameOrEmail(db, identifier);
+  const user = await findByEmail(db, identifier);
 
   if (!user || !user.emailVerified) {
     throw new HttpError(401, "Invalid credentials");
@@ -19,10 +19,10 @@ export const signInInit = async (
 
   const serverEphemeral = srp.generateEphemeral(user.srpVerifier);
 
-  setSrpChallenge(user.username, serverEphemeral.secret);
+  setSrpChallenge(user.email, serverEphemeral.secret);
 
   return {
-    username: user.username,
+    email: user.email,
     srpSalt: user.srpSalt,
     serverPublicEphemeral: serverEphemeral.public,
   };

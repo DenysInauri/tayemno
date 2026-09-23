@@ -13,7 +13,7 @@ export const verifyEmailRoute = async (app: FastifyInstance) => {
         const result = await verifyEmail(app.db, request.body);
 
         const token = app.jwt.sign(
-          { sub: result.user.id, username: result.user.username },
+          { sub: result.user.id },
           { expiresIn: "24h" },
         );
 

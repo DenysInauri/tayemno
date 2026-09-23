@@ -55,11 +55,11 @@ export const SignInPage = () => {
           identifier: values.identifier,
         });
 
-        const { username } = initResponse;
+        const { email } = initResponse;
 
         const srpPrivateKey = srp.derivePrivateKey(
           initResponse.srpSalt,
-          username,
+          email,
           values.password,
         );
 
@@ -69,12 +69,12 @@ export const SignInPage = () => {
           clientEphemeral.secret,
           initResponse.serverPublicEphemeral,
           initResponse.srpSalt,
-          username,
+          email,
           srpPrivateKey,
         );
 
         const verifyResponse = await signInVerify({
-          username,
+          email,
           clientPublicEphemeral: clientEphemeral.public,
           clientSessionProof: clientSession.proof,
         });

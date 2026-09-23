@@ -1,6 +1,5 @@
 export interface User {
   id: string;
-  username: string;
   email: string;
   emailVerified: boolean;
   name: string;
@@ -23,7 +22,6 @@ export interface User {
 }
 
 export interface NewUser {
-  username: string;
   email: string;
   name: string;
   srpSalt: string;
@@ -113,14 +111,6 @@ export interface HealthCheckResponse {
   timestamp: string;
 }
 
-export interface ICheckUsernameParams {
-  username: string;
-}
-
-export interface ICheckUsernameResponse {
-  isFree: boolean;
-}
-
 export interface ICheckPasswordBreachParams {
   hash: string;
 }
@@ -168,20 +158,19 @@ export interface ISignInInitRequest {
 }
 
 export interface ISignInInitResponse {
-  username: string;
+  email: string;
   srpSalt: string;
   serverPublicEphemeral: string;
 }
 
 export interface ISignInVerifyRequest {
-  username: string;
+  email: string;
   clientPublicEphemeral: string;
   clientSessionProof: string;
 }
 
 export interface ISignInUserData {
   id: string;
-  username: string;
   email: string;
   name: string;
   publicKey: string;

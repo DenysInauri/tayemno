@@ -1,9 +1,7 @@
-import { type ChangeEvent, useMemo, useState } from "react";
+import { useState, ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import srp from "secure-remote-password/client";
-import { useDebouncedValue } from "@mantine/hooks";
-import { Loader } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { Anchor } from "../../components/ui/Anchor";
 import { Button } from "../../components/ui/Button";
@@ -19,7 +17,6 @@ import { TextInput } from "../../components/ui/TextInput";
 import { Title } from "../../components/ui/Title";
 import { RouteEnum } from "../../enums/routing/RouteEnum";
 import { SizeEnum } from "../../enums/ui/SizeEnum";
-import { useGetIsUsernameFree } from "../../api/hooks/useGetIsUsernameFree";
 import { usePostRegister } from "../../api/hooks/usePostRegister";
 import { registerSchema } from "../../validations/registerSchema";
 import { getApiErrorMessage } from "../../utils/getApiErrorMessage";
@@ -35,7 +32,6 @@ import { SymmetricCrypto } from "../../utils/crypto/SymmetricCrypto";
 
 interface IRegisterFormValues {
   name: string;
-  username: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -50,7 +46,6 @@ export const RegisterPage = () => {
   const formik = useFormik<IRegisterFormValues>({
     initialValues: {
       name: "",
-      username: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -61,12 +56,10 @@ export const RegisterPage = () => {
     onSubmit: async (values) => {
       setSubmitError("");
 
-      if (isUsernameTaken) return;
-
       const srpSalt = srp.generateSalt();
       const srpPrivateKey = srp.derivePrivateKey(
         srpSalt,
-        values.username,
+        values.email.toLowerCase(),
         values.password,
       );
       const srpVerifier = srp.deriveVerifier(srpPrivateKey);
@@ -88,7 +81,6 @@ export const RegisterPage = () => {
       register(
         {
           name: values.name,
-          username: values.username,
           email: values.email,
           srpSalt,
           srpVerifier,
@@ -118,32 +110,6 @@ export const RegisterPage = () => {
       );
     },
   });
-
-  const [debouncedUsername] = useDebouncedValue(formik.values.username, 250);
-
-  const hasUsernameValidationError = Boolean(
-    formik.touched.username && formik.errors.username,
-  );
-
-  const { data: usernameCheck, isLoading: isCheckingUsername } =
-    useGetIsUsernameFree(hasUsernameValidationError ? "" : debouncedUsername);
-
-  const isUsernameTaken = !!usernameCheck && !usernameCheck.isFree;
-
-  const isUsernameAvailable =
-    !!usernameCheck &&
-    usernameCheck.isFree &&
-    !hasUsernameValidationError &&
-    formik.values.username.length > 0;
-
-  const usernameError = useMemo(() => {
-    if (hasUsernameValidationError) return t(formik.errors.username!);
-    if (isUsernameTaken) return t("register.validation.usernameTaken");
-  }, [hasUsernameValidationError, formik.errors.username, t, isUsernameTaken]);
-
-  const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    formik.setFieldValue("username", e.target.value.toLowerCase());
-  };
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     formik.setFieldValue("password", e.target.value.replace(/\s/g, ""));
@@ -193,20 +159,6 @@ export const RegisterPage = () => {
                       formik.touched.name &&
                       formik.errors.name &&
                       t(formik.errors.name)
-                    }
-                  />
-                  <TextInput
-                    label={t("register.fields.username.label")}
-                    placeholder={t("register.fields.username.placeholder")}
-                    name="username"
-                    value={formik.values.username}
-                    onChange={handleUsernameChange}
-                    onBlur={handleBlur("username")}
-                    maxLength={255}
-                    error={usernameError}
-                    successHighlight={isUsernameAvailable}
-                    rightSection={
-                      isCheckingUsername ? <Loader size={16} /> : undefined
                     }
                   />
                   <TextInput

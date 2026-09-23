@@ -4,7 +4,7 @@ import type {
   ISignInUserData,
 } from "@tayemno/shared";
 import type { Database } from "../../../db";
-import { findByUsername } from "../../../repositories/users";
+import { findByEmail } from "../../../repositories/users";
 import { getSrpChallenge } from "../../../utils/srpChallengeStore";
 import { HttpError } from "../../../utils/httpError";
 
@@ -17,15 +17,15 @@ export const signInVerify = async (
   db: Database,
   data: ISignInVerifyRequest,
 ): Promise<ISignInVerifyResult> => {
-  const username = data.username.toLowerCase();
+  const email = data.email.toLowerCase();
 
-  const user = await findByUsername(db, username);
+  const user = await findByEmail(db, email);
 
   if (!user) {
     throw new HttpError(401, "Invalid credentials");
   }
 
-  const serverSecretEphemeral = getSrpChallenge(username);
+  const serverSecretEphemeral = getSrpChallenge(email);
 
   if (!serverSecretEphemeral) {
     throw new HttpError(401, "SRP session expired or not found");
@@ -38,7 +38,7 @@ export const signInVerify = async (
       serverSecretEphemeral,
       data.clientPublicEphemeral,
       user.srpSalt,
-      username,
+      email,
       user.srpVerifier,
       data.clientSessionProof,
     );
@@ -50,7 +50,6 @@ export const signInVerify = async (
     serverSessionProof: serverSession.proof,
     user: {
       id: user.id,
-      username: user.username,
       email: user.email,
       name: user.name,
       publicKey: user.publicKey,

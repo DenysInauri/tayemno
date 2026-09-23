@@ -8,28 +8,28 @@ const store = new Map<string, ISrpChallenge>();
 const CHALLENGE_TTL_MS = 2 * 60 * 1000;
 
 export const setSrpChallenge = (
-  username: string,
+  email: string,
   serverSecretEphemeral: string,
 ) => {
-  store.set(username, {
+  store.set(email, {
     serverSecretEphemeral,
     expiresAt: Date.now() + CHALLENGE_TTL_MS,
   });
 };
 
 export const getSrpChallenge = (
-  username: string,
+  email: string,
 ): string | null => {
-  const challenge = store.get(username);
+  const challenge = store.get(email);
 
   if (!challenge) return null;
 
   if (Date.now() > challenge.expiresAt) {
-    store.delete(username);
+    store.delete(email);
     return null;
   }
 
-  store.delete(username);
+  store.delete(email);
 
   return challenge.serverSecretEphemeral;
 };

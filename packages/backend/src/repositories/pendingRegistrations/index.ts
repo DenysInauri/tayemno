@@ -1,4 +1,4 @@
-import { eq, or, lt } from "drizzle-orm";
+import { eq, lt } from "drizzle-orm";
 import type { Database } from "../../db";
 import { pendingRegistrations } from "../../db/schema.js";
 
@@ -12,30 +12,14 @@ export const findByEmail = async (db: Database, email: string) => {
   return result[0];
 };
 
-export const findByUsername = async (db: Database, username: string) => {
-  const result = await db
-    .select()
-    .from(pendingRegistrations)
-    .where(eq(pendingRegistrations.username, username))
-    .limit(1);
-
-  return result[0];
-};
-
-export const findByEmailOrUsername = async (
+export const findAllByEmail = async (
   db: Database,
   email: string,
-  username: string,
 ) => {
   const result = await db
     .select()
     .from(pendingRegistrations)
-    .where(
-      or(
-        eq(pendingRegistrations.email, email),
-        eq(pendingRegistrations.username, username),
-      ),
-    );
+    .where(eq(pendingRegistrations.email, email));
 
   return result;
 };

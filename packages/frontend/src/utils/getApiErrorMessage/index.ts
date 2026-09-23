@@ -2,7 +2,6 @@ import { AxiosError } from "axios";
 import type { TFunction } from "i18next";
 
 const ERROR_MESSAGE_TO_I18N: Record<string, string> = {
-  "Username is already taken": "register.validation.usernameTaken",
   "Email is already registered": "register.validation.emailTaken",
   "Invalid verification code": "verify.validation.invalidCode",
   "Verification code has expired": "verify.validation.codeExpired",

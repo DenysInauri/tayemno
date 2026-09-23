@@ -17,24 +17,14 @@ export const register = async (
   smtpFrom: string,
   data: IRegisterRequest,
 ): Promise<IRegisterResponse> => {
-  const username = data.username.toLowerCase();
   const email = data.email.toLowerCase();
-
-  const existingUserByUsername = await usersRepo.findByUsername(db, username);
-  if (existingUserByUsername) {
-    throw new HttpError(409, "Username is already taken");
-  }
 
   const existingUserByEmail = await usersRepo.findByEmail(db, email);
   if (existingUserByEmail) {
     throw new HttpError(409, "Email is already registered");
   }
 
-  const existingPending = await pendingRepo.findByEmailOrUsername(
-    db,
-    email,
-    username,
-  );
+  const existingPending = await pendingRepo.findAllByEmail(db, email);
   for (const record of existingPending) {
     await pendingRepo.deleteByEmail(db, record.email);
   }
@@ -43,7 +33,6 @@ export const register = async (
   const now = new Date();
 
   await pendingRepo.create(db, {
-    username,
     email,
     name: data.name,
     srpSalt: data.srpSalt,
