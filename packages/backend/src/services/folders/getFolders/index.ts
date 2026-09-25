@@ -1,6 +1,6 @@
 import type { Database } from "../../../db";
 import type { IGetFoldersResponse } from "@tayemno/shared";
-import { findByWorkspaceId } from "../../../repositories/folders";
+import { findByWorkspaceIdAndUserId } from "../../../repositories/folders";
 import * as workspaceMembersRepo from "../../../repositories/workspaceMembers";
 import { HttpError } from "../../../utils/httpError";
 
@@ -19,7 +19,7 @@ export const getFolders = async (
     throw new HttpError(403, "Access denied");
   }
 
-  const rows = await findByWorkspaceId(db, workspaceId);
+  const rows = await findByWorkspaceIdAndUserId(db, workspaceId, userId);
 
   return {
     folders: rows.map((row) => ({

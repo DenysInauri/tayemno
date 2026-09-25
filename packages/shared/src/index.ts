@@ -87,6 +87,21 @@ export interface NewFolder {
   encryptedSymmetricKey: string;
 }
 
+export interface FolderMember {
+  id: string;
+  folderId: string;
+  userId: string;
+  encryptedSymmetricKey: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NewFolderMember {
+  folderId: string;
+  userId: string;
+  encryptedSymmetricKey: string;
+}
+
 export interface Vault {
   id: string;
   workspaceId: string;
@@ -225,6 +240,7 @@ export interface IKeyPair {
 export interface ICreateFolderRequest {
   name: string;
   encryptedSymmetricKey: string;
+  memberEncryptedSymmetricKey: string;
 }
 
 export interface ICreateFolderResponse {

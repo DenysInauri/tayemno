@@ -6,6 +6,7 @@ import type {
 import type { Database } from "../../../db";
 import { create as insertVault } from "../../../repositories/vaults";
 import * as workspaceMembersRepo from "../../../repositories/workspaceMembers";
+import * as folderMembersRepo from "../../../repositories/folderMembers";
 import { HttpError } from "../../../utils/httpError";
 
 const mapVault = (row: { createdAt: Date; updatedAt: Date }): Vault =>
@@ -16,14 +17,26 @@ export const createVault = async (
   userId: string,
   data: ICreateVaultRequest,
 ): Promise<ICreateVaultResponse> => {
-  const membership = await workspaceMembersRepo.findByWorkspaceIdAndUserId(
-    db,
-    data.workspaceId,
-    userId,
-  );
+  if (data.folderId) {
+    const folderMembership = await folderMembersRepo.findByFolderIdAndUserId(
+      db,
+      data.folderId,
+      userId,
+    );
 
-  if (!membership) {
-    throw new HttpError(403, "Access denied");
+    if (!folderMembership) {
+      throw new HttpError(403, "Access denied");
+    }
+  } else {
+    const workspaceMembership = await workspaceMembersRepo.findByWorkspaceIdAndUserId(
+      db,
+      data.workspaceId,
+      userId,
+    );
+
+    if (!workspaceMembership) {
+      throw new HttpError(403, "Access denied");
+    }
   }
 
   const vault = await insertVault(db, {

@@ -4,6 +4,7 @@ import type { IPresignVaultRequest, IPresignVaultResponse } from "@tayemno/share
 import type { Database } from "../../../db";
 import type { S3 } from "../../../utils/s3";
 import * as workspaceMembersRepo from "../../../repositories/workspaceMembers";
+import * as folderMembersRepo from "../../../repositories/folderMembers";
 import { HttpError } from "../../../utils/httpError";
 
 export const presignVault = async (
@@ -13,14 +14,26 @@ export const presignVault = async (
   userId: string,
   data: IPresignVaultRequest,
 ): Promise<IPresignVaultResponse> => {
-  const membership = await workspaceMembersRepo.findByWorkspaceIdAndUserId(
-    db,
-    data.workspaceId,
-    userId,
-  );
+  if (data.folderId) {
+    const folderMembership = await folderMembersRepo.findByFolderIdAndUserId(
+      db,
+      data.folderId,
+      userId,
+    );
 
-  if (!membership) {
-    throw new HttpError(403, "Access denied");
+    if (!folderMembership) {
+      throw new HttpError(403, "Access denied");
+    }
+  } else {
+    const workspaceMembership = await workspaceMembersRepo.findByWorkspaceIdAndUserId(
+      db,
+      data.workspaceId,
+      userId,
+    );
+
+    if (!workspaceMembership) {
+      throw new HttpError(403, "Access denied");
+    }
   }
 
   const s3Key = `vaults/${crypto.randomUUID()}/${data.fileName}`;

@@ -5,6 +5,7 @@ import type {
   Folder,
 } from "@tayemno/shared";
 import { create as insertFolder } from "../../../repositories/folders";
+import * as folderMembersRepo from "../../../repositories/folderMembers";
 import * as workspaceMembersRepo from "../../../repositories/workspaceMembers";
 import { HttpError } from "../../../utils/httpError";
 
@@ -33,5 +34,16 @@ export const createFolder = async (
     encryptedSymmetricKey: data.encryptedSymmetricKey,
   });
 
-  return { folder: mapFolder(folder) };
+  const folderMember = await folderMembersRepo.create(db, {
+    folderId: folder.id,
+    userId,
+    encryptedSymmetricKey: data.memberEncryptedSymmetricKey,
+  });
+
+  const folderWithMemberKey = {
+    ...folder,
+    encryptedSymmetricKey: folderMember.encryptedSymmetricKey,
+  };
+
+  return { folder: mapFolder(folderWithMemberKey) };
 };

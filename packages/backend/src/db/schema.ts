@@ -135,6 +135,28 @@ export const folders = pgTable("folders", {
     .$onUpdate(() => new Date()),
 });
 
+export const folderMembers = pgTable(
+  "folder_members",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    folderId: uuid("folder_id")
+      .notNull()
+      .references(() => folders.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    encryptedSymmetricKey: text("encrypted_symmetric_key").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => [unique().on(t.folderId, t.userId)],
+);
+
 export const vaults = pgTable("vaults", {
   id: uuid("id").defaultRandom().primaryKey(),
   workspaceId: uuid("workspace_id")

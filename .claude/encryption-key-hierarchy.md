@@ -22,11 +22,12 @@ The KEK never leaves the client and is never sent to the server.
 Master password + kdf_salt
   └── KEK (Argon2id)
         └── User private key (decrypted with KEK + private_key_nonce)
-              └── Admin workspace private key (decrypted with User private key, from workspace_members.encrypted_admin_private_key)
-                    └── Folder symmetric key (decrypted with Admin workspace private key, from folders.encrypted_symmetric_key)
-                          └── Vault symmetric key (decrypted with Folder key, from vaults.encrypted_symmetric_key + vaults.symmetric_key_nonce)
-                                └── Vault content (decrypted with Vault key + content_nonce)
+              └── Folder symmetric key (decrypted with User private key, from folder_members.encrypted_symmetric_key)
+                    └── Vault symmetric key (decrypted with Folder key, from vaults.encrypted_symmetric_key + vaults.symmetric_key_nonce)
+                          └── Vault content (decrypted with Vault key + content_nonce)
 ```
+
+Note: `folders.encrypted_symmetric_key` is the admin master copy (encrypted with workspace admin public key). It is used by admins when granting folder access to other users, not for day-to-day decryption. Day-to-day decryption uses the per-user copy from `folder_members.encrypted_symmetric_key`.
 
 ### Standalone vault (no folder)
 
@@ -63,6 +64,7 @@ When inviting a user to a workspace:
 | Member workspace private key            | `workspace_members.encrypted_member_private_key`    | User public key (sealed box, per member)    |
 | Admin workspace public key              | `workspaces.admin_public_key`                       | Plaintext                                   |
 | Member workspace public key             | `workspaces.member_public_key`                      | Plaintext                                   |
-| Folder symmetric key                    | `folders.encrypted_symmetric_key`                   | Admin workspace public key (sealed box)     |
+| Folder symmetric key (admin master)     | `folders.encrypted_symmetric_key`                   | Admin workspace public key (sealed box)     |
+| Folder symmetric key (per-user)         | `folder_members.encrypted_symmetric_key`            | User public key (sealed box, per member)    |
 | Vault symmetric key (in folder)         | `vaults.encrypted_symmetric_key`                    | Folder symmetric key (XChaCha20-Poly1305, nonce in `vaults.symmetric_key_nonce`) |
 | Vault symmetric key (standalone)        | `vaults.encrypted_symmetric_key`                    | Member workspace public key (sealed box, `vaults.symmetric_key_nonce` is null)   |
