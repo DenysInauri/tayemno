@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useMemo } from "react";
 import type { ReactNode } from "react";
-import type { ISignInUserData, IKeyPair } from "@tayemno/shared";
+import type { ISignInUserData, IKeyPair, IWorkspaceData } from "@tayemno/shared";
 import { setAuthToken } from "../../api/axios";
 
 const DEV_AUTH_KEY = "tayemno_dev_auth";
@@ -16,10 +16,10 @@ const clearPersistedAuthState = () => {
 };
 
 const rehydrateAuthState = (): IAuthState => {
-  if (!import.meta.env.DEV) return { user: null, token: null, keyPair: null };
+  if (!import.meta.env.DEV) return { user: null, token: null, keyPair: null, workspace: null };
 
   const stored = sessionStorage.getItem(DEV_AUTH_KEY);
-  if (!stored) return { user: null, token: null, keyPair: null };
+  if (!stored) return { user: null, token: null, keyPair: null, workspace: null };
 
   const state = JSON.parse(stored) as IAuthState;
 
@@ -32,11 +32,12 @@ interface IAuthState {
   user: ISignInUserData | null;
   token: string | null;
   keyPair: IKeyPair | null;
+  workspace: IWorkspaceData | null;
 }
 
 interface IAuthContext extends IAuthState {
   isAuthenticated: boolean;
-  signIn: (token: string, user: ISignInUserData, keyPair: IKeyPair) => void;
+  signIn: (token: string, user: ISignInUserData, keyPair: IKeyPair, workspace: IWorkspaceData) => void;
   signOut: () => void;
 }
 
@@ -53,14 +54,14 @@ export const AuthProvider = ({ children }: IAuthProviderProps) => {
     () => ({
       ...authState,
       isAuthenticated: !!authState.token && !!authState.keyPair,
-      signIn: (token, user, keyPair) => {
+      signIn: (token, user, keyPair, workspace) => {
         setAuthToken(token);
-        setAuthState({ token, user, keyPair });
-        persistAuthState({ token, user, keyPair });
+        setAuthState({ token, user, keyPair, workspace });
+        persistAuthState({ token, user, keyPair, workspace });
       },
       signOut: () => {
         setAuthToken(null);
-        setAuthState({ user: null, token: null, keyPair: null });
+        setAuthState({ user: null, token: null, keyPair: null, workspace: null });
         clearPersistedAuthState();
       },
     }),

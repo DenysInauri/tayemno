@@ -103,7 +103,7 @@ export const SignInPage = () => {
         signIn(verifyResponse.token, verifyResponse.user, {
           publicKey: verifyResponse.user.publicKey,
           privateKey,
-        });
+        }, verifyResponse.workspace);
         navigate(RouteEnum.HOME);
       } catch (err: any) {
         setSubmitError(getApiErrorMessage(err, t));

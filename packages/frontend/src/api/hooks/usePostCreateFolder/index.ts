@@ -3,12 +3,14 @@ import type { ICreateFolderRequest, ICreateFolderResponse } from "@tayemno/share
 import { useApiPost } from "../useApiPost";
 import { EndpointEnum } from "../../../enums/api/EndpointEnum";
 import { QueryKeyEnum } from "../../../enums/api/QueryKeyEnum";
+import { useAuth } from "../../../contexts/AuthContext";
 
 export const usePostCreateFolder = () => {
   const queryClient = useQueryClient();
+  const { workspace } = useAuth();
 
   return useApiPost<ICreateFolderRequest, ICreateFolderResponse>(
-    EndpointEnum.FOLDERS,
+    `${EndpointEnum.WORKSPACES}/${workspace?.id}/folders`,
     {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.FOLDERS] });

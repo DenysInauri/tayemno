@@ -1,7 +1,14 @@
-import type { IVerifyEmailRequest, ISignInUserData } from "@tayemno/shared";
+import type {
+  IVerifyEmailRequest,
+  ISignInUserData,
+  IWorkspaceData,
+  WorkspaceRole,
+} from "@tayemno/shared";
 import type { Database } from "../../../db";
 import * as usersRepo from "../../../repositories/users";
 import * as pendingRepo from "../../../repositories/pendingRegistrations";
+import * as workspacesRepo from "../../../repositories/workspaces";
+import * as workspaceMembersRepo from "../../../repositories/workspaceMembers";
 import {
   hashVerificationCode,
   isCodeExpired,
@@ -12,6 +19,7 @@ import { HttpError } from "../../../utils/httpError";
 export interface IVerifyEmailResult {
   message: string;
   user: ISignInUserData;
+  workspace: IWorkspaceData;
 }
 
 export const verifyEmail = async (
@@ -58,6 +66,20 @@ export const verifyEmail = async (
     privateKeyNonce: pending.privateKeyNonce,
   });
 
+  const workspace = await workspacesRepo.create(db, {
+    name: pending.workspaceName,
+    adminPublicKey: pending.workspaceAdminPublicKey,
+    memberPublicKey: pending.workspaceMemberPublicKey,
+  });
+
+  const workspaceMember = await workspaceMembersRepo.create(db, {
+    workspaceId: workspace.id,
+    userId: user.id,
+    role: "owner",
+    encryptedAdminPrivateKey: pending.encryptedWorkspaceAdminPrivateKey,
+    encryptedMemberPrivateKey: pending.encryptedWorkspaceMemberPrivateKey,
+  });
+
   await pendingRepo.deleteByEmail(db, email);
 
   return {
@@ -74,6 +96,15 @@ export const verifyEmail = async (
       kdfMemoryKib: user.kdfMemoryKib,
       kdfIterations: user.kdfIterations,
       kdfParallelism: user.kdfParallelism,
+    },
+    workspace: {
+      id: workspace.id,
+      name: workspace.name,
+      adminPublicKey: workspace.adminPublicKey,
+      memberPublicKey: workspace.memberPublicKey,
+      encryptedAdminPrivateKey: workspaceMember.encryptedAdminPrivateKey,
+      encryptedMemberPrivateKey: workspaceMember.encryptedMemberPrivateKey,
+      role: workspaceMember.role as WorkspaceRole,
     },
   };
 };

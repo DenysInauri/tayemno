@@ -35,6 +35,7 @@ interface IRegisterFormValues {
   email: string;
   password: string;
   confirmPassword: string;
+  workspaceName: string;
 }
 
 export const RegisterPage = () => {
@@ -49,6 +50,7 @@ export const RegisterPage = () => {
       email: "",
       password: "",
       confirmPassword: "",
+      workspaceName: "",
     },
     validationSchema: registerSchema,
     validateOnChange: true,
@@ -78,6 +80,18 @@ export const RegisterPage = () => {
         userDeriveKey,
       );
 
+      const workspaceAdminKeyPair = await AsymmetricCrypto.generateKeyPair();
+      const encryptedWorkspaceAdminPrivateKey = await AsymmetricCrypto.encrypt(
+        workspaceAdminKeyPair.privateKey,
+        userKeyPair.publicKey,
+      );
+
+      const workspaceMemberKeyPair = await AsymmetricCrypto.generateKeyPair();
+      const encryptedWorkspaceMemberPrivateKey = await AsymmetricCrypto.encrypt(
+        workspaceMemberKeyPair.privateKey,
+        userKeyPair.publicKey,
+      );
+
       register(
         {
           name: values.name,
@@ -92,6 +106,11 @@ export const RegisterPage = () => {
           publicKey: userKeyPair.publicKey,
           encryptedPrivateKey: encryptedPrivateKey.ciphertext,
           privateKeyNonce: encryptedPrivateKey.nonce,
+          workspaceName: values.workspaceName,
+          workspaceAdminPublicKey: workspaceAdminKeyPair.publicKey,
+          workspaceMemberPublicKey: workspaceMemberKeyPair.publicKey,
+          encryptedWorkspaceAdminPrivateKey,
+          encryptedWorkspaceMemberPrivateKey,
         },
         {
           onSuccess: (data) => {
@@ -172,6 +191,19 @@ export const RegisterPage = () => {
                       formik.touched.email &&
                       formik.errors.email &&
                       t(formik.errors.email)
+                    }
+                  />
+                  <TextInput
+                    label={t("register.fields.workspaceName.label")}
+                    placeholder={t("register.fields.workspaceName.placeholder")}
+                    name="workspaceName"
+                    value={formik.values.workspaceName}
+                    onChange={formik.handleChange}
+                    onBlur={handleBlur("workspaceName")}
+                    error={
+                      formik.touched.workspaceName &&
+                      formik.errors.workspaceName &&
+                      t(formik.errors.workspaceName)
                     }
                   />
                   <PasswordStrengthInput

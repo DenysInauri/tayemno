@@ -58,7 +58,7 @@ app.get("/health", async (): Promise<HealthCheckResponse> => {
 await app.register(usersRoutes, { prefix: "/users" });
 await app.register(securityRoutes, { prefix: "/security" });
 await app.register(authRoutes, { prefix: "/auth" });
-await app.register(foldersRoutes, { prefix: "/folders" });
+await app.register(foldersRoutes, { prefix: "/workspaces/:workspaceId/folders" });
 await app.register(vaultsRoutes, { prefix: "/vaults" });
 
 const CLEANUP_INTERVAL_MS = 5 * 60 * 1000;

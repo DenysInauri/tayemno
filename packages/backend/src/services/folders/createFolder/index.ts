@@ -3,35 +3,35 @@ import type {
   ICreateFolderRequest,
   ICreateFolderResponse,
   Folder,
-  FolderKeyShare,
 } from "@tayemno/shared";
 import { create as insertFolder } from "../../../repositories/folders";
-import { create as insertFolderKeyShare } from "../../../repositories/folderKeyShares";
+import * as workspaceMembersRepo from "../../../repositories/workspaceMembers";
+import { HttpError } from "../../../utils/httpError";
 
 const mapFolder = (row: { createdAt: Date; updatedAt: Date }): Folder =>
   ({ ...row, createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString() }) as Folder;
 
-const mapFolderKeyShare = (row: { createdAt: Date; updatedAt: Date }): FolderKeyShare =>
-  ({ ...row, createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString() }) as FolderKeyShare;
-
 export const createFolder = async (
   db: Database,
   userId: string,
+  workspaceId: string,
   data: ICreateFolderRequest,
 ): Promise<ICreateFolderResponse> => {
-  const folder = await insertFolder(db, {
-    ownerId: userId,
-    name: data.name,
-  });
-
-  const folderKeyShare = await insertFolderKeyShare(db, {
-    folderId: folder.id,
+  const membership = await workspaceMembersRepo.findByWorkspaceIdAndUserId(
+    db,
+    workspaceId,
     userId,
-    symmetricKey: data.symmetricKey,
+  );
+
+  if (!membership) {
+    throw new HttpError(403, "Access denied");
+  }
+
+  const folder = await insertFolder(db, {
+    workspaceId,
+    name: data.name,
+    encryptedSymmetricKey: data.encryptedSymmetricKey,
   });
 
-  return {
-    folder: mapFolder(folder),
-    folderKeyShare: mapFolderKeyShare(folderKeyShare),
-  };
+  return { folder: mapFolder(folder) };
 };

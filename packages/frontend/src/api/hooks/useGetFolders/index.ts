@@ -2,13 +2,14 @@ import type { IGetFoldersResponse, Folder } from "@tayemno/shared";
 import { useApiGet } from "../useApiGet";
 import { QueryKeyEnum } from "../../../enums/api/QueryKeyEnum";
 import { EndpointEnum } from "../../../enums/api/EndpointEnum";
-
-type FolderWithKey = Folder & { symmetricKey: string };
+import { useAuth } from "../../../contexts/AuthContext";
 
 export const useGetFolders = () => {
-  const query = useApiGet<IGetFoldersResponse, FolderWithKey[]>(
+  const { workspace } = useAuth();
+
+  const query = useApiGet<IGetFoldersResponse, Folder[]>(
     [QueryKeyEnum.FOLDERS],
-    EndpointEnum.FOLDERS,
+    `${EndpointEnum.WORKSPACES}/${workspace?.id}/folders`,
     { select: (data) => data.folders },
   );
 

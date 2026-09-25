@@ -63,6 +63,12 @@ export const pendingRegistrations = pgTable("pending_registrations", {
   encryptedPrivateKey: text("encrypted_private_key").notNull(),
   privateKeyNonce: text("private_key_nonce").notNull(),
 
+  workspaceName: varchar("workspace_name", { length: 255 }).notNull(),
+  workspaceAdminPublicKey: text("workspace_admin_public_key").notNull(),
+  workspaceMemberPublicKey: text("workspace_member_public_key").notNull(),
+  encryptedWorkspaceAdminPrivateKey: text("encrypted_workspace_admin_private_key").notNull(),
+  encryptedWorkspaceMemberPrivateKey: text("encrypted_workspace_member_private_key").notNull(),
+
   verificationCodeHash: text("verification_code_hash").notNull(),
   codeExpiresAt: timestamp("code_expires_at", { withTimezone: true }).notNull(),
   attempts: integer("attempts").default(0).notNull(),
@@ -73,13 +79,52 @@ export const pendingRegistrations = pgTable("pending_registrations", {
     .notNull(),
 });
 
+export const workspaces = pgTable("workspaces", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  adminPublicKey: text("admin_public_key").notNull(),
+  memberPublicKey: text("member_public_key").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+export const workspaceMembers = pgTable(
+  "workspace_members",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    workspaceId: uuid("workspace_id")
+      .notNull()
+      .references(() => workspaces.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    role: varchar("role", { length: 32 }).notNull(),
+    encryptedAdminPrivateKey: text("encrypted_admin_private_key"),
+    encryptedMemberPrivateKey: text("encrypted_member_private_key").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => [unique().on(t.workspaceId, t.userId)],
+);
+
 export const folders = pgTable("folders", {
   id: uuid("id").defaultRandom().primaryKey(),
-  ownerId: uuid("owner_id")
+  workspaceId: uuid("workspace_id")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => workspaces.id, { onDelete: "cascade" }),
 
   name: varchar("name", { length: 255 }).notNull(),
+  encryptedSymmetricKey: text("encrypted_symmetric_key").notNull(),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
@@ -90,33 +135,11 @@ export const folders = pgTable("folders", {
     .$onUpdate(() => new Date()),
 });
 
-export const folderKeyShares = pgTable(
-  "folder_key_shares",
-  {
-    id: uuid("id").defaultRandom().primaryKey(),
-    folderId: uuid("folder_id")
-      .notNull()
-      .references(() => folders.id, { onDelete: "cascade" }),
-    userId: uuid("user_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    symmetricKey: text("symmetric_key").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .defaultNow()
-      .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
-      .defaultNow()
-      .notNull()
-      .$onUpdate(() => new Date()),
-  },
-  (t) => [unique().on(t.folderId, t.userId)],
-);
-
 export const vaults = pgTable("vaults", {
   id: uuid("id").defaultRandom().primaryKey(),
-  ownerId: uuid("owner_id")
+  workspaceId: uuid("workspace_id")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => workspaces.id, { onDelete: "cascade" }),
   folderId: uuid("folder_id").references(() => folders.id, {
     onDelete: "cascade",
   }),
@@ -129,7 +152,8 @@ export const vaults = pgTable("vaults", {
   s3Key: text("s3_key").notNull(),
   contentNonce: text("content_nonce").notNull(),
 
-  symmetricKey: text("symmetric_key"),
+  encryptedSymmetricKey: text("encrypted_symmetric_key").notNull(),
+  symmetricKeyNonce: text("symmetric_key_nonce"),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
@@ -139,25 +163,3 @@ export const vaults = pgTable("vaults", {
     .notNull()
     .$onUpdate(() => new Date()),
 });
-
-export const vaultKeyShares = pgTable(
-  "vault_key_shares",
-  {
-    id: uuid("id").defaultRandom().primaryKey(),
-    vaultId: uuid("vault_id")
-      .notNull()
-      .references(() => vaults.id, { onDelete: "cascade" }),
-    userId: uuid("user_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    symmetricKey: text("symmetric_key").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .defaultNow()
-      .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
-      .defaultNow()
-      .notNull()
-      .$onUpdate(() => new Date()),
-  },
-  (t) => [unique().on(t.vaultId, t.userId)],
-);

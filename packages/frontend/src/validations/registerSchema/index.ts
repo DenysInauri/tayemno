@@ -7,6 +7,10 @@ const PASSWORD_SPECIAL_REGEX = /[$&+,:;=?@#|'<>.^*()%!-]/;
 
 export const registerSchema = yup.object().shape({
   name: yup.string().trim().required("register.validation.nameRequired"),
+  workspaceName: yup
+    .string()
+    .trim()
+    .required("register.validation.workspaceNameRequired"),
   email: yup
     .string()
     .trim()

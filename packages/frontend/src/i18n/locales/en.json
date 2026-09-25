@@ -23,6 +23,10 @@
       "confirmPassword": {
         "label": "Confirm password",
         "placeholder": "Confirm your password"
+      },
+      "workspaceName": {
+        "label": "Workspace name",
+        "placeholder": "My workspace"
       }
     },
     "validation": {
@@ -37,7 +41,8 @@
       "passwordIncludesSpecial": "Includes special symbol",
       "confirmPasswordRequired": "Please confirm your password",
       "confirmPasswordMismatch": "Passwords do not match",
-      "emailTaken": "This email is already registered"
+      "emailTaken": "This email is already registered",
+      "workspaceNameRequired": "Workspace name is required"
     }
   },
   "verify": {

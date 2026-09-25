@@ -46,7 +46,7 @@ export const VerifyEmailPage = () => {
       { email, code },
       {
         onSuccess: (data) => {
-          signIn(data.token, data.user, { publicKey, privateKey });
+          signIn(data.token, data.user, { publicKey, privateKey }, data.workspace);
           navigate(RouteEnum.HOME);
         },
         onError: (err) => {

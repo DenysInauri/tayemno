@@ -5,7 +5,7 @@ import type {
 } from "@tayemno/shared";
 import type { Database } from "../../../db";
 import { create as insertVault } from "../../../repositories/vaults";
-import { findByFolderIdAndUserId } from "../../../repositories/folderKeyShares";
+import * as workspaceMembersRepo from "../../../repositories/workspaceMembers";
 import { HttpError } from "../../../utils/httpError";
 
 const mapVault = (row: { createdAt: Date; updatedAt: Date }): Vault =>
@@ -16,22 +16,27 @@ export const createVault = async (
   userId: string,
   data: ICreateVaultRequest,
 ): Promise<ICreateVaultResponse> => {
-  const folderKeyShare = await findByFolderIdAndUserId(db, data.folderId, userId);
+  const membership = await workspaceMembersRepo.findByWorkspaceIdAndUserId(
+    db,
+    data.workspaceId,
+    userId,
+  );
 
-  if (!folderKeyShare) {
+  if (!membership) {
     throw new HttpError(403, "Access denied");
   }
 
   const vault = await insertVault(db, {
-    ownerId: userId,
-    folderId: data.folderId,
+    workspaceId: data.workspaceId,
+    folderId: data.folderId || null,
     name: data.name,
     mimeType: data.mimeType,
     extension: data.extension,
     sizeBytes: data.sizeBytes,
     s3Key: data.s3Key,
     contentNonce: data.contentNonce,
-    symmetricKey: data.symmetricKey,
+    encryptedSymmetricKey: data.encryptedSymmetricKey,
+    symmetricKeyNonce: data.symmetricKeyNonce || null,
   });
 
   return { vault: mapVault(vault) };

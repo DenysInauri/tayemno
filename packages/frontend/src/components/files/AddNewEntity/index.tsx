@@ -17,7 +17,7 @@ interface IProps {
 
 export const AddNewEntity = (props: IProps) => {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { workspace } = useAuth();
   const createFolder = usePostCreateFolder();
   const [
     folderModalOpened,
@@ -27,15 +27,15 @@ export const AddNewEntity = (props: IProps) => {
     useDisclosure();
 
   const handleCreateFolder = async (name: string) => {
-    if (!user) return;
+    if (!workspace) return;
 
     const folderKey = await SymmetricCrypto.generateKey();
     const encryptedKey = await AsymmetricCrypto.encrypt(
       folderKey,
-      user.publicKey,
+      workspace.adminPublicKey,
     );
 
-    createFolder.mutate({ name, symmetricKey: encryptedKey });
+    createFolder.mutate({ name, encryptedSymmetricKey: encryptedKey });
   };
 
   return (

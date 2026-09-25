@@ -21,6 +21,7 @@ export const verifyEmailRoute = async (app: FastifyInstance) => {
           message: result.message,
           token,
           user: result.user,
+          workspace: result.workspace,
         };
       } catch (err: any) {
         return reply.status(err.statusCode || 500).send({

@@ -36,37 +36,60 @@ export interface NewUser {
   privateKeyNonce: string;
 }
 
+export type WorkspaceRole = "owner" | "admin" | "member";
+
+export interface Workspace {
+  id: string;
+  name: string;
+  adminPublicKey: string;
+  memberPublicKey: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NewWorkspace {
+  name: string;
+  adminPublicKey: string;
+  memberPublicKey: string;
+}
+
+export interface WorkspaceMember {
+  id: string;
+  workspaceId: string;
+  userId: string;
+  role: WorkspaceRole;
+  encryptedAdminPrivateKey: string | null;
+  encryptedMemberPrivateKey: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NewWorkspaceMember {
+  workspaceId: string;
+  userId: string;
+  role: WorkspaceRole;
+  encryptedAdminPrivateKey?: string | null;
+  encryptedMemberPrivateKey: string;
+}
+
 export interface Folder {
   id: string;
-  ownerId: string;
+  workspaceId: string;
   name: string;
+  encryptedSymmetricKey: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface NewFolder {
-  ownerId: string;
+  workspaceId: string;
   name: string;
-}
-
-export interface FolderKeyShare {
-  id: string;
-  folderId: string;
-  userId: string;
-  symmetricKey: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface NewFolderKeyShare {
-  folderId: string;
-  userId: string;
-  symmetricKey: string;
+  encryptedSymmetricKey: string;
 }
 
 export interface Vault {
   id: string;
-  ownerId: string;
+  workspaceId: string;
   folderId: string | null;
   name: string;
   mimeType: string;
@@ -74,13 +97,14 @@ export interface Vault {
   sizeBytes: number;
   s3Key: string;
   contentNonce: string;
-  symmetricKey: string | null;
+  encryptedSymmetricKey: string;
+  symmetricKeyNonce: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface NewVault {
-  ownerId: string;
+  workspaceId: string;
   folderId?: string | null;
   name: string;
   mimeType: string;
@@ -88,22 +112,8 @@ export interface NewVault {
   sizeBytes: number;
   s3Key: string;
   contentNonce: string;
-  symmetricKey?: string | null;
-}
-
-export interface VaultKeyShare {
-  id: string;
-  vaultId: string;
-  userId: string;
-  symmetricKey: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface NewVaultKeyShare {
-  vaultId: string;
-  userId: string;
-  symmetricKey: string;
+  encryptedSymmetricKey: string;
+  symmetricKeyNonce?: string | null;
 }
 
 export interface HealthCheckResponse {
@@ -119,7 +129,13 @@ export interface ICheckPasswordBreachResponse {
   count: number;
 }
 
-export interface IRegisterRequest extends NewUser {}
+export interface IRegisterRequest extends NewUser {
+  workspaceName: string;
+  workspaceAdminPublicKey: string;
+  workspaceMemberPublicKey: string;
+  encryptedWorkspaceAdminPrivateKey: string;
+  encryptedWorkspaceMemberPrivateKey: string;
+}
 
 export interface IRegisterResponse {
   message: string;
@@ -131,10 +147,21 @@ export interface IVerifyEmailRequest {
   code: string;
 }
 
+export interface IWorkspaceData {
+  id: string;
+  name: string;
+  adminPublicKey: string;
+  memberPublicKey: string;
+  encryptedAdminPrivateKey: string | null;
+  encryptedMemberPrivateKey: string;
+  role: WorkspaceRole;
+}
+
 export interface IVerifyEmailResponse {
   message: string;
   token: string;
   user: ISignInUserData;
+  workspace: IWorkspaceData;
 }
 
 export interface IResendVerificationRequest {
@@ -187,6 +214,7 @@ export interface ISignInVerifyResponse {
   serverSessionProof: string;
   token: string;
   user: ISignInUserData;
+  workspace: IWorkspaceData;
 }
 
 export interface IKeyPair {
@@ -196,20 +224,20 @@ export interface IKeyPair {
 
 export interface ICreateFolderRequest {
   name: string;
-  symmetricKey: string;
+  encryptedSymmetricKey: string;
 }
 
 export interface ICreateFolderResponse {
   folder: Folder;
-  folderKeyShare: FolderKeyShare;
 }
 
 export interface IGetFoldersResponse {
-  folders: (Folder & { symmetricKey: string })[];
+  folders: Folder[];
 }
 
 export interface IPresignVaultRequest {
-  folderId: string;
+  workspaceId: string;
+  folderId?: string | null;
   fileName: string;
   mimeType: string;
 }
@@ -220,14 +248,16 @@ export interface IPresignVaultResponse {
 }
 
 export interface ICreateVaultRequest {
-  folderId: string;
+  workspaceId: string;
+  folderId?: string | null;
   name: string;
   mimeType: string;
   extension: string;
   sizeBytes: number;
   s3Key: string;
   contentNonce: string;
-  symmetricKey: string;
+  encryptedSymmetricKey: string;
+  symmetricKeyNonce?: string | null;
 }
 
 export interface ICreateVaultResponse {
