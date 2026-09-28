@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+import keyBy from "lodash/keyBy";
 import type { IGetFoldersResponse, Folder } from "@tayemno/shared";
 import { useApiGet } from "../useApiGet";
 import { QueryKeyEnum } from "../../../enums/api/QueryKeyEnum";
@@ -13,5 +15,8 @@ export const useGetFolders = () => {
     { select: (data) => data.folders },
   );
 
-  return { ...query, data: query.data ?? [] };
+  const folders = query.data ?? [];
+  const foldersById = useMemo(() => keyBy(folders, "id"), [folders]);
+
+  return { ...query, data: folders, dataMap: foldersById };
 };

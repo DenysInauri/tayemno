@@ -6,4 +6,6 @@ export enum EndpointEnum {
   SIGN_IN_INIT = "/auth/sign-in/init",
   SIGN_IN_VERIFY = "/auth/sign-in/verify",
   WORKSPACES = "/workspaces",
+  VAULTS_PRESIGN = "/vaults/presign",
+  VAULTS = "/vaults",
 }

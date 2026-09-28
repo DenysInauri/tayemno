@@ -279,3 +279,11 @@ export interface ICreateVaultRequest {
 export interface ICreateVaultResponse {
   vault: Vault;
 }
+
+export interface IGetVaultsRequest {
+  folderId: string;
+}
+
+export interface IGetVaultsResponse {
+  vaults: Vault[];
+}

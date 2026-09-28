@@ -63,12 +63,14 @@ export const AddNewEntity = (props: IProps) => {
               {t("files.menu.folder")}
             </Menu.Item>
           )}
-          <Menu.Item
-            leftSection={<IconUpload size={16} />}
-            onClick={openFileModal}
-          >
-            {t("files.menu.file")}
-          </Menu.Item>
+          {props.folderId && (
+            <Menu.Item
+              leftSection={<IconUpload size={16} />}
+              onClick={openFileModal}
+            >
+              {t("files.menu.file")}
+            </Menu.Item>
+          )}
         </Menu.Dropdown>
       </Menu>
 
@@ -77,7 +79,13 @@ export const AddNewEntity = (props: IProps) => {
         onClose={closeFolderModal}
         onSubmit={handleCreateFolder}
       />
-      <UploadFileModal opened={fileModalOpened} onClose={closeFileModal} />
+      {props.folderId && (
+        <UploadFileModal
+          opened={fileModalOpened}
+          onClose={closeFileModal}
+          folderId={props.folderId}
+        />
+      )}
     </>
   );
 };

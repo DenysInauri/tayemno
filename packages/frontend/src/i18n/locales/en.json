@@ -123,10 +123,18 @@
     },
     "uploadFile": {
       "title": "Upload file",
-      "placeholder": "File upload coming soon"
+      "placeholder": "File upload coming soon",
+      "fields": {
+        "file": {
+          "label": "File",
+          "placeholder": "Choose a file"
+        }
+      },
+      "submit": "Upload"
     },
     "validation": {
-      "folderNameRequired": "Folder name is required"
+      "folderNameRequired": "Folder name is required",
+      "fileRequired": "Please select a file"
     }
   }
 }
