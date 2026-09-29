@@ -55,6 +55,26 @@ export const create = async (
   return result[0];
 };
 
+export const findDescendantSizes = async (
+  db: Database,
+  folderId: string,
+) => {
+  const rows = await db.execute(sql`
+    WITH RECURSIVE descendant_folders AS (
+      SELECT id FROM folders WHERE id = ${folderId}
+      UNION ALL
+      SELECT f.id FROM folders f
+      INNER JOIN descendant_folders df ON f.parent_folder_id = df.id
+    )
+    SELECT
+      COALESCE(SUM(v.size_bytes), 0)::bigint AS "sizeBytes",
+      COALESCE(SUM(v.encrypted_size_bytes), 0)::bigint AS "encryptedSizeBytes"
+    FROM vaults v
+    WHERE v.folder_id IN (SELECT id FROM descendant_folders)
+  `);
+  return rows[0] as unknown as { sizeBytes: number; encryptedSizeBytes: number };
+};
+
 export const findByWorkspaceIdAndUserId = async (
   db: Database,
   workspaceId: string,

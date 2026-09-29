@@ -296,6 +296,11 @@ export interface IGetFolderResponse {
   folder: Folder;
 }
 
+export interface IGetFolderSizeResponse {
+  sizeBytes: number;
+  encryptedSizeBytes: number;
+}
+
 export interface IGetFoldersRequest {
   parentFolderId?: string | null;
 }
