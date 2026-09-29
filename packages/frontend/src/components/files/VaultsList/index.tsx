@@ -14,6 +14,7 @@ export const VaultsList = ({ vaults }: IProps) => (
         name={vault.name}
         isFolder={false}
         sizeBytes={vault.sizeBytes}
+        encryptedSizeBytes={vault.encryptedSizeBytes}
         updatedAt={vault.updatedAt}
         onClick={() => {}}
       />

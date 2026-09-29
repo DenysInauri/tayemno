@@ -171,6 +171,7 @@ export const vaults = pgTable("vaults", {
   mimeType: varchar("mime_type", { length: 255 }).notNull(),
   extension: varchar("extension", { length: 64 }).notNull(),
   sizeBytes: bigint("size_bytes", { mode: "number" }).notNull(),
+  encryptedSizeBytes: bigint("encrypted_size_bytes", { mode: "number" }).notNull().default(0),
 
   s3Key: text("s3_key").notNull(),
   contentNonce: text("content_nonce").notNull(),

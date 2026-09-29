@@ -46,6 +46,7 @@ export const createVault = async (
     mimeType: data.mimeType,
     extension: data.extension,
     sizeBytes: data.sizeBytes,
+    encryptedSizeBytes: data.encryptedSizeBytes,
     s3Key: data.s3Key,
     contentNonce: data.contentNonce,
     encryptedSymmetricKey: data.encryptedSymmetricKey,

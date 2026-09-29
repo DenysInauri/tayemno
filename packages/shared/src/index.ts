@@ -112,6 +112,7 @@ export interface Vault {
   mimeType: string;
   extension: string;
   sizeBytes: number;
+  encryptedSizeBytes: number;
   s3Key: string;
   contentNonce: string;
   encryptedSymmetricKey: string;
@@ -127,6 +128,7 @@ export interface NewVault {
   mimeType: string;
   extension: string;
   sizeBytes: number;
+  encryptedSizeBytes: number;
   s3Key: string;
   contentNonce: string;
   encryptedSymmetricKey: string;
@@ -279,6 +281,7 @@ export interface ICreateVaultRequest {
   mimeType: string;
   extension: string;
   sizeBytes: number;
+  encryptedSizeBytes: number;
   s3Key: string;
   contentNonce: string;
   encryptedSymmetricKey: string;
