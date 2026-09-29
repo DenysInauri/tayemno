@@ -136,6 +136,9 @@
     "validation": {
       "folderNameRequired": "Folder name is required",
       "fileRequired": "Please select a file"
+    },
+    "actions": {
+      "download": "Download"
     }
   }
 }

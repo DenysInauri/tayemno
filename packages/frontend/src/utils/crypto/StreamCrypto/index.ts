@@ -51,4 +51,40 @@ export class StreamCrypto {
       ),
     };
   }
+
+  static async decryptFile(
+    encryptedBlob: Blob,
+    keyHex: string,
+    headerBase64: string,
+  ): Promise<Blob> {
+    await this.init();
+
+    const key = sodium.from_hex(keyHex);
+    const header = sodium.from_base64(headerBase64, sodium.base64_variants.ORIGINAL);
+    const state = sodium.crypto_secretstream_xchacha20poly1305_init_pull(header, key);
+
+    const chunks: Uint8Array[] = [];
+    const totalBytes = encryptedBlob.size;
+    const ENCRYPTED_CHUNK_SIZE = CHUNK_SIZE + sodium.crypto_secretstream_xchacha20poly1305_ABYTES;
+    let offset = 0;
+
+    while (offset < totalBytes) {
+      const end = Math.min(offset + ENCRYPTED_CHUNK_SIZE, totalBytes);
+      const slice = encryptedBlob.slice(offset, end);
+      const buffer = new Uint8Array(await slice.arrayBuffer());
+
+      const result = sodium.crypto_secretstream_xchacha20poly1305_pull(state, buffer, null);
+
+      if (!result) {
+        throw new Error("Decryption failed: corrupted or tampered data");
+      }
+
+      chunks.push(result.message);
+      offset = end;
+    }
+
+    return new Blob(
+      chunks.map((c) => new Uint8Array(c) as BlobPart),
+    );
+  }
 }

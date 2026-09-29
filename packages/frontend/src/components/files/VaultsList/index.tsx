@@ -1,6 +1,6 @@
 import type { Vault } from "@tayemno/shared";
 
-import { FileListItem } from "../FileListItem";
+import { VaultListItem } from "../VaultListItem";
 
 interface IProps {
   vaults: Vault[];
@@ -9,15 +9,7 @@ interface IProps {
 export const VaultsList = ({ vaults }: IProps) => (
   <>
     {vaults.map((vault) => (
-      <FileListItem
-        key={vault.id}
-        name={vault.name}
-        isFolder={false}
-        sizeBytes={vault.sizeBytes}
-        encryptedSizeBytes={vault.encryptedSizeBytes}
-        updatedAt={vault.updatedAt}
-        onClick={() => {}}
-      />
+      <VaultListItem key={vault.id} vault={vault} />
     ))}
   </>
 );

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Table } from "@mantine/core";
 import { IconFolder, IconFile } from "@tabler/icons-react";
 
@@ -12,6 +13,7 @@ interface IProps {
   encryptedSizeBytes?: number;
   updatedAt: string;
   onClick: () => void;
+  actions?: ReactNode;
 }
 
 export const FileListItem = ({
@@ -21,6 +23,7 @@ export const FileListItem = ({
   encryptedSizeBytes,
   updatedAt,
   onClick,
+  actions,
 }: IProps) => (
   <Table.Tr onClick={onClick} style={{ cursor: "pointer" }}>
     <Table.Td>
@@ -47,6 +50,9 @@ export const FileListItem = ({
           day: "numeric",
         })}
       </Text>
+    </Table.Td>
+    <Table.Td width={40} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+      {actions}
     </Table.Td>
   </Table.Tr>
 );

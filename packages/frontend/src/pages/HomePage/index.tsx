@@ -46,6 +46,7 @@ export const HomePage = () => {
               <Table.Th visibleFrom="sm">
                 {t("files.columns.modified")}
               </Table.Th>
+              <Table.Th w={40} />
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
