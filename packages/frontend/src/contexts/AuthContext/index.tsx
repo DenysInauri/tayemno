@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useMemo } from "react";
 import type { ReactNode } from "react";
 import type { ISignInUserData, IKeyPair, IWorkspaceData } from "@tayemno/shared";
 import { setAuthToken } from "../../api/axios";
+import { clearFolderKeyCache } from "../../services/folderKeyService";
 
 const DEV_AUTH_KEY = "tayemno_dev_auth";
 
@@ -63,6 +64,7 @@ export const AuthProvider = ({ children }: IAuthProviderProps) => {
         setAuthToken(null);
         setAuthState({ user: null, token: null, keyPair: null, workspace: null });
         clearPersistedAuthState();
+        clearFolderKeyCache();
       },
     }),
     [authState],

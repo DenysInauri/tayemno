@@ -1,14 +1,12 @@
 import { useState } from "react";
-import type { IGetFolderResponse } from "@tayemno/shared";
 
 import { usePostPresignVault } from "../usePostPresignVault";
 import { usePostCreateVault } from "../usePostCreateVault";
 import { useAuth } from "../../../contexts/AuthContext";
-import { EndpointEnum } from "../../../enums/api/EndpointEnum";
-import { axios } from "../../axios";
 import { AsymmetricCrypto } from "../../../utils/crypto/AsymmetricCrypto";
 import { SymmetricCrypto } from "../../../utils/crypto/SymmetricCrypto";
 import { StreamCrypto } from "../../../utils/crypto/StreamCrypto";
+import { getFolderKey } from "../../../services/folderKeyService";
 
 export const useUploadVault = () => {
   const { keyPair, workspace, user } = useAuth();
@@ -22,13 +20,9 @@ export const useUploadVault = () => {
     const vaultKey = await SymmetricCrypto.generateKey();
 
     if (folderId) {
-      const { data } = await axios.get<IGetFolderResponse>(
-        `${EndpointEnum.WORKSPACES}/${workspace.id}/folders/${folderId}`,
-      );
-      const folder = data.folder;
-
-      const folderKey = await AsymmetricCrypto.decrypt(
-        folder.encryptedSymmetricKey,
+      const folderKey = await getFolderKey(
+        folderId,
+        workspace.id,
         user.publicKey,
         keyPair.privateKey,
       );
