@@ -37,3 +37,7 @@ npm run dev -w packages/frontend   # start frontend dev server
 ```bash
 npm run build -w packages/frontend
 ```
+
+## Git
+
+- Never include `Co-Authored-By` in commit messages.
