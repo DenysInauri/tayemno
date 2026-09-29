@@ -38,3 +38,13 @@ export const findByWorkspaceIdRootLevel = async (
       ),
     );
 };
+
+export const findById = async (db: Database, vaultId: string) => {
+  const result = await db
+    .select()
+    .from(vaults)
+    .where(eq(vaults.id, vaultId))
+    .limit(1);
+
+  return result[0] ?? null;
+};

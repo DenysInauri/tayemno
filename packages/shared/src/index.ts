@@ -313,3 +313,7 @@ export interface IGetVaultsRequest {
 export interface IGetVaultsResponse {
   vaults: Vault[];
 }
+
+export interface IGetVaultDownloadUrlResponse {
+  presignedUrl: string;
+}
