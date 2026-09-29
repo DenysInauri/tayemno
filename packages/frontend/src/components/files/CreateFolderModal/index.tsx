@@ -51,6 +51,7 @@ export const CreateFolderModal = ({ opened, onClose, onSubmit }: IProps) => {
       <form onSubmit={formik.handleSubmit}>
         <Stack>
           <TextInput
+            data-autofocus
             label={t("files.createFolder.fields.name.label")}
             placeholder={t("files.createFolder.fields.name.placeholder")}
             name="name"
