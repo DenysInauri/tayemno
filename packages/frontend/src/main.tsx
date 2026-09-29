@@ -10,7 +10,7 @@ import { queryClient } from "./api/queryClient";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <MantineProvider defaultColorScheme="dark">
+      <MantineProvider defaultColorScheme="light">
         <App />
       </MantineProvider>
     </QueryClientProvider>
