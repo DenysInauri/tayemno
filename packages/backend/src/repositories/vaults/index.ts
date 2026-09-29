@@ -1,4 +1,4 @@
-import { eq, asc, sql } from "drizzle-orm";
+import { eq, and, asc, sql, isNull } from "drizzle-orm";
 import type { Database } from "../../db";
 import { vaults } from "../../db/schema.js";
 
@@ -15,6 +15,22 @@ export const findByFolderId = async (db: Database, folderId: string) => {
     .select()
     .from(vaults)
     .where(eq(vaults.folderId, folderId))
+    .orderBy(
+      asc(sql`regexp_replace(lower(${vaults.name}), '\\d', '', 'g')`),
+      asc(
+        sql`COALESCE(NULLIF(regexp_replace(${vaults.name}, '\\D', '', 'g'), ''), '0')::bigint`,
+      ),
+    );
+};
+
+export const findByWorkspaceIdRootLevel = async (
+  db: Database,
+  workspaceId: string,
+) => {
+  return db
+    .select()
+    .from(vaults)
+    .where(and(eq(vaults.workspaceId, workspaceId), isNull(vaults.folderId)))
     .orderBy(
       asc(sql`regexp_replace(lower(${vaults.name}), '\\d', '', 'g')`),
       asc(

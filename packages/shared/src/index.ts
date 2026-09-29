@@ -75,6 +75,7 @@ export interface NewWorkspaceMember {
 export interface Folder {
   id: string;
   workspaceId: string;
+  parentFolderId: string | null;
   name: string;
   encryptedSymmetricKey: string;
   createdAt: string;
@@ -83,6 +84,7 @@ export interface Folder {
 
 export interface NewFolder {
   workspaceId: string;
+  parentFolderId?: string | null;
   name: string;
   encryptedSymmetricKey: string;
 }
@@ -241,14 +243,21 @@ export interface ICreateFolderRequest {
   name: string;
   encryptedSymmetricKey: string;
   memberEncryptedSymmetricKey: string;
+  parentFolderId?: string | null;
 }
 
 export interface ICreateFolderResponse {
   folder: Folder;
 }
 
+export interface IBreadcrumbItem {
+  id: string;
+  name: string;
+}
+
 export interface IGetFoldersResponse {
   folders: Folder[];
+  breadcrumbs: IBreadcrumbItem[];
 }
 
 export interface IPresignVaultRequest {
@@ -280,8 +289,17 @@ export interface ICreateVaultResponse {
   vault: Vault;
 }
 
+export interface IGetFolderResponse {
+  folder: Folder;
+}
+
+export interface IGetFoldersRequest {
+  parentFolderId?: string | null;
+}
+
 export interface IGetVaultsRequest {
-  folderId: string;
+  folderId?: string;
+  workspaceId?: string;
 }
 
 export interface IGetVaultsResponse {

@@ -1,46 +1,34 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Table } from "@mantine/core";
 
 import { Stack } from "../../components/ui/Stack";
 import { Group } from "../../components/ui/Group";
-import { Breadcrumbs } from "../../components/ui/Breadcrumbs";
-import { Text } from "../../components/ui/Text";
-import { Anchor } from "../../components/ui/Anchor";
 import { EmptyState } from "../../components/files/EmptyState";
 import { FoldersList } from "../../components/files/FoldersList";
+import { FolderBreadcrumbs } from "../../components/files/FolderBreadcrumbs";
 import { VaultsList } from "../../components/files/VaultsList";
 import { AddNewEntity } from "../../components/files/AddNewEntity";
 import { useGetFolders } from "../../api/hooks/useGetFolders";
 import { useGetVaults } from "../../api/hooks/useGetVaults";
-import { RouteEnum } from "../../enums/routing/RouteEnum";
+import { useAuth } from "../../contexts/AuthContext";
 import { SizeEnum } from "../../enums/ui/SizeEnum";
 
 export const HomePage = () => {
   const routeParams = useParams<{ folderId: string }>();
-  const navigate = useNavigate();
   const { t } = useTranslation();
+  const { workspace } = useAuth();
 
   const folderId = routeParams.folderId ?? null;
 
-  const { data: folders } = useGetFolders();
-  const { data: vaults } = useGetVaults(folderId);
+  const { data: folders, breadcrumbs } = useGetFolders(folderId);
+  const { data: vaults } = useGetVaults(folderId, workspace!.id);
   const isEmpty = folders.length === 0 && vaults.length === 0;
 
   return (
     <Stack gap={SizeEnum.MD} p={SizeEnum.MD}>
       <Group justify="space-between">
-        <Breadcrumbs>
-          <Anchor
-            size="sm"
-            component="button"
-            type="button"
-            onClick={() => navigate(RouteEnum.HOME)}
-          >
-            {t("files.breadcrumb.root")}
-          </Anchor>
-          {folderId && <Text size="sm">...</Text>}
-        </Breadcrumbs>
+        <FolderBreadcrumbs breadcrumbs={breadcrumbs} />
         <AddNewEntity folderId={folderId} />
       </Group>
 

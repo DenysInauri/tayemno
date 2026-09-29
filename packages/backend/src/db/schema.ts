@@ -122,6 +122,7 @@ export const folders = pgTable("folders", {
   workspaceId: uuid("workspace_id")
     .notNull()
     .references(() => workspaces.id, { onDelete: "cascade" }),
+  parentFolderId: uuid("parent_folder_id"),
 
   name: varchar("name", { length: 255 }).notNull(),
   encryptedSymmetricKey: text("encrypted_symmetric_key").notNull(),

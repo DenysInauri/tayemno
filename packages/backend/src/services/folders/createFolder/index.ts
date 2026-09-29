@@ -28,10 +28,23 @@ export const createFolder = async (
     throw new HttpError(403, "Access denied");
   }
 
+  if (data.parentFolderId) {
+    const parentMembership = await folderMembersRepo.findByFolderIdAndUserId(
+      db,
+      data.parentFolderId,
+      userId,
+    );
+
+    if (!parentMembership) {
+      throw new HttpError(403, "Access denied to parent folder");
+    }
+  }
+
   const folder = await insertFolder(db, {
     workspaceId,
     name: data.name,
     encryptedSymmetricKey: data.encryptedSymmetricKey,
+    parentFolderId: data.parentFolderId ?? null,
   });
 
   const folderMember = await folderMembersRepo.create(db, {

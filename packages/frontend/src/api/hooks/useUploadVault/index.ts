@@ -1,46 +1,79 @@
 import { useState } from "react";
+import type { IGetFolderResponse } from "@tayemno/shared";
 
 import { usePostPresignVault } from "../usePostPresignVault";
 import { usePostCreateVault } from "../usePostCreateVault";
-import { useGetFolders } from "../useGetFolders";
 import { useAuth } from "../../../contexts/AuthContext";
+import { EndpointEnum } from "../../../enums/api/EndpointEnum";
+import { axios } from "../../axios";
 import { AsymmetricCrypto } from "../../../utils/crypto/AsymmetricCrypto";
 import { SymmetricCrypto } from "../../../utils/crypto/SymmetricCrypto";
 import { StreamCrypto } from "../../../utils/crypto/StreamCrypto";
 
 export const useUploadVault = () => {
   const { keyPair, workspace, user } = useAuth();
-  const { dataMap: foldersById } = useGetFolders();
   const presignVault = usePostPresignVault();
   const createVault = usePostCreateVault();
   const [isUploading, setIsUploading] = useState(false);
 
-  const upload = async (file: File, folderId: string) => {
-    if (!keyPair || !workspace || !user) return;
+  const buildVaultEncryptionKey = async (folderId: string | null) => {
+    if (!keyPair || !workspace || !user) return null;
 
-    const folder = foldersById[folderId];
+    const vaultKey = await SymmetricCrypto.generateKey();
 
-    if (!folder) return;
+    if (folderId) {
+      const { data } = await axios.get<IGetFolderResponse>(
+        `${EndpointEnum.WORKSPACES}/${workspace.id}/folders/${folderId}`,
+      );
+      const folder = data.folder;
 
-    setIsUploading(true);
-
-    try {
       const folderKey = await AsymmetricCrypto.decrypt(
         folder.encryptedSymmetricKey,
         user.publicKey,
         keyPair.privateKey,
       );
 
-      const vaultKey = await SymmetricCrypto.generateKey();
-
-      const { header, encryptedBlob } = await StreamCrypto.encryptFile(
-        file,
-        vaultKey,
-      );
-
       const encryptedVaultKey = await SymmetricCrypto.encrypt(
         vaultKey,
         folderKey,
+      );
+
+      return {
+        symmetricKey: vaultKey,
+        encryptedSymmetricKey: encryptedVaultKey.ciphertext,
+        symmetricKeyNonce: encryptedVaultKey.nonce,
+      };
+    }
+
+    const encryptedSymmetricKey = await AsymmetricCrypto.encrypt(
+      vaultKey,
+      workspace.memberPublicKey,
+    );
+
+    return {
+      encryptedSymmetricKey,
+      symmetricKeyNonce: null,
+      symmetricKey: vaultKey,
+    };
+  };
+
+  const upload = async (file: File, folderId: string | null) => {
+    if (!keyPair || !workspace || !user) return;
+
+    setIsUploading(true);
+
+    try {
+      const buildVaultEncryptionKeyResult =
+        await buildVaultEncryptionKey(folderId);
+
+      if (!buildVaultEncryptionKeyResult) return;
+
+      const { encryptedSymmetricKey, symmetricKeyNonce, symmetricKey } =
+        buildVaultEncryptionKeyResult;
+
+      const { header, encryptedBlob } = await StreamCrypto.encryptFile(
+        file,
+        symmetricKey,
       );
 
       const fileName = file.name;
@@ -71,8 +104,8 @@ export const useUploadVault = () => {
         sizeBytes: encryptedBlob.size,
         s3Key: presignResult.s3Key,
         contentNonce: header,
-        encryptedSymmetricKey: encryptedVaultKey.ciphertext,
-        symmetricKeyNonce: encryptedVaultKey.nonce,
+        encryptedSymmetricKey,
+        symmetricKeyNonce,
       });
     } finally {
       setIsUploading(false);

@@ -11,6 +11,7 @@ export const getVaultsRoute = async (app: FastifyInstance) => {
           app.db,
           request.user.sub,
           request.query.folderId,
+          request.query.workspaceId,
         );
       } catch (err: any) {
         return reply.status(err.statusCode || 500).send({

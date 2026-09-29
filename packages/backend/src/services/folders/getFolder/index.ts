@@ -1,18 +1,15 @@
 import type { Database } from "../../../db";
-import type { IGetFoldersResponse } from "@tayemno/shared";
-import {
-  findByWorkspaceIdAndUserId,
-  findAncestors,
-} from "../../../repositories/folders";
+import type { IGetFolderResponse } from "@tayemno/shared";
+import { findByIdAndUserId } from "../../../repositories/folders";
 import * as workspaceMembersRepo from "../../../repositories/workspaceMembers";
 import { HttpError } from "../../../utils/httpError";
 
-export const getFolders = async (
+export const getFolder = async (
   db: Database,
   userId: string,
   workspaceId: string,
-  parentFolderId: string | null,
-): Promise<IGetFoldersResponse> => {
+  folderId: string,
+): Promise<IGetFolderResponse> => {
   const membership = await workspaceMembersRepo.findByWorkspaceIdAndUserId(
     db,
     workspaceId,
@@ -23,23 +20,17 @@ export const getFolders = async (
     throw new HttpError(403, "Access denied");
   }
 
-  const rows = await findByWorkspaceIdAndUserId(
-    db,
-    workspaceId,
-    userId,
-    parentFolderId,
-  );
+  const row = await findByIdAndUserId(db, folderId, userId);
 
-  const breadcrumbs = parentFolderId
-    ? await findAncestors(db, parentFolderId, userId)
-    : [];
+  if (!row) {
+    throw new HttpError(404, "Folder not found");
+  }
 
   return {
-    folders: rows.map((row) => ({
+    folder: {
       ...row,
       createdAt: row.createdAt.toISOString(),
       updatedAt: row.updatedAt.toISOString(),
-    })),
-    breadcrumbs,
+    },
   };
 };

@@ -14,7 +14,7 @@ import { getApiErrorMessage } from "../../../utils/getApiErrorMessage";
 interface IProps {
   opened: boolean;
   onClose: () => void;
-  folderId: string;
+  folderId: string | null;
 }
 
 interface IUploadFileFormValues {

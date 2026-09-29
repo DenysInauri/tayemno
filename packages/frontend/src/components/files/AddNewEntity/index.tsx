@@ -43,6 +43,7 @@ export const AddNewEntity = (props: IProps) => {
       name,
       encryptedSymmetricKey: adminEncryptedKey,
       memberEncryptedSymmetricKey: memberEncryptedKey,
+      parentFolderId: props.folderId,
     });
   };
 
@@ -55,22 +56,18 @@ export const AddNewEntity = (props: IProps) => {
           </Button>
         </Menu.Target>
         <Menu.Dropdown>
-          {!props.folderId && (
-            <Menu.Item
-              leftSection={<IconFolder size={16} />}
-              onClick={openFolderModal}
-            >
-              {t("files.menu.folder")}
-            </Menu.Item>
-          )}
-          {props.folderId && (
-            <Menu.Item
-              leftSection={<IconUpload size={16} />}
-              onClick={openFileModal}
-            >
-              {t("files.menu.file")}
-            </Menu.Item>
-          )}
+          <Menu.Item
+            leftSection={<IconFolder size={16} />}
+            onClick={openFolderModal}
+          >
+            {t("files.menu.folder")}
+          </Menu.Item>
+          <Menu.Item
+            leftSection={<IconUpload size={16} />}
+            onClick={openFileModal}
+          >
+            {t("files.menu.file")}
+          </Menu.Item>
         </Menu.Dropdown>
       </Menu>
 
@@ -79,13 +76,11 @@ export const AddNewEntity = (props: IProps) => {
         onClose={closeFolderModal}
         onSubmit={handleCreateFolder}
       />
-      {props.folderId && (
-        <UploadFileModal
-          opened={fileModalOpened}
-          onClose={closeFileModal}
-          folderId={props.folderId}
-        />
-      )}
+      <UploadFileModal
+        opened={fileModalOpened}
+        onClose={closeFileModal}
+        folderId={props.folderId}
+      />
     </>
   );
 };
