@@ -1,15 +1,18 @@
 import { useDisclosure } from "@mantine/hooks";
 import { useTranslation } from "react-i18next";
-import { Menu } from "@mantine/core";
-import { IconPlus, IconFolder, IconUpload } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { IconPlus, IconUpload, IconRefresh } from "@tabler/icons-react";
 
 import { Button } from "../../ui/Button";
+import { Group } from "../../ui/Group";
+import { ActionIcon } from "../../ui/ActionIcon";
 import { CreateFolderModal } from "../CreateFolderModal";
 import { UploadFileModal } from "../UploadFileModal";
 import { usePostCreateFolder } from "../../../api/hooks/usePostCreateFolder";
 import { useAuth } from "../../../contexts/AuthContext";
 import { SymmetricCrypto } from "../../../utils/crypto/SymmetricCrypto";
 import { AsymmetricCrypto } from "../../../utils/crypto/AsymmetricCrypto";
+import { QueryKeyEnum } from "../../../enums/api/QueryKeyEnum";
 
 interface IProps {
   folderId: string | null;
@@ -18,6 +21,7 @@ interface IProps {
 export const AddNewEntity = (props: IProps) => {
   const { t } = useTranslation();
   const { workspace, user } = useAuth();
+  const queryClient = useQueryClient();
   const createFolder = usePostCreateFolder();
   const [
     folderModalOpened,
@@ -47,29 +51,28 @@ export const AddNewEntity = (props: IProps) => {
     });
   };
 
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.FOLDERS] });
+    queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.VAULTS] });
+  };
+
   return (
     <>
-      <Menu position="bottom-end">
-        <Menu.Target>
-          <Button leftSection={<IconPlus size={16} />}>
-            {t("files.addNew")}
-          </Button>
-        </Menu.Target>
-        <Menu.Dropdown>
-          <Menu.Item
-            leftSection={<IconFolder size={16} />}
-            onClick={openFolderModal}
-          >
-            {t("files.menu.folder")}
-          </Menu.Item>
-          <Menu.Item
-            leftSection={<IconUpload size={16} />}
-            onClick={openFileModal}
-          >
-            {t("files.menu.file")}
-          </Menu.Item>
-        </Menu.Dropdown>
-      </Menu>
+      <Group gap="xs">
+        <Button
+          variant="default"
+          leftSection={<IconUpload size={16} />}
+          onClick={openFileModal}
+        >
+          {t("files.uploadFileButton")}
+        </Button>
+        <Button leftSection={<IconPlus size={16} />} onClick={openFolderModal}>
+          {t("files.addFolderButton")}
+        </Button>
+        <ActionIcon variant="default" size="input-sm" onClick={handleRefresh}>
+          <IconRefresh size={16} />
+        </ActionIcon>
+      </Group>
 
       <CreateFolderModal
         opened={folderModalOpened}

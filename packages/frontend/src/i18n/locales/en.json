@@ -103,11 +103,8 @@
       "storedSize": "Stored",
       "modified": "Modified"
     },
-    "addNew": "Add new",
-    "menu": {
-      "folder": "Folder",
-      "file": "File"
-    },
+    "addFolderButton": "Add folder",
+    "uploadFileButton": "Upload file",
     "empty": {
       "title": "No files or folders yet",
       "createFolder": "Create a folder"
