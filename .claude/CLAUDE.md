@@ -21,9 +21,9 @@ packages/
 - [Backend Architecture](backend/architecture.md) — three-layer architecture, routes/services/repositories, Drizzle ORM, code style
 - [Encryption Key Hierarchy](encryption-key-hierarchy.md) — E2EE key derivation, hierarchy, sharing model, storage mapping
 
-## Responsive Design
+## Desktop Only
 
-All UI pages and layouts must support desktop, tablet, and mobile viewports. Use Mantine's responsive props (e.g., `span={{ base: 12, md: 6 }}`, `ta={{ base: "center", md: "left" }}`) to adapt layouts per breakpoint. Never build desktop-only designs.
+The frontend targets desktop and tablet viewports only. Mobile viewports show a full-screen block message (`MobileBlockScreen` component in `main.tsx`). Do not add mobile-specific responsive styles or breakpoints to pages and components.
 
 ## Quick Start
 
