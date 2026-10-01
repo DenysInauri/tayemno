@@ -2,15 +2,12 @@ import type { Database } from "../../../db";
 import type {
   ICreateFolderRequest,
   ICreateFolderResponse,
-  Folder,
 } from "@tayemno/shared";
 import { create as insertFolder } from "../../../repositories/folders";
 import * as folderMembersRepo from "../../../repositories/folderMembers";
 import * as workspaceMembersRepo from "../../../repositories/workspaceMembers";
 import { HttpError } from "../../../utils/httpError";
-
-const mapFolder = (row: { createdAt: Date; updatedAt: Date }): Folder =>
-  ({ ...row, createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString() }) as Folder;
+import { mapTimestamps } from "../../../utils/mapTimestamps";
 
 export const createFolder = async (
   db: Database,
@@ -58,5 +55,5 @@ export const createFolder = async (
     encryptedSymmetricKey: folderMember.encryptedSymmetricKey,
   };
 
-  return { folder: mapFolder(folderWithMemberKey) };
+  return { folder: mapTimestamps(folderWithMemberKey) };
 };

@@ -6,6 +6,7 @@ import {
 } from "../../../repositories/folders";
 import * as workspaceMembersRepo from "../../../repositories/workspaceMembers";
 import { HttpError } from "../../../utils/httpError";
+import { mapTimestamps } from "../../../utils/mapTimestamps";
 
 export const getFolders = async (
   db: Database,
@@ -35,11 +36,7 @@ export const getFolders = async (
     : [];
 
   return {
-    folders: rows.map((row) => ({
-      ...row,
-      createdAt: row.createdAt.toISOString(),
-      updatedAt: row.updatedAt.toISOString(),
-    })),
+    folders: rows.map(mapTimestamps),
     breadcrumbs,
   };
 };

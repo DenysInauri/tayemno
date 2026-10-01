@@ -150,3 +150,30 @@ export const deleteByIds = async (
 ) => {
   await db.delete(folders).where(inArray(folders.id, ids));
 };
+
+export const findAllByUser = async (
+  db: Database,
+  workspaceId: string,
+  userId: string,
+) => {
+  return db
+    .select({
+      id: folders.id,
+      name: folders.name,
+      parentFolderId: folders.parentFolderId,
+    })
+    .from(folderMembers)
+    .innerJoin(folders, eq(folderMembers.folderId, folders.id))
+    .where(
+      and(
+        eq(folders.workspaceId, workspaceId),
+        eq(folderMembers.userId, userId),
+      ),
+    )
+    .orderBy(
+      asc(sql`regexp_replace(lower(${folders.name}), '\\d', '', 'g')`),
+      asc(
+        sql`COALESCE(NULLIF(regexp_replace(${folders.name}, '\\D', '', 'g'), ''), '0')::bigint`,
+      ),
+    );
+};

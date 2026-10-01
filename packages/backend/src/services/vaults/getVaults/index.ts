@@ -7,19 +7,7 @@ import {
 import * as folderMembersRepo from "../../../repositories/folderMembers";
 import * as workspaceMembersRepo from "../../../repositories/workspaceMembers";
 import { HttpError } from "../../../utils/httpError";
-
-interface IRow {
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-function transformRows<I extends IRow>(rows: I[]) {
-  return rows.map((row) => ({
-    ...row,
-    createdAt: row.createdAt.toISOString(),
-    updatedAt: row.updatedAt.toISOString(),
-  }));
-}
+import { mapTimestamps } from "../../../utils/mapTimestamps";
 
 export const getVaults = async (
   db: Database,
@@ -40,7 +28,7 @@ export const getVaults = async (
 
     const rows = await findByFolderId(db, folderId);
 
-    return { vaults: transformRows(rows) };
+    return { vaults: rows.map(mapTimestamps) };
   }
 
   if (workspaceId) {
@@ -55,7 +43,7 @@ export const getVaults = async (
     }
 
     const rows = await findByWorkspaceIdRootLevel(db, workspaceId);
-    return { vaults: transformRows(rows) };
+    return { vaults: rows.map(mapTimestamps) };
   }
 
   throw new HttpError(400, "Either folderId or workspaceId is required");

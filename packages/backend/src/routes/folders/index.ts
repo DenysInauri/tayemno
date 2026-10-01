@@ -5,6 +5,7 @@ import { deleteFolderRoute } from "./deleteFolder";
 import { getFolderRoute } from "./getFolder";
 import { getFolderSizeRoute } from "./getFolderSize";
 import { getFoldersRoute } from "./getFolders";
+import { getFolderTreeRoute } from "./getFolderTree";
 
 export const foldersRoutes = async (app: FastifyInstance) => {
   app.addHook("onRequest", authenticate);
@@ -14,4 +15,5 @@ export const foldersRoutes = async (app: FastifyInstance) => {
   await app.register(getFolderRoute);
   await app.register(getFolderSizeRoute);
   await app.register(getFoldersRoute);
+  await app.register(getFolderTreeRoute);
 };

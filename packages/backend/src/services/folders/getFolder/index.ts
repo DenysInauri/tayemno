@@ -3,6 +3,7 @@ import type { IGetFolderResponse } from "@tayemno/shared";
 import { findByIdAndUserId } from "../../../repositories/folders";
 import * as workspaceMembersRepo from "../../../repositories/workspaceMembers";
 import { HttpError } from "../../../utils/httpError";
+import { mapTimestamps } from "../../../utils/mapTimestamps";
 
 export const getFolder = async (
   db: Database,
@@ -27,10 +28,6 @@ export const getFolder = async (
   }
 
   return {
-    folder: {
-      ...row,
-      createdAt: row.createdAt.toISOString(),
-      updatedAt: row.updatedAt.toISOString(),
-    },
+    folder: mapTimestamps(row),
   };
 };

@@ -5,6 +5,7 @@ import { createVaultRoute } from "./createVault";
 import { getVaultsRoute } from "./getVaults";
 import { getVaultDownloadUrlRoute } from "./getVaultDownloadUrl";
 import { deleteVaultRoute } from "./deleteVault";
+import { moveVaultRoute } from "./moveVault";
 
 export const vaultsRoutes = async (app: FastifyInstance) => {
   app.addHook("onRequest", authenticate);
@@ -14,4 +15,5 @@ export const vaultsRoutes = async (app: FastifyInstance) => {
   await app.register(getVaultsRoute);
   await app.register(getVaultDownloadUrlRoute);
   await app.register(deleteVaultRoute);
+  await app.register(moveVaultRoute);
 };

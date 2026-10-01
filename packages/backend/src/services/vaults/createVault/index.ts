@@ -1,16 +1,13 @@
 import type {
   ICreateVaultRequest,
   ICreateVaultResponse,
-  Vault,
 } from "@tayemno/shared";
 import type { Database } from "../../../db";
 import { create as insertVault } from "../../../repositories/vaults";
 import * as workspaceMembersRepo from "../../../repositories/workspaceMembers";
 import * as folderMembersRepo from "../../../repositories/folderMembers";
 import { HttpError } from "../../../utils/httpError";
-
-const mapVault = (row: { createdAt: Date; updatedAt: Date }): Vault =>
-  ({ ...row, createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString() }) as Vault;
+import { mapTimestamps } from "../../../utils/mapTimestamps";
 
 export const createVault = async (
   db: Database,
@@ -53,5 +50,5 @@ export const createVault = async (
     symmetricKeyNonce: data.symmetricKeyNonce || null,
   });
 
-  return { vault: mapVault(vault) };
+  return { vault: mapTimestamps(vault) };
 };

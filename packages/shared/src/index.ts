@@ -325,3 +325,23 @@ export interface IDeleteVaultResponse {
 export interface IDeleteFolderResponse {
   message: string;
 }
+
+export interface IMoveVaultRequest {
+  targetFolderId: string | null;
+  encryptedSymmetricKey: string;
+  symmetricKeyNonce: string | null;
+}
+
+export interface IMoveVaultResponse {
+  vault: Vault;
+}
+
+export interface IFolderTreeNode {
+  id: string;
+  name: string;
+  children: IFolderTreeNode[];
+}
+
+export interface IGetFolderTreeResponse {
+  folders: IFolderTreeNode[];
+}

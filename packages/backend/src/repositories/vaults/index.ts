@@ -52,3 +52,27 @@ export const findById = async (db: Database, vaultId: string) => {
 export const deleteById = async (db: Database, vaultId: string) => {
   await db.delete(vaults).where(eq(vaults.id, vaultId));
 };
+
+interface IUpdateMoveData {
+  folderId: string | null;
+  encryptedSymmetricKey: string;
+  symmetricKeyNonce: string | null;
+}
+
+export const updateMove = async (
+  db: Database,
+  vaultId: string,
+  data: IUpdateMoveData,
+) => {
+  const result = await db
+    .update(vaults)
+    .set({
+      folderId: data.folderId,
+      encryptedSymmetricKey: data.encryptedSymmetricKey,
+      symmetricKeyNonce: data.symmetricKeyNonce,
+    })
+    .where(eq(vaults.id, vaultId))
+    .returning();
+
+  return result[0] ?? null;
+};
