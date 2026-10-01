@@ -1,13 +1,16 @@
 import { useFormik } from "formik";
 import { useTranslation } from "react-i18next";
+import { IconCopy } from "@tabler/icons-react";
 
 import { Modal } from "../../ui/Modal";
 import { TextInput } from "../../ui/TextInput";
 import { Button } from "../../ui/Button";
+import { CopyButton } from "../../ui/CopyButton";
 import { Stack } from "../../ui/Stack";
 import { Group } from "../../ui/Group";
 import { Text } from "../../ui/Text";
 import { deleteFolderConfirmSchema } from "../../../validations/deleteFolderConfirmSchema";
+import { TextColorEnum } from "../../../enums/ui/TextColorEnum";
 
 interface IProps {
   opened: boolean;
@@ -55,16 +58,34 @@ export const DeleteFolderModal = ({
     >
       <form onSubmit={formik.handleSubmit}>
         <Stack>
-          <Text size="sm">
-            {t("files.deleteFolder.description", { folderName })}
+          <Text size="sm" c={TextColorEnum.TERTIARY}>
+            {t("files.deleteFolder.descriptionPrefix")}{" "}
+            <Text span c={TextColorEnum.SECONDARY} size="sm">
+              {folderName}
+            </Text>{" "}
+            {t("files.deleteFolder.descriptionSuffix")}
           </Text>
           <Text size="sm">
-            {t("files.deleteFolder.confirmInstruction")}
+            {t("files.deleteFolder.confirmPrefix")}{" "}
+            <CopyButton value="delete">
+              {({ copied, copy }) => (
+                <Button
+                  variant={copied ? undefined : "default"}
+                  color={copied ? "teal" : undefined}
+                  rightSection={<IconCopy size={12} />}
+                  onClick={copy}
+                  w={100}
+                  h={22}
+                >
+                  {t("files.deleteFolder.confirmWord")}
+                </Button>
+              )}
+            </CopyButton>{" "}
+            {t("files.deleteFolder.confirmSuffix")}
           </Text>
           <TextInput
-            data-autofocus
-            placeholder={t("files.deleteFolder.fields.confirm.placeholder")}
             name="confirm"
+            placeholder={t("files.deleteFolder.placeholder")}
             value={formik.values.confirm}
             onChange={formik.handleChange}
             error={

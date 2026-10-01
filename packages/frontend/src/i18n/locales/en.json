@@ -136,13 +136,12 @@
     },
     "deleteFolder": {
       "title": "Delete this folder?",
-      "description": "Deleting the folder {{folderName}} and all the files within it is permanent and cannot be undone.",
-      "confirmInstruction": "Type in delete to confirm.",
-      "fields": {
-        "confirm": {
-          "placeholder": "Type delete to confirm"
-        }
-      },
+      "descriptionPrefix": "Deleting the folder",
+      "descriptionSuffix": "and all the objects within it is permanent and cannot be undone.",
+      "confirmPrefix": "Type in",
+      "confirmSuffix": "to confirm.",
+      "confirmWord": "delete",
+      "placeholder": "delete",
       "submit": "Delete",
       "cancel": "Cancel",
       "validation": {
