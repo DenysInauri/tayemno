@@ -134,6 +134,22 @@
       },
       "submit": "Upload"
     },
+    "deleteFolder": {
+      "title": "Delete this folder?",
+      "description": "Deleting the folder {{folderName}} and all the files within it is permanent and cannot be undone.",
+      "confirmInstruction": "Type in delete to confirm.",
+      "fields": {
+        "confirm": {
+          "placeholder": "Type delete to confirm"
+        }
+      },
+      "submit": "Delete",
+      "cancel": "Cancel",
+      "validation": {
+        "confirmRequired": "Please type \"delete\" to confirm",
+        "confirmMismatch": "Please type \"delete\" to confirm"
+      }
+    },
     "validation": {
       "folderNameRequired": "Folder name is required",
       "fileRequired": "Please select a file"
