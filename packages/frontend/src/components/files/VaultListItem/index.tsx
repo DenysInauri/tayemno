@@ -1,11 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { Menu } from "@mantine/core";
-import { IconDotsVertical, IconDownload } from "@tabler/icons-react";
+import { IconDotsVertical, IconDownload, IconTrash } from "@tabler/icons-react";
 import type { Vault } from "@tayemno/shared";
 
 import { FileListItem } from "../FileListItem";
 import { ActionIcon } from "../../ui/ActionIcon";
 import { useDownloadVault } from "../../../api/hooks/useDownloadVault";
+import { useDeleteVault } from "../../../api/hooks/useDeleteVault";
 
 interface IProps {
   vault: Vault;
@@ -14,6 +15,7 @@ interface IProps {
 export const VaultListItem = ({ vault }: IProps) => {
   const { t } = useTranslation();
   const { download, isDownloading } = useDownloadVault();
+  const { deleteVault, isDeleting } = useDeleteVault(vault.id);
 
   return (
     <FileListItem
@@ -26,7 +28,11 @@ export const VaultListItem = ({ vault }: IProps) => {
       actions={
         <Menu position="bottom-end">
           <Menu.Target>
-            <ActionIcon variant="subtle" color="gray" loading={isDownloading}>
+            <ActionIcon
+              variant="subtle"
+              color="gray"
+              loading={isDownloading || isDeleting}
+            >
               <IconDotsVertical size={16} />
             </ActionIcon>
           </Menu.Target>
@@ -36,6 +42,13 @@ export const VaultListItem = ({ vault }: IProps) => {
               onClick={() => download(vault)}
             >
               {t("files.actions.download")}
+            </Menu.Item>
+            <Menu.Item
+              color="red"
+              leftSection={<IconTrash size={16} />}
+              onClick={() => deleteVault()}
+            >
+              {t("files.actions.delete")}
             </Menu.Item>
           </Menu.Dropdown>
         </Menu>

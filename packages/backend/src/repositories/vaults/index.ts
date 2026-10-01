@@ -48,3 +48,7 @@ export const findById = async (db: Database, vaultId: string) => {
 
   return result[0] ?? null;
 };
+
+export const deleteById = async (db: Database, vaultId: string) => {
+  await db.delete(vaults).where(eq(vaults.id, vaultId));
+};

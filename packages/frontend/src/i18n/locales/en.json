@@ -139,7 +139,8 @@
       "fileRequired": "Please select a file"
     },
     "actions": {
-      "download": "Download"
+      "download": "Download",
+      "delete": "Delete"
     }
   }
 }

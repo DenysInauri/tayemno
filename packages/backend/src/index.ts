@@ -33,7 +33,10 @@ declare module "@fastify/jwt" {
 const app = Fastify({ logger: true });
 
 await registerConfig(app);
-await app.register(cors);
+await app.register(cors, {
+  origin: true,
+  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+});
 await app.register(jwt, { secret: app.config.JWT_SECRET });
 
 app.decorate("db", createDb(app.config.DATABASE_URL));

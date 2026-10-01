@@ -317,3 +317,7 @@ export interface IGetVaultsResponse {
 export interface IGetVaultDownloadUrlResponse {
   presignedUrl: string;
 }
+
+export interface IDeleteVaultResponse {
+  message: string;
+}
