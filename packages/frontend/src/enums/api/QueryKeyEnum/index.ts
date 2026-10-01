@@ -4,4 +4,5 @@ export enum QueryKeyEnum {
   FOLDER_SIZE = "folderSize",
   FOLDERS = "folders",
   VAULTS = "vaults",
+  FOLDER_TREE = "folderTree",
 }

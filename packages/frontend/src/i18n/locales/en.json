@@ -155,7 +155,17 @@
     },
     "actions": {
       "download": "Download",
-      "delete": "Delete"
+      "delete": "Delete",
+      "move": "Move"
+    },
+    "moveVault": {
+      "title": "Move file",
+      "description": "Everyone who has access to the current folder will lose access to this file.",
+      "selectLabel": "Destination folder",
+      "selectPlaceholder": "Select folder",
+      "rootFolder": "Files",
+      "cancel": "Cancel",
+      "submit": "Move"
     }
   }
 }

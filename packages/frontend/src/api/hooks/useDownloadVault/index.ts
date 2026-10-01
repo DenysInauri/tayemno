@@ -5,46 +5,13 @@ import { axios } from "../../axios";
 import { useAuth } from "../../../contexts/AuthContext";
 import { EndpointEnum } from "../../../enums/api/EndpointEnum";
 import { StreamCrypto } from "../../../utils/crypto/StreamCrypto";
-import { SymmetricCrypto } from "../../../utils/crypto/SymmetricCrypto";
-import { AsymmetricCrypto } from "../../../utils/crypto/AsymmetricCrypto";
-import { getFolderKey } from "../../../services/folderKeyService";
 import { downloadBlob } from "../../../utils/downloadBlob";
+import { useDecryptVaultKey } from "../useDecryptVaultKey";
 
 export const useDownloadVault = () => {
   const { keyPair, workspace, user } = useAuth();
+  const { decryptVaultKey } = useDecryptVaultKey();
   const [isDownloading, setIsDownloading] = useState(false);
-
-  const decryptVaultKey = async (vault: Vault): Promise<string> => {
-    if (!keyPair || !workspace || !user) {
-      throw new Error("Not authenticated");
-    }
-
-    if (vault.folderId && vault.symmetricKeyNonce) {
-      const folderKey = await getFolderKey(
-        vault.folderId,
-        workspace.id,
-        user.publicKey,
-        keyPair.privateKey,
-      );
-
-      return SymmetricCrypto.decrypt(
-        { nonce: vault.symmetricKeyNonce, ciphertext: vault.encryptedSymmetricKey },
-        folderKey,
-      );
-    }
-
-    const memberPrivateKey = await AsymmetricCrypto.decrypt(
-      workspace.encryptedMemberPrivateKey,
-      user.publicKey,
-      keyPair.privateKey,
-    );
-
-    return AsymmetricCrypto.decrypt(
-      vault.encryptedSymmetricKey,
-      workspace.memberPublicKey,
-      memberPrivateKey,
-    );
-  };
 
   const download = async (vault: Vault) => {
     if (!keyPair || !workspace || !user) return;
