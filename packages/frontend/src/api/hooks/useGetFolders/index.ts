@@ -18,6 +18,7 @@ export const useGetFolders = (parentFolderId: string | null = null) => {
       data: [] as Folder[],
       dataMap: {} as Record<string, Folder>,
       breadcrumbs: [] as IBreadcrumbItem[],
+      isLoading: false as const,
     };
 
   const url = parentFolderId
