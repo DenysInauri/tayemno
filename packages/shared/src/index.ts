@@ -321,3 +321,7 @@ export interface IGetVaultDownloadUrlResponse {
 export interface IDeleteVaultResponse {
   message: string;
 }
+
+export interface IDeleteFolderResponse {
+  message: string;
+}

@@ -1,4 +1,4 @@
-import { eq, and, asc, sql, isNull } from "drizzle-orm";
+import { eq, and, asc, sql, isNull, inArray } from "drizzle-orm";
 import type { Database } from "../../db";
 import { folders, folderMembers } from "../../db/schema.js";
 
@@ -108,4 +108,45 @@ export const findByWorkspaceIdAndUserId = async (
         sql`COALESCE(NULLIF(regexp_replace(${folders.name}, '\\D', '', 'g'), ''), '0')::bigint`,
       ),
     );
+};
+
+export const findDescendantVaultS3Keys = async (
+  db: Database,
+  folderId: string,
+): Promise<string[]> => {
+  const rows = await db.execute(sql`
+    WITH RECURSIVE descendant_folders AS (
+      SELECT id FROM folders WHERE id = ${folderId}
+      UNION ALL
+      SELECT f.id FROM folders f
+      INNER JOIN descendant_folders df ON f.parent_folder_id = df.id
+    )
+    SELECT v.s3_key AS "s3Key"
+    FROM vaults v
+    WHERE v.folder_id IN (SELECT id FROM descendant_folders)
+  `);
+  return (rows as unknown as { s3Key: string }[]).map((r) => r.s3Key);
+};
+
+export const findDescendantIds = async (
+  db: Database,
+  folderId: string,
+): Promise<string[]> => {
+  const rows = await db.execute(sql`
+    WITH RECURSIVE descendant_folders AS (
+      SELECT id FROM folders WHERE id = ${folderId}
+      UNION ALL
+      SELECT f.id FROM folders f
+      INNER JOIN descendant_folders df ON f.parent_folder_id = df.id
+    )
+    SELECT id FROM descendant_folders
+  `);
+  return (rows as unknown as { id: string }[]).map((r) => r.id);
+};
+
+export const deleteByIds = async (
+  db: Database,
+  ids: string[],
+) => {
+  await db.delete(folders).where(inArray(folders.id, ids));
 };
