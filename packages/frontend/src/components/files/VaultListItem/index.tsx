@@ -23,7 +23,7 @@ interface IProps {
 
 export const VaultListItem = ({ vault }: IProps) => {
   const { t } = useTranslation();
-  const { download, isDownloading } = useDownloadVault();
+  const { download, isDownloading, progress } = useDownloadVault();
   const { deleteVault, isDeleting } = useDeleteVault(vault.id);
   const { move, isMoving } = useMoveVault();
   const [moveModalOpened, { open: openMoveModal, close: closeMoveModal }] =
@@ -46,6 +46,7 @@ export const VaultListItem = ({ vault }: IProps) => {
         encryptedSizeBytes={vault.encryptedSizeBytes}
         updatedAt={vault.updatedAt}
         onClick={() => {}}
+        progress={isDownloading ? progress : undefined}
         actions={
           <Menu position="bottom-end">
             <Menu.Target>

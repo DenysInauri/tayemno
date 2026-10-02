@@ -4,6 +4,7 @@ import { IconFolder, IconFile } from "@tabler/icons-react";
 
 import { Group } from "../../ui/Group";
 import { Text } from "../../ui/Text";
+import { Progress } from "../../ui/Progress";
 import { formatFileSize } from "../../../utils/formatFileSize";
 
 interface IProps {
@@ -14,6 +15,7 @@ interface IProps {
   updatedAt: string;
   onClick: () => void;
   actions?: ReactNode;
+  progress?: number;
 }
 
 export const FileListItem = ({
@@ -24,13 +26,21 @@ export const FileListItem = ({
   updatedAt,
   onClick,
   actions,
+  progress,
 }: IProps) => (
   <Table.Tr onClick={onClick} style={{ cursor: "pointer" }}>
-    <Table.Td>
+    <Table.Td style={{ position: "relative" }}>
       <Group gap="sm">
         {isFolder ? <IconFolder size={20} /> : <IconFile size={20} />}
         <Text size="sm">{name}</Text>
       </Group>
+      {progress !== undefined && progress > 0 && (
+        <Progress
+          value={progress}
+          size={4}
+          style={{ position: "absolute", bottom: 0, left: 0, right: 0 }}
+        />
+      )}
     </Table.Td>
     <Table.Td visibleFrom="sm">
       <Text c="dimmed" size="sm">

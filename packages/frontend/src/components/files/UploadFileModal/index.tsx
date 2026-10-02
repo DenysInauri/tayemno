@@ -7,6 +7,7 @@ import { Modal } from "../../ui/Modal";
 import { Button } from "../../ui/Button";
 import { Stack } from "../../ui/Stack";
 import { Text } from "../../ui/Text";
+import { Progress } from "../../ui/Progress";
 import { useUploadVault } from "../../../api/hooks/useUploadVault";
 import { uploadFileSchema } from "../../../validations/uploadFileSchema";
 import { getApiErrorMessage } from "../../../utils/getApiErrorMessage";
@@ -23,7 +24,7 @@ interface IUploadFileFormValues {
 
 export const UploadFileModal = ({ opened, onClose, folderId }: IProps) => {
   const { t } = useTranslation();
-  const { upload, isUploading } = useUploadVault();
+  const { upload, isUploading, progress } = useUploadVault();
   const [uploadError, setUploadError] = useState("");
 
   const formik = useFormik<IUploadFileFormValues>({
@@ -77,6 +78,7 @@ export const UploadFileModal = ({ opened, onClose, folderId }: IProps) => {
               {uploadError}
             </Text>
           )}
+          {isUploading && <Progress value={progress} size="sm" />}
           <Button type="submit" fullWidth loading={isUploading}>
             {t("files.uploadFile.submit")}
           </Button>
