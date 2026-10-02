@@ -10,6 +10,7 @@ export class StreamCrypto {
   static async encryptFile(
     file: File,
     keyHex: string,
+    onProgress?: (ratio: number) => void,
   ): Promise<{ header: string; encryptedBlob: Blob }> {
     await this.init();
 
@@ -41,6 +42,7 @@ export class StreamCrypto {
 
       chunks.push(encryptedChunk);
       offset = end;
+      onProgress?.(offset / totalBytes);
     }
 
     return {
@@ -56,6 +58,7 @@ export class StreamCrypto {
     encryptedBlob: Blob,
     keyHex: string,
     headerBase64: string,
+    onProgress?: (ratio: number) => void,
   ): Promise<Blob> {
     await this.init();
 
@@ -81,6 +84,7 @@ export class StreamCrypto {
 
       chunks.push(result.message);
       offset = end;
+      onProgress?.(offset / totalBytes);
     }
 
     return new Blob(

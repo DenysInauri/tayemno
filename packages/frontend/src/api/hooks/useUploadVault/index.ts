@@ -7,12 +7,15 @@ import { AsymmetricCrypto } from "../../../utils/crypto/AsymmetricCrypto";
 import { SymmetricCrypto } from "../../../utils/crypto/SymmetricCrypto";
 import { StreamCrypto } from "../../../utils/crypto/StreamCrypto";
 import { getFolderKey } from "../../../services/folderKeyService";
+import { createThrottledProgress } from "../../../utils/createThrottledProgress";
+import { uploadWithProgress } from "../../../utils/uploadWithProgress";
 
 export const useUploadVault = () => {
   const { keyPair, workspace, user } = useAuth();
   const presignVault = usePostPresignVault();
   const createVault = usePostCreateVault();
   const [isUploading, setIsUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const buildVaultEncryptionKey = async (folderId: string | null) => {
     if (!keyPair || !workspace || !user) return null;
@@ -55,6 +58,9 @@ export const useUploadVault = () => {
     if (!keyPair || !workspace || !user) return;
 
     setIsUploading(true);
+    setProgress(0);
+
+    const tp = createThrottledProgress(setProgress);
 
     try {
       const buildVaultEncryptionKeyResult =
@@ -68,6 +74,7 @@ export const useUploadVault = () => {
       const { header, encryptedBlob } = await StreamCrypto.encryptFile(
         file,
         symmetricKey,
+        (ratio) => tp.set(Math.round(ratio * 50)),
       );
 
       const fileName = file.name;
@@ -83,11 +90,13 @@ export const useUploadVault = () => {
         mimeType,
       });
 
-      await fetch(presignResult.presignedUrl, {
-        method: "PUT",
-        body: encryptedBlob,
-        headers: { "Content-Type": "application/octet-stream" },
-      });
+      await uploadWithProgress(
+        presignResult.presignedUrl,
+        encryptedBlob,
+        (ratio) => tp.set(50 + Math.round(ratio * 50)),
+      );
+
+      tp.flush();
 
       await createVault.mutateAsync({
         workspaceId: workspace.id,
@@ -103,9 +112,13 @@ export const useUploadVault = () => {
         symmetricKeyNonce,
       });
     } finally {
+      tp.cancel();
       setIsUploading(false);
+      setProgress(0);
     }
   };
 
-  return { upload, isUploading };
+  console.log({ progress });
+
+  return { upload, isUploading, progress };
 };
