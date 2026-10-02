@@ -167,6 +167,10 @@
       "rootFolder": "Files",
       "cancel": "Cancel",
       "submit": "Move"
+    },
+    "downloadAlert": {
+      "title": "Downloading",
+      "cancelAll": "Cancel all"
     }
   }
 }

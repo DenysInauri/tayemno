@@ -12,7 +12,7 @@ import type { Vault } from "@tayemno/shared";
 import { FileListItem } from "../FileListItem";
 import { MoveVaultModal } from "../MoveVaultModal";
 import { ActionIcon } from "../../ui/ActionIcon";
-import { useDownloadVault } from "../../../api/hooks/useDownloadVault";
+import { useDownload } from "../../../contexts/DownloadContext";
 import { useDeleteVault } from "../../../api/hooks/useDeleteVault";
 import { useMoveVault } from "../../../api/hooks/useMoveVault";
 import { useGetFolderTree } from "../../../api/hooks/useGetFolderTree";
@@ -23,7 +23,7 @@ interface IProps {
 
 export const VaultListItem = ({ vault }: IProps) => {
   const { t } = useTranslation();
-  const { download, cancel, isDownloading, progress } = useDownloadVault();
+  const { download, isDownloading } = useDownload();
   const { deleteVault, isDeleting } = useDeleteVault(vault.id);
   const { move, isMoving } = useMoveVault();
   const [moveModalOpened, { open: openMoveModal, close: closeMoveModal }] =
@@ -46,15 +46,13 @@ export const VaultListItem = ({ vault }: IProps) => {
         encryptedSizeBytes={vault.encryptedSizeBytes}
         updatedAt={vault.updatedAt}
         onClick={() => {}}
-        progress={isDownloading ? progress : undefined}
-        onCancelProgress={isDownloading ? cancel : undefined}
         actions={
           <Menu position="bottom-end">
             <Menu.Target>
               <ActionIcon
                 variant="subtle"
                 color="gray"
-                loading={isDownloading || isDeleting || isLoadingTree}
+                loading={isDownloading(vault.id) || isDeleting || isLoadingTree}
               >
                 <IconDotsVertical size={16} />
               </ActionIcon>
