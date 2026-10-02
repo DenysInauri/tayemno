@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { usePostPresignVault } from "../usePostPresignVault";
 import { usePostCreateVault } from "../usePostCreateVault";
@@ -16,6 +16,7 @@ export const useUploadVault = () => {
   const createVault = usePostCreateVault();
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const buildVaultEncryptionKey = async (folderId: string | null) => {
     if (!keyPair || !workspace || !user) return null;
@@ -57,6 +58,10 @@ export const useUploadVault = () => {
   const upload = async (file: File, folderId: string | null) => {
     if (!keyPair || !workspace || !user) return;
 
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    const signal = controller.signal;
+
     setIsUploading(true);
     setProgress(0);
 
@@ -75,6 +80,7 @@ export const useUploadVault = () => {
         file,
         symmetricKey,
         (ratio) => tp.set(Math.round(ratio * 50)),
+        signal,
       );
 
       const fileName = file.name;
@@ -94,6 +100,7 @@ export const useUploadVault = () => {
         presignResult.presignedUrl,
         encryptedBlob,
         (ratio) => tp.set(50 + Math.round(ratio * 50)),
+        signal,
       );
 
       tp.flush();
@@ -112,11 +119,16 @@ export const useUploadVault = () => {
         symmetricKeyNonce,
       });
     } finally {
+      abortControllerRef.current = null;
       tp.cancel();
       setIsUploading(false);
       setProgress(0);
     }
   };
 
-  return { upload, isUploading, progress };
+  const cancel = () => {
+    abortControllerRef.current?.abort();
+  };
+
+  return { upload, cancel, isUploading, progress };
 };

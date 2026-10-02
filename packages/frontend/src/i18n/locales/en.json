@@ -132,7 +132,8 @@
           "placeholder": "Choose a file"
         }
       },
-      "submit": "Upload"
+      "submit": "Upload",
+      "cancel": "Cancel"
     },
     "deleteFolder": {
       "title": "Delete this folder?",

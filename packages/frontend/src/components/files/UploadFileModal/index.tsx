@@ -24,7 +24,7 @@ interface IUploadFileFormValues {
 
 export const UploadFileModal = ({ opened, onClose, folderId }: IProps) => {
   const { t } = useTranslation();
-  const { upload, isUploading, progress } = useUploadVault();
+  const { upload, cancel, isUploading, progress } = useUploadVault();
   const [uploadError, setUploadError] = useState("");
 
   const formik = useFormik<IUploadFileFormValues>({
@@ -43,12 +43,14 @@ export const UploadFileModal = ({ opened, onClose, folderId }: IProps) => {
         resetForm();
         onClose();
       } catch (err: any) {
+        if (err?.name === "AbortError") return;
         setUploadError(getApiErrorMessage(err, t));
       }
     },
   });
 
   const handleClose = () => {
+    cancel();
     formik.resetForm();
     setUploadError("");
     onClose();
@@ -79,9 +81,19 @@ export const UploadFileModal = ({ opened, onClose, folderId }: IProps) => {
             </Text>
           )}
           {isUploading && <Progress value={progress} size="sm" />}
-          <Button type="submit" fullWidth loading={isUploading}>
-            {t("files.uploadFile.submit")}
-          </Button>
+          {isUploading ? (
+            <Button
+              fullWidth
+              variant="default"
+              onClick={handleClose}
+            >
+              {t("files.uploadFile.cancel")}
+            </Button>
+          ) : (
+            <Button type="submit" fullWidth>
+              {t("files.uploadFile.submit")}
+            </Button>
+          )}
         </Stack>
       </form>
     </Modal>
