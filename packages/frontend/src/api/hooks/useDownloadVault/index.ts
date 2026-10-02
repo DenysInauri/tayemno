@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { Vault } from "@tayemno/shared";
 
 import { axios } from "../../axios";
@@ -15,9 +15,14 @@ export const useDownloadVault = () => {
   const { decryptVaultKey } = useDecryptVaultKey();
   const [isDownloading, setIsDownloading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const download = async (vault: Vault) => {
     if (!keyPair || !workspace || !user) return;
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    const signal = controller.signal;
 
     setIsDownloading(true);
     setProgress(0);
@@ -32,6 +37,7 @@ export const useDownloadVault = () => {
       const encryptedBlob = await fetchWithProgress(
         data.presignedUrl,
         (ratio) => tp.set(Math.round(ratio * 50)),
+        signal,
       );
 
       const vaultKey = await decryptVaultKey(vault);
@@ -41,17 +47,25 @@ export const useDownloadVault = () => {
         vaultKey,
         vault.contentNonce,
         (ratio) => tp.set(50 + Math.round(ratio * 50)),
+        signal,
       );
 
       tp.flush();
 
       downloadBlob(decryptedBlob, vault.name, vault.mimeType);
+    } catch (err: any) {
+      if (err?.name !== "AbortError") throw err;
     } finally {
+      abortControllerRef.current = null;
       tp.cancel();
       setIsDownloading(false);
       setProgress(0);
     }
   };
 
-  return { download, isDownloading, progress };
+  const cancel = () => {
+    abortControllerRef.current?.abort();
+  };
+
+  return { download, cancel, isDownloading, progress };
 };

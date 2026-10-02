@@ -1,10 +1,11 @@
 import type { ReactNode } from "react";
 import { Table } from "@mantine/core";
-import { IconFolder, IconFile } from "@tabler/icons-react";
+import { IconFolder, IconFile, IconX } from "@tabler/icons-react";
 
 import { Group } from "../../ui/Group";
 import { Text } from "../../ui/Text";
 import { Progress } from "../../ui/Progress";
+import { ActionIcon } from "../../ui/ActionIcon";
 import { formatFileSize } from "../../../utils/formatFileSize";
 
 interface IProps {
@@ -16,6 +17,7 @@ interface IProps {
   onClick: () => void;
   actions?: ReactNode;
   progress?: number;
+  onCancelProgress?: () => void;
 }
 
 export const FileListItem = ({
@@ -27,6 +29,7 @@ export const FileListItem = ({
   onClick,
   actions,
   progress,
+  onCancelProgress,
 }: IProps) => (
   <Table.Tr onClick={onClick} style={{ cursor: "pointer" }}>
     <Table.Td style={{ position: "relative" }}>
@@ -35,11 +38,26 @@ export const FileListItem = ({
         <Text size="sm">{name}</Text>
       </Group>
       {progress !== undefined && progress > 0 && (
-        <Progress
-          value={progress}
-          size={4}
+        <Group
+          gap={4}
           style={{ position: "absolute", bottom: 0, left: 0, right: 0 }}
-        />
+          wrap="nowrap"
+        >
+          <Progress value={progress} size={8} style={{ flex: 1 }} />
+          {!!onCancelProgress && (
+            <ActionIcon
+              variant="subtle"
+              color="gray"
+              size={16}
+              onClick={(e: React.MouseEvent) => {
+                e.stopPropagation();
+                onCancelProgress();
+              }}
+            >
+              <IconX size={12} />
+            </ActionIcon>
+          )}
+        </Group>
       )}
     </Table.Td>
     <Table.Td visibleFrom="sm">
