@@ -2,6 +2,7 @@ export const uploadWithProgress = (
   url: string,
   blob: Blob,
   onProgress?: (ratio: number) => void,
+  signal?: AbortSignal,
 ): Promise<void> => {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
@@ -27,6 +28,19 @@ export const uploadWithProgress = (
     xhr.addEventListener("error", () => {
       reject(new Error("Upload network error"));
     });
+
+    xhr.addEventListener("abort", () => {
+      reject(new DOMException("Upload aborted", "AbortError"));
+    });
+
+    if (signal) {
+      if (signal.aborted) {
+        xhr.abort();
+        return;
+      }
+
+      signal.addEventListener("abort", () => xhr.abort());
+    }
 
     xhr.send(blob);
   });

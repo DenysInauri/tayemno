@@ -11,6 +11,7 @@ export class StreamCrypto {
     file: File,
     keyHex: string,
     onProgress?: (ratio: number) => void,
+    signal?: AbortSignal,
   ): Promise<{ header: string; encryptedBlob: Blob }> {
     await this.init();
 
@@ -23,6 +24,10 @@ export class StreamCrypto {
     let offset = 0;
 
     while (offset < totalBytes) {
+      if (signal?.aborted) {
+        throw new DOMException("Encryption aborted", "AbortError");
+      }
+
       const end = Math.min(offset + CHUNK_SIZE, totalBytes);
       const slice = file.slice(offset, end);
       const buffer = new Uint8Array(await slice.arrayBuffer());
@@ -59,6 +64,7 @@ export class StreamCrypto {
     keyHex: string,
     headerBase64: string,
     onProgress?: (ratio: number) => void,
+    signal?: AbortSignal,
   ): Promise<Blob> {
     await this.init();
 
@@ -72,6 +78,10 @@ export class StreamCrypto {
     let offset = 0;
 
     while (offset < totalBytes) {
+      if (signal?.aborted) {
+        throw new DOMException("Decryption aborted", "AbortError");
+      }
+
       const end = Math.min(offset + ENCRYPTED_CHUNK_SIZE, totalBytes);
       const slice = encryptedBlob.slice(offset, end);
       const buffer = new Uint8Array(await slice.arrayBuffer());

@@ -1,8 +1,9 @@
 export const fetchWithProgress = async (
   url: string,
   onProgress?: (ratio: number) => void,
+  signal?: AbortSignal,
 ): Promise<Blob> => {
-  const response = await fetch(url);
+  const response = await fetch(url, { signal });
 
   if (!response.ok) {
     throw new Error(`Download failed with status ${response.status}`);
