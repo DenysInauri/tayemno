@@ -118,7 +118,5 @@ export const useUploadVault = () => {
     }
   };
 
-  console.log({ progress });
-
   return { upload, isUploading, progress };
 };
