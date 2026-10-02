@@ -123,17 +123,9 @@
       },
       "submit": "Create"
     },
-    "uploadFile": {
-      "title": "Upload file",
-      "placeholder": "File upload coming soon",
-      "fields": {
-        "file": {
-          "label": "File",
-          "placeholder": "Choose a file"
-        }
-      },
-      "submit": "Upload",
-      "cancel": "Cancel"
+    "uploadAlert": {
+      "title": "Uploading",
+      "cancelAll": "Cancel all"
     },
     "deleteFolder": {
       "title": "Delete this folder?",

@@ -6,35 +6,40 @@ import { VerifyEmailPage } from "./pages/VerifyEmailPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { AuthProvider } from "./contexts/AuthContext";
 import { DownloadProvider } from "./contexts/DownloadContext";
+import { UploadProvider } from "./contexts/UploadContext";
 import { GuestRoute } from "./components/routing/GuestRoute";
 import { ProtectedRoute } from "./components/routing/ProtectedRoute";
 import { HomePage } from "./pages/HomePage";
 import { AppShellLayout } from "./components/layout/AppShell";
 import { SettingsPage } from "./pages/SettingsPage";
+import { TransferPanel } from "./components/files/TransferPanel";
 
 export const App = () => (
   <BrowserRouter>
     <AuthProvider>
       <DownloadProvider>
-        <Routes>
-          <Route element={<GuestRoute />}>
-            <Route path={RouteEnum.SIGN_IN} element={<SignInPage />} />
-            <Route path={RouteEnum.SIGN_UP} element={<RegisterPage />} />
-            <Route path={RouteEnum.VERIFY_EMAIL} element={<VerifyEmailPage />} />
-            <Route
-              path={RouteEnum.FORGOT_PASSWORD}
-              element={<ForgotPasswordPage />}
-            />
-          </Route>
-          <Route element={<ProtectedRoute />}>
-            <Route element={<AppShellLayout />}>
-              <Route path={RouteEnum.HOME} element={<HomePage />} />
-              <Route path={RouteEnum.FOLDER} element={<HomePage />} />
-              <Route path={RouteEnum.SETTINGS} element={<SettingsPage />} />
+        <UploadProvider>
+          <Routes>
+            <Route element={<GuestRoute />}>
+              <Route path={RouteEnum.SIGN_IN} element={<SignInPage />} />
+              <Route path={RouteEnum.SIGN_UP} element={<RegisterPage />} />
+              <Route path={RouteEnum.VERIFY_EMAIL} element={<VerifyEmailPage />} />
+              <Route
+                path={RouteEnum.FORGOT_PASSWORD}
+                element={<ForgotPasswordPage />}
+              />
             </Route>
-          </Route>
-          <Route path="*" element={<Navigate to={RouteEnum.HOME} replace />} />
-        </Routes>
+            <Route element={<ProtectedRoute />}>
+              <Route element={<AppShellLayout />}>
+                <Route path={RouteEnum.HOME} element={<HomePage />} />
+                <Route path={RouteEnum.FOLDER} element={<HomePage />} />
+                <Route path={RouteEnum.SETTINGS} element={<SettingsPage />} />
+              </Route>
+            </Route>
+            <Route path="*" element={<Navigate to={RouteEnum.HOME} replace />} />
+          </Routes>
+          <TransferPanel />
+        </UploadProvider>
       </DownloadProvider>
     </AuthProvider>
   </BrowserRouter>

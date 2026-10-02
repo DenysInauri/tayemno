@@ -8,6 +8,7 @@ import {
 import type { ReactNode } from "react";
 import type { Vault } from "@tayemno/shared";
 
+import type { ITransferItem } from "../../components/files/TransferAlert";
 import { axios } from "../../api";
 import { useAuth } from "../AuthContext";
 import { useDecryptVaultKey } from "../../api/hooks/useDecryptVaultKey";
@@ -16,16 +17,9 @@ import { StreamCrypto } from "../../utils/crypto/StreamCrypto";
 import { downloadBlob } from "../../utils/downloadBlob";
 import { createThrottledProgress } from "../../utils/createThrottledProgress";
 import { fetchWithProgress } from "../../utils/fetchWithProgress";
-import { DownloadAlert } from "../../components/files/DownloadAlert";
-
-export interface IDownloadItem {
-  vaultId: string;
-  fileName: string;
-  progress: number;
-}
 
 interface IDownloadContext {
-  downloads: IDownloadItem[];
+  downloads: ITransferItem[];
   download: (vault: Vault) => void;
   cancel: (vaultId: string) => void;
   cancelAll: () => void;
@@ -42,9 +36,9 @@ export const DownloadProvider = ({ children }: IDownloadProviderProps) => {
   const { keyPair, workspace, user } = useAuth();
   const { decryptVaultKey } = useDecryptVaultKey();
 
-  const downloadsRef = useRef<Map<string, IDownloadItem>>(new Map());
+  const downloadsRef = useRef<Map<string, ITransferItem>>(new Map());
   const controllersRef = useRef<Map<string, AbortController>>(new Map());
-  const [downloads, setDownloads] = useState<IDownloadItem[]>([]);
+  const [downloads, setDownloads] = useState<ITransferItem[]>([]);
 
   const syncDownloads = () => {
     setDownloads([...downloadsRef.current.values()]);
@@ -59,7 +53,7 @@ export const DownloadProvider = ({ children }: IDownloadProviderProps) => {
       controllersRef.current.set(vault.id, controller);
 
       downloadsRef.current.set(vault.id, {
-        vaultId: vault.id,
+        id: vault.id,
         fileName: vault.name,
         progress: 0,
       });
@@ -128,13 +122,6 @@ export const DownloadProvider = ({ children }: IDownloadProviderProps) => {
       value={{ downloads, download, cancel, cancelAll, isDownloading }}
     >
       {children}
-      {downloads.length > 0 && (
-        <DownloadAlert
-          downloads={downloads}
-          onCancel={cancel}
-          onCancelAll={cancelAll}
-        />
-      )}
     </DownloadContext.Provider>
   );
 };

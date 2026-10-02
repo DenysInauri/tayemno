@@ -1,3 +1,5 @@
+import { useRef } from "react";
+import type { ChangeEvent } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
@@ -7,9 +9,9 @@ import { Button } from "../../ui/Button";
 import { Group } from "../../ui/Group";
 import { ActionIcon } from "../../ui/ActionIcon";
 import { CreateFolderModal } from "../CreateFolderModal";
-import { UploadFileModal } from "../UploadFileModal";
 import { usePostCreateFolder } from "../../../api/hooks/usePostCreateFolder";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useUpload } from "../../../contexts/UploadContext";
 import { SymmetricCrypto } from "../../../utils/crypto/SymmetricCrypto";
 import { AsymmetricCrypto } from "../../../utils/crypto/AsymmetricCrypto";
 import { QueryKeyEnum } from "../../../enums/api/QueryKeyEnum";
@@ -21,14 +23,14 @@ interface IProps {
 export const AddNewEntity = (props: IProps) => {
   const { t } = useTranslation();
   const { workspace, user } = useAuth();
+  const { upload } = useUpload();
   const queryClient = useQueryClient();
   const createFolder = usePostCreateFolder();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [
     folderModalOpened,
     { open: openFolderModal, close: closeFolderModal },
   ] = useDisclosure();
-  const [fileModalOpened, { open: openFileModal, close: closeFileModal }] =
-    useDisclosure();
 
   const handleCreateFolder = async (name: string) => {
     if (!workspace || !user) return;
@@ -51,6 +53,14 @@ export const AddNewEntity = (props: IProps) => {
     });
   };
 
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    Array.from(files).forEach((file) => upload(file, props.folderId));
+    e.target.value = "";
+  };
+
   const handleRefresh = () => {
     queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.FOLDERS] });
     queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.VAULTS] });
@@ -62,7 +72,7 @@ export const AddNewEntity = (props: IProps) => {
         <Button
           variant="default"
           leftSection={<IconUpload size={16} />}
-          onClick={openFileModal}
+          onClick={() => fileInputRef.current?.click()}
         >
           {t("files.uploadFileButton")}
         </Button>
@@ -74,15 +84,18 @@ export const AddNewEntity = (props: IProps) => {
         </ActionIcon>
       </Group>
 
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        onChange={handleFileChange}
+        style={{ display: "none" }}
+      />
+
       <CreateFolderModal
         opened={folderModalOpened}
         onClose={closeFolderModal}
         onSubmit={handleCreateFolder}
-      />
-      <UploadFileModal
-        opened={fileModalOpened}
-        onClose={closeFileModal}
-        folderId={props.folderId}
       />
     </>
   );
