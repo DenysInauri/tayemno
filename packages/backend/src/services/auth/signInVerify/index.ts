@@ -76,7 +76,7 @@ export const signInVerify = async (
     },
     workspace: {
       id: workspace.id,
-      name: workspace.name,
+      encryptedName: workspace.encryptedName,
       adminPublicKey: workspace.adminPublicKey,
       memberPublicKey: workspace.memberPublicKey,
       encryptedAdminPrivateKey: membership.encryptedAdminPrivateKey,

@@ -36,7 +36,7 @@ export const presignVault = async (
     }
   }
 
-  const s3Key = `${data.workspaceId}/${crypto.randomUUID()}/${data.fileName}`;
+  const s3Key = crypto.randomUUID();
 
   const command = new PutObjectCommand({
     Bucket: bucket,

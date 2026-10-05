@@ -39,7 +39,8 @@ export const createFolder = async (
 
   const folder = await insertFolder(db, {
     workspaceId,
-    name: data.name,
+    encryptedName: data.encryptedName,
+    nameNonce: data.nameNonce,
     encryptedSymmetricKey: data.encryptedSymmetricKey,
     parentFolderId: data.parentFolderId ?? null,
   });

@@ -7,7 +7,7 @@ import {
   IconChevronRight,
   IconChevronDown,
 } from "@tabler/icons-react";
-import type { IFolderTreeNode } from "@tayemno/shared";
+import type { IFolderTreeNode } from "../../../api/hooks/useLocalFolderTree";
 
 import { Modal } from "../../ui/Modal";
 import { Button } from "../../ui/Button";

@@ -1,9 +1,9 @@
-import type { Folder } from "@tayemno/shared";
+import type { ILocalFolder } from "../../../types/local";
 
 import { FolderListItem } from "../FolderListItem";
 
 interface IProps {
-  folders: Folder[];
+  folders: ILocalFolder[];
 }
 
 export const FoldersList = ({ folders }: IProps) => (

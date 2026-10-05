@@ -22,7 +22,7 @@ interface IProps {
 
 export const AddNewEntity = (props: IProps) => {
   const { t } = useTranslation();
-  const { workspace, user } = useAuth();
+  const { workspace, user, keyPair } = useAuth();
   const { upload } = useUpload();
   const queryClient = useQueryClient();
   const createFolder = usePostCreateFolder();
@@ -33,7 +33,7 @@ export const AddNewEntity = (props: IProps) => {
   ] = useDisclosure();
 
   const handleCreateFolder = async (name: string) => {
-    if (!workspace || !user) return;
+    if (!workspace || !user || !keyPair) return;
 
     const folderKey = await SymmetricCrypto.generateKey();
     const adminEncryptedKey = await AsymmetricCrypto.encrypt(
@@ -45,12 +45,19 @@ export const AddNewEntity = (props: IProps) => {
       user.publicKey,
     );
 
-    createFolder.mutate({
-      name,
+    const encrypted = await SymmetricCrypto.encrypt(name, folderKey);
+
+    await createFolder.mutateAsync({
+      encryptedName: encrypted.ciphertext,
+      nameNonce: encrypted.nonce,
       encryptedSymmetricKey: adminEncryptedKey,
       memberEncryptedSymmetricKey: memberEncryptedKey,
       parentFolderId: props.folderId,
     });
+
+    queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.FOLDERS] });
+    queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.FOLDER_TREE] });
+    queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.BREADCRUMBS] });
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {

@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import type {
-  Vault,
-  IMoveVaultRequest,
-  IMoveVaultResponse,
-} from "@tayemno/shared";
+import type { IMoveVaultRequest, IMoveVaultResponse, IGetFolderResponse } from "@tayemno/shared";
 
 import { axios } from "../../axios";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -12,8 +8,7 @@ import { EndpointEnum } from "../../../enums/api/EndpointEnum";
 import { QueryKeyEnum } from "../../../enums/api/QueryKeyEnum";
 import { SymmetricCrypto } from "../../../utils/crypto/SymmetricCrypto";
 import { AsymmetricCrypto } from "../../../utils/crypto/AsymmetricCrypto";
-import { getFolderKey } from "../../../services/folderKeyService";
-import { useDecryptVaultKey } from "../useDecryptVaultKey";
+import type { ILocalVault } from "../../../types/local";
 
 interface IEncryptedSymmetricKey {
   encryptedSymmetricKey: string;
@@ -22,7 +17,6 @@ interface IEncryptedSymmetricKey {
 
 export const useMoveVault = () => {
   const { keyPair, workspace, user } = useAuth();
-  const { decryptVaultKey } = useDecryptVaultKey();
   const queryClient = useQueryClient();
   const [isMoving, setIsMoving] = useState(false);
 
@@ -35,9 +29,12 @@ export const useMoveVault = () => {
     }
 
     if (targetFolderId) {
-      const folderKey = await getFolderKey(
-        targetFolderId,
-        workspace.id,
+      const { data } = await axios.get<IGetFolderResponse>(
+        `${EndpointEnum.WORKSPACES}/${workspace.id}/folders/${targetFolderId}`,
+      );
+
+      const folderKey = await AsymmetricCrypto.decrypt(
+        data.folder.encryptedSymmetricKey,
         user.publicKey,
         keyPair.privateKey,
       );
@@ -58,15 +55,14 @@ export const useMoveVault = () => {
     return { encryptedSymmetricKey, symmetricKeyNonce: null };
   };
 
-  const move = async (vault: Vault, targetFolderId: string | null) => {
+  const move = async (vault: ILocalVault, targetFolderId: string | null) => {
     if (!keyPair || !workspace || !user) return;
 
     setIsMoving(true);
 
     try {
-      const vaultKey = await decryptVaultKey(vault);
       const { encryptedSymmetricKey, symmetricKeyNonce } =
-        await encryptVaultKey(vaultKey, targetFolderId);
+        await encryptVaultKey(vault.symmetricKey, targetFolderId);
 
       const body: IMoveVaultRequest = {
         targetFolderId,

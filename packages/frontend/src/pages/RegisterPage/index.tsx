@@ -30,6 +30,7 @@ import {
 import { AsymmetricCrypto } from "../../utils/crypto/AsymmetricCrypto";
 import { SymmetricCrypto } from "../../utils/crypto/SymmetricCrypto";
 
+
 interface IRegisterFormValues {
   name: string;
   email: string;
@@ -92,6 +93,10 @@ export const RegisterPage = () => {
         userKeyPair.publicKey,
       );
 
+      const workspaceEncryptedName = await AsymmetricCrypto.encrypt(
+        values.workspaceName,
+        workspaceMemberKeyPair.publicKey,
+      );
       register(
         {
           name: values.name,
@@ -106,7 +111,7 @@ export const RegisterPage = () => {
           publicKey: userKeyPair.publicKey,
           encryptedPrivateKey: encryptedPrivateKey.ciphertext,
           privateKeyNonce: encryptedPrivateKey.nonce,
-          workspaceName: values.workspaceName,
+          workspaceEncryptedName,
           workspaceAdminPublicKey: workspaceAdminKeyPair.publicKey,
           workspaceMemberPublicKey: workspaceMemberKeyPair.publicKey,
           encryptedWorkspaceAdminPrivateKey,

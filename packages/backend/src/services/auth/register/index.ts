@@ -45,7 +45,7 @@ export const register = async (
     publicKey: data.publicKey,
     encryptedPrivateKey: data.encryptedPrivateKey,
     privateKeyNonce: data.privateKeyNonce,
-    workspaceName: data.workspaceName,
+    workspaceEncryptedName: data.workspaceEncryptedName,
     workspaceAdminPublicKey: data.workspaceAdminPublicKey,
     workspaceMemberPublicKey: data.workspaceMemberPublicKey,
     encryptedWorkspaceAdminPrivateKey: data.encryptedWorkspaceAdminPrivateKey,

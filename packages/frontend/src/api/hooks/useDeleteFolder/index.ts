@@ -15,6 +15,8 @@ export const useDeleteFolder = (folderId: string) => {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.FOLDERS] });
         queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.FOLDER_SIZE] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.FOLDER_TREE] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.BREADCRUMBS] });
       },
     },
   );

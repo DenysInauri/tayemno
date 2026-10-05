@@ -40,7 +40,7 @@ export type WorkspaceRole = "owner" | "admin" | "member";
 
 export interface Workspace {
   id: string;
-  name: string;
+  encryptedName: string;
   adminPublicKey: string;
   memberPublicKey: string;
   createdAt: string;
@@ -48,7 +48,7 @@ export interface Workspace {
 }
 
 export interface NewWorkspace {
-  name: string;
+  encryptedName: string;
   adminPublicKey: string;
   memberPublicKey: string;
 }
@@ -76,7 +76,8 @@ export interface Folder {
   id: string;
   workspaceId: string;
   parentFolderId: string | null;
-  name: string;
+  encryptedName: string;
+  nameNonce: string;
   encryptedSymmetricKey: string;
   createdAt: string;
   updatedAt: string;
@@ -85,7 +86,8 @@ export interface Folder {
 export interface NewFolder {
   workspaceId: string;
   parentFolderId?: string | null;
-  name: string;
+  encryptedName: string;
+  nameNonce: string;
   encryptedSymmetricKey: string;
 }
 
@@ -108,10 +110,10 @@ export interface Vault {
   id: string;
   workspaceId: string;
   folderId: string | null;
-  name: string;
-  mimeType: string;
-  extension: string;
-  sizeBytes: number;
+  encryptedName: string;
+  nameNonce: string;
+  encryptedMetadata: string;
+  metadataNonce: string;
   encryptedSizeBytes: number;
   s3Key: string;
   contentNonce: string;
@@ -124,10 +126,10 @@ export interface Vault {
 export interface NewVault {
   workspaceId: string;
   folderId?: string | null;
-  name: string;
-  mimeType: string;
-  extension: string;
-  sizeBytes: number;
+  encryptedName: string;
+  nameNonce: string;
+  encryptedMetadata: string;
+  metadataNonce: string;
   encryptedSizeBytes: number;
   s3Key: string;
   contentNonce: string;
@@ -149,7 +151,7 @@ export interface ICheckPasswordBreachResponse {
 }
 
 export interface IRegisterRequest extends NewUser {
-  workspaceName: string;
+  workspaceEncryptedName: string;
   workspaceAdminPublicKey: string;
   workspaceMemberPublicKey: string;
   encryptedWorkspaceAdminPrivateKey: string;
@@ -168,7 +170,7 @@ export interface IVerifyEmailRequest {
 
 export interface IWorkspaceData {
   id: string;
-  name: string;
+  encryptedName: string;
   adminPublicKey: string;
   memberPublicKey: string;
   encryptedAdminPrivateKey: string | null;
@@ -242,7 +244,8 @@ export interface IKeyPair {
 }
 
 export interface ICreateFolderRequest {
-  name: string;
+  encryptedName: string;
+  nameNonce: string;
   encryptedSymmetricKey: string;
   memberEncryptedSymmetricKey: string;
   parentFolderId?: string | null;
@@ -254,7 +257,9 @@ export interface ICreateFolderResponse {
 
 export interface IBreadcrumbItem {
   id: string;
-  name: string;
+  encryptedName: string;
+  nameNonce: string;
+  encryptedSymmetricKey: string;
 }
 
 export interface IGetFoldersResponse {
@@ -265,8 +270,6 @@ export interface IGetFoldersResponse {
 export interface IPresignVaultRequest {
   workspaceId: string;
   folderId?: string | null;
-  fileName: string;
-  mimeType: string;
 }
 
 export interface IPresignVaultResponse {
@@ -277,10 +280,10 @@ export interface IPresignVaultResponse {
 export interface ICreateVaultRequest {
   workspaceId: string;
   folderId?: string | null;
-  name: string;
-  mimeType: string;
-  extension: string;
-  sizeBytes: number;
+  encryptedName: string;
+  nameNonce: string;
+  encryptedMetadata: string;
+  metadataNonce: string;
   encryptedSizeBytes: number;
   s3Key: string;
   contentNonce: string;
@@ -338,10 +341,21 @@ export interface IMoveVaultResponse {
 
 export interface IFolderTreeNode {
   id: string;
-  name: string;
+  encryptedName: string;
+  nameNonce: string;
+  encryptedSymmetricKey: string;
   children: IFolderTreeNode[];
 }
 
 export interface IGetFolderTreeResponse {
   folders: IFolderTreeNode[];
 }
+
+export interface IGetAllFoldersResponse {
+  folders: Folder[];
+}
+
+export interface IGetAllVaultsResponse {
+  vaults: Vault[];
+}
+

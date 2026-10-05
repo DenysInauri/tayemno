@@ -63,7 +63,7 @@ export const pendingRegistrations = pgTable("pending_registrations", {
   encryptedPrivateKey: text("encrypted_private_key").notNull(),
   privateKeyNonce: text("private_key_nonce").notNull(),
 
-  workspaceName: varchar("workspace_name", { length: 255 }).notNull(),
+  workspaceEncryptedName: text("workspace_encrypted_name").notNull(),
   workspaceAdminPublicKey: text("workspace_admin_public_key").notNull(),
   workspaceMemberPublicKey: text("workspace_member_public_key").notNull(),
   encryptedWorkspaceAdminPrivateKey: text("encrypted_workspace_admin_private_key").notNull(),
@@ -81,7 +81,7 @@ export const pendingRegistrations = pgTable("pending_registrations", {
 
 export const workspaces = pgTable("workspaces", {
   id: uuid("id").defaultRandom().primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
+  encryptedName: text("encrypted_name").notNull(),
   adminPublicKey: text("admin_public_key").notNull(),
   memberPublicKey: text("member_public_key").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
@@ -124,7 +124,8 @@ export const folders = pgTable("folders", {
     .references(() => workspaces.id, { onDelete: "cascade" }),
   parentFolderId: uuid("parent_folder_id"),
 
-  name: varchar("name", { length: 255 }).notNull(),
+  encryptedName: text("encrypted_name").notNull(),
+  nameNonce: text("name_nonce").notNull(),
   encryptedSymmetricKey: text("encrypted_symmetric_key").notNull(),
 
   createdAt: timestamp("created_at", { withTimezone: true })
@@ -167,10 +168,10 @@ export const vaults = pgTable("vaults", {
     onDelete: "cascade",
   }),
 
-  name: varchar("name", { length: 255 }).notNull(),
-  mimeType: varchar("mime_type", { length: 255 }).notNull(),
-  extension: varchar("extension", { length: 64 }).notNull(),
-  sizeBytes: bigint("size_bytes", { mode: "number" }).notNull(),
+  encryptedName: text("encrypted_name").notNull(),
+  nameNonce: text("name_nonce").notNull(),
+  encryptedMetadata: text("encrypted_metadata").notNull(),
+  metadataNonce: text("metadata_nonce").notNull(),
   encryptedSizeBytes: bigint("encrypted_size_bytes", { mode: "number" }).notNull().default(0),
 
   s3Key: text("s3_key").notNull(),

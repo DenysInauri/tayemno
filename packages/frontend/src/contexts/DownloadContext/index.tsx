@@ -6,12 +6,10 @@ import {
   useState,
 } from "react";
 import type { ReactNode } from "react";
-import type { Vault } from "@tayemno/shared";
 
 import type { ITransferItem } from "../../components/files/TransferAlert";
+import type { ILocalVault } from "../../types/local";
 import { axios } from "../../api";
-import { useAuth } from "../AuthContext";
-import { useDecryptVaultKey } from "../../api/hooks/useDecryptVaultKey";
 import { EndpointEnum } from "../../enums/api/EndpointEnum";
 import { StreamCrypto } from "../../utils/crypto/StreamCrypto";
 import { downloadBlob } from "../../utils/downloadBlob";
@@ -20,7 +18,7 @@ import { fetchWithProgress } from "../../utils/fetchWithProgress";
 
 interface IDownloadContext {
   downloads: ITransferItem[];
-  download: (vault: Vault) => void;
+  download: (vault: ILocalVault) => void;
   cancel: (vaultId: string) => void;
   cancelAll: () => void;
   isDownloading: (vaultId: string) => boolean;
@@ -33,8 +31,6 @@ interface IDownloadProviderProps {
 }
 
 export const DownloadProvider = ({ children }: IDownloadProviderProps) => {
-  const { keyPair, workspace, user } = useAuth();
-  const { decryptVaultKey } = useDecryptVaultKey();
 
   const downloadsRef = useRef<Map<string, ITransferItem>>(new Map());
   const controllersRef = useRef<Map<string, AbortController>>(new Map());
@@ -45,22 +41,23 @@ export const DownloadProvider = ({ children }: IDownloadProviderProps) => {
   };
 
   const download = useCallback(
-    async (vault: Vault) => {
-      if (!keyPair || !workspace || !user) return;
-      if (downloadsRef.current.has(vault.id)) return;
+    async (vault: ILocalVault) => {
+      const vaultId = vault.id;
+
+      if (downloadsRef.current.has(vaultId)) return;
 
       const controller = new AbortController();
-      controllersRef.current.set(vault.id, controller);
+      controllersRef.current.set(vaultId, controller);
 
-      downloadsRef.current.set(vault.id, {
-        id: vault.id,
+      downloadsRef.current.set(vaultId, {
+        id: vaultId,
         fileName: vault.name,
         progress: 0,
       });
       syncDownloads();
 
       const tp = createThrottledProgress((value: number) => {
-        const entry = downloadsRef.current.get(vault.id);
+        const entry = downloadsRef.current.get(vaultId);
         if (entry) {
           entry.progress = value;
           syncDownloads();
@@ -69,7 +66,7 @@ export const DownloadProvider = ({ children }: IDownloadProviderProps) => {
 
       try {
         const { data } = await axios.get<{ presignedUrl: string }>(
-          `${EndpointEnum.VAULTS}/${vault.id}/download-url`,
+          `${EndpointEnum.VAULTS}/${vaultId}/download-url`,
         );
 
         const encryptedBlob = await fetchWithProgress(
@@ -78,11 +75,9 @@ export const DownloadProvider = ({ children }: IDownloadProviderProps) => {
           controller.signal,
         );
 
-        const vaultKey = await decryptVaultKey(vault);
-
         const decryptedBlob = await StreamCrypto.decryptFile(
           encryptedBlob,
-          vaultKey,
+          vault.symmetricKey,
           vault.contentNonce,
           (ratio) => tp.set(50 + Math.round(ratio * 50)),
           controller.signal,
@@ -94,13 +89,13 @@ export const DownloadProvider = ({ children }: IDownloadProviderProps) => {
       } catch (err: any) {
         if (err?.name !== "AbortError") throw err;
       } finally {
-        controllersRef.current.delete(vault.id);
-        downloadsRef.current.delete(vault.id);
+        controllersRef.current.delete(vaultId);
+        downloadsRef.current.delete(vaultId);
         tp.cancel();
         syncDownloads();
       }
     },
-    [keyPair, workspace, user, decryptVaultKey],
+    [],
   );
 
   const cancel = useCallback((vaultId: string) => {

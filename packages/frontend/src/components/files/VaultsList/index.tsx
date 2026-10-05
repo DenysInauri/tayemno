@@ -1,9 +1,9 @@
-import type { Vault } from "@tayemno/shared";
+import type { ILocalVault } from "../../../types/local";
 
 import { VaultListItem } from "../VaultListItem";
 
 interface IProps {
-  vaults: Vault[];
+  vaults: ILocalVault[];
 }
 
 export const VaultsList = ({ vaults }: IProps) => (

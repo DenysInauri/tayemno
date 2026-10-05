@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import type { IBreadcrumbItem } from "@tayemno/shared";
+import type { IBreadcrumb } from "../../../api/hooks/useBreadcrumbs";
 
 import { Breadcrumbs } from "../../ui/Breadcrumbs";
 import { Anchor } from "../../ui/Anchor";
@@ -8,7 +8,7 @@ import { Text } from "../../ui/Text";
 import { RouteEnum } from "../../../enums/routing/RouteEnum";
 
 interface IProps {
-  breadcrumbs: IBreadcrumbItem[];
+  breadcrumbs: IBreadcrumb[];
 }
 
 export const FolderBreadcrumbs = ({ breadcrumbs }: IProps) => {

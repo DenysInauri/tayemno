@@ -23,7 +23,13 @@ export const getFolderTree = async (
 
   const nodeMap = new Map<string, IFolderTreeNode>();
   for (const row of rows) {
-    nodeMap.set(row.id, { id: row.id, name: row.name, children: [] });
+    nodeMap.set(row.id, {
+      id: row.id,
+      encryptedName: row.encryptedName,
+      nameNonce: row.nameNonce,
+      encryptedSymmetricKey: row.encryptedSymmetricKey,
+      children: [],
+    });
   }
 
   const roots: IFolderTreeNode[] = [];

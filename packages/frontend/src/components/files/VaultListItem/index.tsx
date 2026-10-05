@@ -7,7 +7,7 @@ import {
   IconFolderSymlink,
   IconTrash,
 } from "@tabler/icons-react";
-import type { Vault } from "@tayemno/shared";
+import type { ILocalVault } from "../../../types/local";
 
 import { FileListItem } from "../FileListItem";
 import { MoveVaultModal } from "../MoveVaultModal";
@@ -15,10 +15,10 @@ import { ActionIcon } from "../../ui/ActionIcon";
 import { useDownload } from "../../../contexts/DownloadContext";
 import { useDeleteVault } from "../../../api/hooks/useDeleteVault";
 import { useMoveVault } from "../../../api/hooks/useMoveVault";
-import { useGetFolderTree } from "../../../api/hooks/useGetFolderTree";
+import { useLocalFolderTree } from "../../../api/hooks/useLocalFolderTree";
 
 interface IProps {
-  vault: Vault;
+  vault: ILocalVault;
 }
 
 export const VaultListItem = ({ vault }: IProps) => {
@@ -28,7 +28,7 @@ export const VaultListItem = ({ vault }: IProps) => {
   const { move, isMoving } = useMoveVault();
   const [moveModalOpened, { open: openMoveModal, close: closeMoveModal }] =
     useDisclosure();
-  const { data: folderTree, isLoading: isLoadingTree } = useGetFolderTree(
+  const { data: folderTree, isLoading: isLoadingTree } = useLocalFolderTree(
     moveModalOpened,
   );
 

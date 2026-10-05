@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useDisclosure } from "@mantine/hooks";
 import { Menu } from "@mantine/core";
 import { IconDotsVertical, IconTrash } from "@tabler/icons-react";
-import type { Folder } from "@tayemno/shared";
+import type { ILocalFolder } from "../../../types/local";
 
 import { FileListItem } from "../FileListItem";
 import { DeleteFolderModal } from "../DeleteFolderModal";
@@ -13,7 +13,7 @@ import { useDeleteFolder } from "../../../api/hooks/useDeleteFolder";
 import { RouteEnum } from "../../../enums/routing/RouteEnum";
 
 interface IProps {
-  folder: Folder;
+  folder: ILocalFolder;
 }
 
 export const FolderListItem = ({ folder }: IProps) => {

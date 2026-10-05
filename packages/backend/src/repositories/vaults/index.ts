@@ -1,4 +1,4 @@
-import { eq, and, asc, sql, isNull } from "drizzle-orm";
+import { eq, and, isNull, sql } from "drizzle-orm";
 import type { Database } from "../../db";
 import { vaults } from "../../db/schema.js";
 
@@ -14,13 +14,7 @@ export const findByFolderId = async (db: Database, folderId: string) => {
   return db
     .select()
     .from(vaults)
-    .where(eq(vaults.folderId, folderId))
-    .orderBy(
-      asc(sql`regexp_replace(lower(${vaults.name}), '\\d', '', 'g')`),
-      asc(
-        sql`COALESCE(NULLIF(regexp_replace(${vaults.name}, '\\D', '', 'g'), ''), '0')::bigint`,
-      ),
-    );
+    .where(eq(vaults.folderId, folderId));
 };
 
 export const findByWorkspaceIdRootLevel = async (
@@ -30,13 +24,7 @@ export const findByWorkspaceIdRootLevel = async (
   return db
     .select()
     .from(vaults)
-    .where(and(eq(vaults.workspaceId, workspaceId), isNull(vaults.folderId)))
-    .orderBy(
-      asc(sql`regexp_replace(lower(${vaults.name}), '\\d', '', 'g')`),
-      asc(
-        sql`COALESCE(NULLIF(regexp_replace(${vaults.name}, '\\D', '', 'g'), ''), '0')::bigint`,
-      ),
-    );
+    .where(and(eq(vaults.workspaceId, workspaceId), isNull(vaults.folderId)));
 };
 
 export const findById = async (db: Database, vaultId: string) => {
@@ -75,4 +63,28 @@ export const updateMove = async (
     .returning();
 
   return result[0] ?? null;
+};
+
+export const findAllByWorkspaceAndUser = async (
+  db: Database,
+  workspaceId: string,
+  userId: string,
+) => {
+  const rows = await db.execute(sql`
+    SELECT v.id, v.workspace_id AS "workspaceId", v.folder_id AS "folderId",
+           v.encrypted_name AS "encryptedName", v.name_nonce AS "nameNonce",
+           v.encrypted_metadata AS "encryptedMetadata", v.metadata_nonce AS "metadataNonce",
+           v.encrypted_size_bytes AS "encryptedSizeBytes",
+           v.s3_key AS "s3Key", v.content_nonce AS "contentNonce",
+           v.encrypted_symmetric_key AS "encryptedSymmetricKey",
+           v.symmetric_key_nonce AS "symmetricKeyNonce",
+           v.created_at AS "createdAt", v.updated_at AS "updatedAt"
+    FROM vaults v
+    WHERE v.workspace_id = ${workspaceId}
+    AND (
+      v.folder_id IS NULL
+      OR v.folder_id IN (SELECT fm.folder_id FROM folder_members fm WHERE fm.user_id = ${userId})
+    )
+  `);
+  return rows;
 };

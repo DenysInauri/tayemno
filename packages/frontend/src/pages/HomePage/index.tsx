@@ -11,34 +11,28 @@ import { FolderBreadcrumbsSkeleton } from "../../components/files/FolderBreadcru
 import { FileTableSkeleton } from "../../components/files/FileTableSkeleton";
 import { VaultsList } from "../../components/files/VaultsList";
 import { AddNewEntity } from "../../components/files/AddNewEntity";
-import { useGetFolders } from "../../api/hooks/useGetFolders";
-import { useGetVaults } from "../../api/hooks/useGetVaults";
-import { useAuth } from "../../contexts/AuthContext";
+import { useFolders } from "../../api/hooks/useFolders";
+import { useVaults } from "../../api/hooks/useVaults";
+import { useBreadcrumbs } from "../../api/hooks/useBreadcrumbs";
 import { SizeEnum } from "../../enums/ui/SizeEnum";
 
 export const HomePage = () => {
   const routeParams = useParams<{ folderId: string }>();
   const { t } = useTranslation();
-  const { workspace } = useAuth();
 
   const folderId = routeParams.folderId ?? null;
 
-  const {
-    data: folders,
-    breadcrumbs,
-    isLoading: isFoldersLoading,
-  } = useGetFolders(folderId);
-  const { data: vaults, isLoading: isVaultsLoading } = useGetVaults(
-    folderId,
-    workspace!.id,
-  );
+  const { data: folders, isLoading: isFoldersLoading } = useFolders(folderId);
+  const { data: vaults, isLoading: isVaultsLoading } = useVaults(folderId);
+  const { data: breadcrumbs, isLoading: isBreadcrumbsLoading } = useBreadcrumbs(folderId);
+
   const isLoading = isFoldersLoading || isVaultsLoading;
   const isEmpty = folders.length === 0 && vaults.length === 0;
 
   return (
     <Stack gap={SizeEnum.MD} p={SizeEnum.MD}>
       <Group justify="space-between">
-        {isLoading ? (
+        {isBreadcrumbsLoading ? (
           <FolderBreadcrumbsSkeleton />
         ) : (
           <FolderBreadcrumbs breadcrumbs={breadcrumbs} />

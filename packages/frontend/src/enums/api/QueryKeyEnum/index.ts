@@ -5,4 +5,5 @@ export enum QueryKeyEnum {
   FOLDERS = "folders",
   VAULTS = "vaults",
   FOLDER_TREE = "folderTree",
+  BREADCRUMBS = "breadcrumbs",
 }

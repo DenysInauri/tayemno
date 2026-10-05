@@ -1,7 +1,7 @@
 {
   "version": "8",
   "dialect": "postgres",
-  "id": "6cb686bd-3601-4ebe-aad0-a0a7ea3d7e49",
+  "id": "71e41e41-ad49-4874-9b93-106a444b2581",
   "prevIds": [
     "00000000-0000-0000-0000-000000000000"
   ],
@@ -166,14 +166,27 @@
       "table": "folders"
     },
     {
-      "type": "varchar(255)",
+      "type": "text",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "name",
+      "name": "encrypted_name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "folders"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name_nonce",
       "entityType": "columns",
       "schema": "public",
       "table": "folders"
@@ -387,14 +400,14 @@
       "table": "pending_registrations"
     },
     {
-      "type": "varchar(255)",
+      "type": "text",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "workspace_name",
+      "name": "workspace_encrypted_name",
       "entityType": "columns",
       "schema": "public",
       "table": "pending_registrations"
@@ -764,40 +777,53 @@
       "table": "vaults"
     },
     {
-      "type": "varchar(255)",
+      "type": "text",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "name",
+      "name": "encrypted_name",
       "entityType": "columns",
       "schema": "public",
       "table": "vaults"
     },
     {
-      "type": "varchar(255)",
+      "type": "text",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "mime_type",
+      "name": "name_nonce",
       "entityType": "columns",
       "schema": "public",
       "table": "vaults"
     },
     {
-      "type": "varchar(64)",
+      "type": "text",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "extension",
+      "name": "encrypted_metadata",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "vaults"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "metadata_nonce",
       "entityType": "columns",
       "schema": "public",
       "table": "vaults"
@@ -807,10 +833,10 @@
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
-      "default": null,
+      "default": "0",
       "generated": null,
       "identity": null,
-      "name": "size_bytes",
+      "name": "encrypted_size_bytes",
       "entityType": "columns",
       "schema": "public",
       "table": "vaults"
@@ -1011,14 +1037,14 @@
       "table": "workspaces"
     },
     {
-      "type": "varchar(255)",
+      "type": "text",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "name",
+      "name": "encrypted_name",
       "entityType": "columns",
       "schema": "public",
       "table": "workspaces"
