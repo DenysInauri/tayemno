@@ -255,18 +255,6 @@ export interface ICreateFolderResponse {
   folder: Folder;
 }
 
-export interface IBreadcrumbItem {
-  id: string;
-  encryptedName: string;
-  nameNonce: string;
-  encryptedSymmetricKey: string;
-}
-
-export interface IGetFoldersResponse {
-  folders: Folder[];
-  breadcrumbs: IBreadcrumbItem[];
-}
-
 export interface IPresignVaultRequest {
   workspaceId: string;
   folderId?: string | null;
@@ -295,28 +283,6 @@ export interface ICreateVaultResponse {
   vault: Vault;
 }
 
-export interface IGetFolderResponse {
-  folder: Folder;
-}
-
-export interface IGetFolderSizeResponse {
-  sizeBytes: number;
-  encryptedSizeBytes: number;
-}
-
-export interface IGetFoldersRequest {
-  parentFolderId?: string | null;
-}
-
-export interface IGetVaultsRequest {
-  folderId?: string;
-  workspaceId?: string;
-}
-
-export interface IGetVaultsResponse {
-  vaults: Vault[];
-}
-
 export interface IGetVaultDownloadUrlResponse {
   presignedUrl: string;
 }
@@ -337,18 +303,6 @@ export interface IMoveVaultRequest {
 
 export interface IMoveVaultResponse {
   vault: Vault;
-}
-
-export interface IFolderTreeNode {
-  id: string;
-  encryptedName: string;
-  nameNonce: string;
-  encryptedSymmetricKey: string;
-  children: IFolderTreeNode[];
-}
-
-export interface IGetFolderTreeResponse {
-  folders: IFolderTreeNode[];
 }
 
 export interface IGetAllFoldersResponse {

@@ -7,20 +7,17 @@ import {
 } from "react";
 import type { ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import type { IGetFolderResponse } from "@tayemno/shared";
-
 import type { ITransferItem } from "../../components/files/TransferAlert";
 import { useAuth } from "../AuthContext";
 import { usePostPresignVault } from "../../api/hooks/usePostPresignVault";
 import { usePostCreateVault } from "../../api/hooks/usePostCreateVault";
+import { useClaudeState } from "../ClaudeStateContext";
 import { AsymmetricCrypto } from "../../utils/crypto/AsymmetricCrypto";
 import { SymmetricCrypto } from "../../utils/crypto/SymmetricCrypto";
 import { StreamCrypto } from "../../utils/crypto/StreamCrypto";
 import { createThrottledProgress } from "../../utils/createThrottledProgress";
 import { uploadWithProgress } from "../../utils/uploadWithProgress";
 import { QueryKeyEnum } from "../../enums/api/QueryKeyEnum";
-import { EndpointEnum } from "../../enums/api/EndpointEnum";
-import { axios } from "../../api";
 
 interface IUploadContext {
   uploads: ITransferItem[];
@@ -37,6 +34,7 @@ interface IUploadProviderProps {
 
 export const UploadProvider = ({ children }: IUploadProviderProps) => {
   const { keyPair, workspace, user } = useAuth();
+  const { data: claudeState } = useClaudeState();
   const queryClient = useQueryClient();
   const presignVault = usePostPresignVault();
   const createVault = usePostCreateVault();
@@ -55,19 +53,12 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
     const vaultKey = await SymmetricCrypto.generateKey();
 
     if (folderId) {
-      const { data } = await axios.get<IGetFolderResponse>(
-        `${EndpointEnum.WORKSPACES}/${workspace.id}/folders/${folderId}`,
-      );
-
-      const folderKey = await AsymmetricCrypto.decrypt(
-        data.folder.encryptedSymmetricKey,
-        user.publicKey,
-        keyPair.privateKey,
-      );
+      const folder = claudeState.foldersById[folderId];
+      if (!folder) throw new Error("Folder not found in cache");
 
       const encryptedVaultKey = await SymmetricCrypto.encrypt(
         vaultKey,
-        folderKey,
+        folder.symmetricKey,
       );
 
       return {
@@ -175,8 +166,7 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
           symmetricKeyNonce,
         });
 
-        queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.VAULTS] });
-        queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.FOLDER_SIZE] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.CLAUDE_STATE] });
       } catch (err: any) {
         if (err?.name !== "AbortError") throw err;
       } finally {

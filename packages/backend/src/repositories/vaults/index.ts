@@ -81,6 +81,7 @@ export const findAllByWorkspaceAndUser = async (
            v.created_at AS "createdAt", v.updated_at AS "updatedAt"
     FROM vaults v
     WHERE v.workspace_id = ${workspaceId}
+    AND EXISTS (SELECT 1 FROM workspace_members wm WHERE wm.workspace_id = ${workspaceId} AND wm.user_id = ${userId})
     AND (
       v.folder_id IS NULL
       OR v.folder_id IN (SELECT fm.folder_id FROM folder_members fm WHERE fm.user_id = ${userId})

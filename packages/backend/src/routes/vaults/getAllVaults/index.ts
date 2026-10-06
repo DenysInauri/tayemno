@@ -3,15 +3,22 @@ import type { IGetAllVaultsResponse } from "@tayemno/shared";
 import { getAllVaults } from "../../../services/vaults";
 
 export const getAllVaultsRoute = async (app: FastifyInstance) => {
-  app.get<{ Querystring: { workspaceId: string } }>(
+  app.get<{ Params: { workspaceId: string } }>(
     "/all",
     async (request, reply): Promise<IGetAllVaultsResponse> => {
+      const start = Date.now();
       try {
-        return await getAllVaults(app.db, request.user.sub, request.query.workspaceId);
+        return await getAllVaults(
+          app.db,
+          request.user.sub,
+          request.params.workspaceId,
+        );
       } catch (err: any) {
         return reply.status(err.statusCode || 500).send({
           message: err.message || "Internal server error",
         });
+      } finally {
+        console.log(`getAllVaults took ${Date.now() - start}ms`);
       }
     },
   );

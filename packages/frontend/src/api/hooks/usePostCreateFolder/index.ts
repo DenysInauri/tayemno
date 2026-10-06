@@ -13,7 +13,7 @@ export const usePostCreateFolder = () => {
     `${EndpointEnum.WORKSPACES}/${workspace?.id}/folders`,
     {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.FOLDERS] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.CLAUDE_STATE] });
       },
     },
   );

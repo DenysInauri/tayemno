@@ -1,12 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import type { IGetFoldersResponse } from "@tayemno/shared";
-
-import { axios } from "../../axios";
-import { useAuth } from "../../../contexts/AuthContext";
-import { QueryKeyEnum } from "../../../enums/api/QueryKeyEnum";
-import { EndpointEnum } from "../../../enums/api/EndpointEnum";
-import { AsymmetricCrypto } from "../../../utils/crypto/AsymmetricCrypto";
-import { SymmetricCrypto } from "../../../utils/crypto/SymmetricCrypto";
+import { useMemo } from "react";
+import { useClaudeState } from "../../../contexts/ClaudeStateContext";
 import type { ILocalFolder } from "../../../types/local";
 
 export interface IBreadcrumb {
@@ -14,77 +7,27 @@ export interface IBreadcrumb {
   name: string;
 }
 
-interface IFolderPageData {
-  folders: ILocalFolder[];
-  breadcrumbs: IBreadcrumb[];
-}
-
 export const useFolders = (parentFolderId: string | null) => {
-  const { workspace, keyPair, user } = useAuth();
+  const { data, isLoading } = useClaudeState();
 
-  const query = useQuery<IFolderPageData>({
-    queryKey: [QueryKeyEnum.FOLDERS, parentFolderId],
-    queryFn: async () => {
-      const { data } = await axios.get<IGetFoldersResponse>(
-        `${EndpointEnum.WORKSPACES}/${workspace!.id}/folders`,
-        { params: { parentFolderId } },
-      );
+  const key = parentFolderId ?? "root";
+  const folders = data.foldersByParentId[key] ?? [];
 
-      const folders: ILocalFolder[] = await Promise.all(
-        data.folders.map(async (folder) => {
-          const folderKey = await AsymmetricCrypto.decrypt(
-            folder.encryptedSymmetricKey,
-            user!.publicKey,
-            keyPair!.privateKey,
-          );
+  const breadcrumbs = useMemo<IBreadcrumb[]>(() => {
+    if (!parentFolderId) return [];
 
-          const name = await SymmetricCrypto.decrypt(
-            { nonce: folder.nameNonce, ciphertext: folder.encryptedName },
-            folderKey,
-          );
+    const result: IBreadcrumb[] = [];
+    let currentId: string | null = parentFolderId;
 
-          return {
-            id: folder.id,
-            parentFolderId: folder.parentFolderId,
-            workspaceId: folder.workspaceId,
-            name,
-            symmetricKey: folderKey,
-            createdAt: folder.createdAt,
-            updatedAt: folder.updatedAt,
-          };
-        }),
-      );
+    while (currentId) {
+      const folder: ILocalFolder | undefined = data.foldersById[currentId];
+      if (!folder) break;
+      result.unshift({ id: folder.id, name: folder.name });
+      currentId = folder.parentFolderId;
+    }
 
-      const breadcrumbs: IBreadcrumb[] = await Promise.all(
-        data.breadcrumbs.map(async (crumb) => {
-          const key = await AsymmetricCrypto.decrypt(
-            crumb.encryptedSymmetricKey,
-            user!.publicKey,
-            keyPair!.privateKey,
-          );
+    return result;
+  }, [data, parentFolderId]);
 
-          const name = await SymmetricCrypto.decrypt(
-            { nonce: crumb.nameNonce, ciphertext: crumb.encryptedName },
-            key,
-          );
-
-          return { id: crumb.id, name };
-        }),
-      );
-
-      return {
-        folders: folders.sort((a, b) =>
-          a.name.localeCompare(b.name, undefined, { numeric: true }),
-        ),
-        breadcrumbs,
-      };
-    },
-    enabled: !!workspace && !!keyPair && !!user,
-  });
-
-  return {
-    ...query,
-    data: query.data?.folders ?? [],
-    breadcrumbs: query.data?.breadcrumbs ?? [],
-  };
+  return { data: folders, breadcrumbs, isLoading };
 };

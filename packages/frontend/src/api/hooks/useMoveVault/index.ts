@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import type { IMoveVaultRequest, IMoveVaultResponse, IGetFolderResponse } from "@tayemno/shared";
+import type { IMoveVaultRequest, IMoveVaultResponse } from "@tayemno/shared";
 
 import { axios } from "../../axios";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useClaudeState } from "../../../contexts/ClaudeStateContext";
 import { EndpointEnum } from "../../../enums/api/EndpointEnum";
 import { QueryKeyEnum } from "../../../enums/api/QueryKeyEnum";
 import { SymmetricCrypto } from "../../../utils/crypto/SymmetricCrypto";
@@ -17,6 +18,7 @@ interface IEncryptedSymmetricKey {
 
 export const useMoveVault = () => {
   const { keyPair, workspace, user } = useAuth();
+  const { data: claudeState } = useClaudeState();
   const queryClient = useQueryClient();
   const [isMoving, setIsMoving] = useState(false);
 
@@ -29,17 +31,11 @@ export const useMoveVault = () => {
     }
 
     if (targetFolderId) {
-      const { data } = await axios.get<IGetFolderResponse>(
-        `${EndpointEnum.WORKSPACES}/${workspace.id}/folders/${targetFolderId}`,
+      const folder = claudeState.foldersById[targetFolderId];
+      const encrypted = await SymmetricCrypto.encrypt(
+        vaultKey,
+        folder.symmetricKey,
       );
-
-      const folderKey = await AsymmetricCrypto.decrypt(
-        data.folder.encryptedSymmetricKey,
-        user.publicKey,
-        keyPair.privateKey,
-      );
-
-      const encrypted = await SymmetricCrypto.encrypt(vaultKey, folderKey);
 
       return {
         encryptedSymmetricKey: encrypted.ciphertext,
@@ -71,13 +67,11 @@ export const useMoveVault = () => {
       };
 
       await axios.patch<IMoveVaultResponse>(
-        `${EndpointEnum.VAULTS}/${vault.id}/move`,
+        `${EndpointEnum.WORKSPACES}/${workspace.id}${EndpointEnum.VAULTS}/${vault.id}/move`,
         body,
       );
 
-      queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.VAULTS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.FOLDER_SIZE] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.FOLDER_TREE] });
+      queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.CLAUDE_STATE] });
     } finally {
       setIsMoving(false);
     }

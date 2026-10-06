@@ -8,7 +8,7 @@ import type { ILocalFolder } from "../../../types/local";
 import { FileListItem } from "../FileListItem";
 import { DeleteFolderModal } from "../DeleteFolderModal";
 import { ActionIcon } from "../../ui/ActionIcon";
-import { useGetFolderSize } from "../../../api/hooks/useGetFolderSize";
+import { useClaudeState } from "../../../contexts/ClaudeStateContext";
 import { useDeleteFolder } from "../../../api/hooks/useDeleteFolder";
 import { RouteEnum } from "../../../enums/routing/RouteEnum";
 
@@ -19,7 +19,8 @@ interface IProps {
 export const FolderListItem = ({ folder }: IProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { data } = useGetFolderSize(folder.id);
+  const { data: claudeState } = useClaudeState();
+  const folderSize = claudeState.folderSizesById[folder.id];
   const { deleteFolder, isDeleting } = useDeleteFolder(folder.id);
   const [deleteModalOpened, { open: openDeleteModal, close: closeDeleteModal }] =
     useDisclosure();
@@ -29,8 +30,8 @@ export const FolderListItem = ({ folder }: IProps) => {
       <FileListItem
         name={folder.name}
         isFolder
-        sizeBytes={data?.sizeBytes}
-        encryptedSizeBytes={data?.encryptedSizeBytes}
+        sizeBytes={folderSize?.sizeBytes}
+        encryptedSizeBytes={folderSize?.encryptedSizeBytes}
         updatedAt={folder.updatedAt}
         onClick={() =>
           navigate(RouteEnum.FOLDER.replace(":folderId", folder.id))

@@ -2,29 +2,6 @@ import { eq, and, sql, isNull, inArray } from "drizzle-orm";
 import type { Database } from "../../db";
 import { folders, folderMembers } from "../../db/schema.js";
 
-export const findAncestors = async (
-  db: Database,
-  folderId: string,
-  userId: string,
-) => {
-  const rows = await db.execute(sql`
-    WITH RECURSIVE ancestors AS (
-      SELECT f.id, f.encrypted_name, f.name_nonce, fm.encrypted_symmetric_key, f.parent_folder_id, 1 AS depth
-      FROM folders f
-      INNER JOIN folder_members fm ON fm.folder_id = f.id AND fm.user_id = ${userId}
-      WHERE f.id = ${folderId}
-      UNION ALL
-      SELECT f.id, f.encrypted_name, f.name_nonce, fm.encrypted_symmetric_key, f.parent_folder_id, a.depth + 1
-      FROM folders f
-      INNER JOIN ancestors a ON f.id = a.parent_folder_id
-      INNER JOIN folder_members fm ON fm.folder_id = f.id AND fm.user_id = ${userId}
-    )
-    SELECT id, encrypted_name AS "encryptedName", name_nonce AS "nameNonce", encrypted_symmetric_key AS "encryptedSymmetricKey"
-    FROM ancestors ORDER BY depth DESC
-  `);
-  return rows as unknown as { id: string; encryptedName: string; nameNonce: string; encryptedSymmetricKey: string }[];
-};
-
 export const findByIdAndUserId = async (
   db: Database,
   folderId: string,

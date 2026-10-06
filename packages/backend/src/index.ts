@@ -44,12 +44,15 @@ app.decorate("db", createDb(app.config.DATABASE_URL));
 const mailTransport = await createTransport(app.config);
 app.decorate("mailTransport", mailTransport);
 
-app.decorate("s3", createS3Client({
-  endpoint: app.config.S3_ENDPOINT,
-  region: app.config.S3_REGION,
-  accessKeyId: app.config.S3_ACCESS_KEY_ID,
-  secretAccessKey: app.config.S3_SECRET_ACCESS_KEY,
-}));
+app.decorate(
+  "s3",
+  createS3Client({
+    endpoint: app.config.S3_ENDPOINT,
+    region: app.config.S3_REGION,
+    accessKeyId: app.config.S3_ACCESS_KEY_ID,
+    secretAccessKey: app.config.S3_SECRET_ACCESS_KEY,
+  }),
+);
 
 app.get("/health", async (): Promise<HealthCheckResponse> => {
   return {
@@ -61,8 +64,12 @@ app.get("/health", async (): Promise<HealthCheckResponse> => {
 await app.register(usersRoutes, { prefix: "/users" });
 await app.register(securityRoutes, { prefix: "/security" });
 await app.register(authRoutes, { prefix: "/auth" });
-await app.register(foldersRoutes, { prefix: "/workspaces/:workspaceId/folders" });
-await app.register(vaultsRoutes, { prefix: "/vaults" });
+await app.register(foldersRoutes, {
+  prefix: "/workspaces/:workspaceId/folders",
+});
+await app.register(vaultsRoutes, {
+  prefix: "/workspaces/:workspaceId/vaults",
+});
 
 const CLEANUP_INTERVAL_MS = 5 * 60 * 1000;
 setInterval(() => {

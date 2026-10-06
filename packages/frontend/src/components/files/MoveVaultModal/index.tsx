@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Tree, useTree, getTreeExpandedState } from "@mantine/core";
 import type { TreeNodeData, RenderTreeNodePayload } from "@mantine/core";
@@ -7,7 +8,7 @@ import {
   IconChevronRight,
   IconChevronDown,
 } from "@tabler/icons-react";
-import type { IFolderTreeNode } from "../../../api/hooks/useLocalFolderTree";
+import type { IFolderTreeNode } from "../../../contexts/ClaudeStateContext";
 
 import { Modal } from "../../ui/Modal";
 import { Button } from "../../ui/Button";
@@ -56,11 +57,17 @@ export const MoveVaultModal = ({
 }: IProps) => {
   const { t } = useTranslation();
 
-  const treeData = buildTreeData(folderTree, t("files.moveVault.rootFolder"));
+  const treeData = useMemo(
+    () => buildTreeData(folderTree, t("files.moveVault.rootFolder")),
+    [folderTree, t],
+  );
 
-  const tree = useTree({
-    initialExpandedState: getTreeExpandedState(treeData, "*"),
-  });
+  const initialExpandedState = useMemo(
+    () => getTreeExpandedState(treeData, "*"),
+    [treeData],
+  );
+
+  const tree = useTree({ initialExpandedState });
 
   const isDisabled = (value: string) => {
     if (currentFolderId === null && value === ROOT_VALUE) return true;

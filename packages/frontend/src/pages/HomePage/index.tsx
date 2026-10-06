@@ -7,8 +7,6 @@ import { Group } from "../../components/ui/Group";
 import { EmptyState } from "../../components/files/EmptyState";
 import { FoldersList } from "../../components/files/FoldersList";
 import { FolderBreadcrumbs } from "../../components/files/FolderBreadcrumbs";
-import { FolderBreadcrumbsSkeleton } from "../../components/files/FolderBreadcrumbsSkeleton";
-import { FileTableSkeleton } from "../../components/files/FileTableSkeleton";
 import { VaultsList } from "../../components/files/VaultsList";
 import { AddNewEntity } from "../../components/files/AddNewEntity";
 import { useFolders } from "../../api/hooks/useFolders";
@@ -22,27 +20,20 @@ export const HomePage = () => {
 
   const folderId = routeParams.folderId ?? null;
 
-  const { data: folders, isLoading: isFoldersLoading } = useFolders(folderId);
-  const { data: vaults, isLoading: isVaultsLoading } = useVaults(folderId);
-  const { data: breadcrumbs, isLoading: isBreadcrumbsLoading } = useBreadcrumbs(folderId);
+  const { data: folders } = useFolders(folderId);
+  const { data: vaults } = useVaults(folderId);
+  const { data: breadcrumbs } = useBreadcrumbs(folderId);
 
-  const isLoading = isFoldersLoading || isVaultsLoading;
   const isEmpty = folders.length === 0 && vaults.length === 0;
 
   return (
     <Stack gap={SizeEnum.MD} p={SizeEnum.MD}>
       <Group justify="space-between">
-        {isBreadcrumbsLoading ? (
-          <FolderBreadcrumbsSkeleton />
-        ) : (
-          <FolderBreadcrumbs breadcrumbs={breadcrumbs} />
-        )}
+        <FolderBreadcrumbs breadcrumbs={breadcrumbs} />
         <AddNewEntity folderId={folderId} />
       </Group>
 
-      {isLoading ? (
-        <FileTableSkeleton />
-      ) : isEmpty ? (
+      {isEmpty ? (
         <EmptyState />
       ) : (
         <Table highlightOnHover>

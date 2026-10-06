@@ -13,10 +13,7 @@ export const useDeleteFolder = (folderId: string) => {
     `${EndpointEnum.WORKSPACES}/${workspace!.id}/folders/${folderId}`,
     {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.FOLDERS] });
-        queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.FOLDER_SIZE] });
-        queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.FOLDER_TREE] });
-        queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.BREADCRUMBS] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.CLAUDE_STATE] });
       },
     },
   );
