@@ -3,7 +3,7 @@ import type { ChangeEvent } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { IconPlus, IconUpload, IconRefresh } from "@tabler/icons-react";
+import { IconPlus, IconUpload, IconFolderUp, IconRefresh } from "@tabler/icons-react";
 
 import { Button } from "../../ui/Button";
 import { Group } from "../../ui/Group";
@@ -25,10 +25,11 @@ export const AddNewEntity = (props: IProps) => {
   const { t } = useTranslation();
   const { workspace, user, keyPair } = useAuth();
   const { isFetching } = useClaudeState();
-  const { upload } = useUpload();
+  const { upload, uploadFolder } = useUpload();
   const queryClient = useQueryClient();
   const createFolder = usePostCreateFolder();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const folderInputRef = useRef<HTMLInputElement>(null);
   const [
     folderModalOpened,
     { open: openFolderModal, close: closeFolderModal },
@@ -68,6 +69,14 @@ export const AddNewEntity = (props: IProps) => {
     e.target.value = "";
   };
 
+  const handleFolderChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    uploadFolder(files, props.folderId);
+    e.target.value = "";
+  };
+
   const handleRefresh = () => {
     queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.CLAUDE_STATE] });
   };
@@ -81,6 +90,13 @@ export const AddNewEntity = (props: IProps) => {
           onClick={() => fileInputRef.current?.click()}
         >
           {t("files.uploadFileButton")}
+        </Button>
+        <Button
+          variant="default"
+          leftSection={<IconFolderUp size={16} />}
+          onClick={() => folderInputRef.current?.click()}
+        >
+          {t("files.uploadFolderButton")}
         </Button>
         <Button leftSection={<IconPlus size={16} />} onClick={openFolderModal}>
           {t("files.addFolderButton")}
@@ -96,6 +112,14 @@ export const AddNewEntity = (props: IProps) => {
         multiple
         onChange={handleFileChange}
         style={{ display: "none" }}
+      />
+
+      <input
+        ref={folderInputRef}
+        type="file"
+        onChange={handleFolderChange}
+        style={{ display: "none" }}
+        {...{ webkitdirectory: "", directory: "" }}
       />
 
       <CreateFolderModal

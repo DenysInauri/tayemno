@@ -109,6 +109,7 @@
     },
     "addFolderButton": "Add folder",
     "uploadFileButton": "Upload file",
+    "uploadFolderButton": "Upload folder",
     "empty": {
       "title": "No files or folders yet",
       "createFolder": "Create a folder"

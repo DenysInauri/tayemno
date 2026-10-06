@@ -97,12 +97,22 @@ export const useClaudeStateQuery = () => {
         ),
       ]);
 
+      const date1 = Date.now();
+
       const decryptedFolders = await Promise.all(
         foldersRes.data.folders.map(decryptFolder),
       );
 
+      console.log({ decryptedFolders: Date.now() - date1 });
+
+      const date2 = Date.now();
+
       const { foldersByParentId, foldersById } =
         buildFoldersStructures(decryptedFolders);
+
+      console.log({ buildFoldersStructures: Date.now() - date2 });
+
+      const date3 = Date.now();
 
       const decryptedVaults = await Promise.all(
         vaultsRes.data.vaults.map((vault) =>
@@ -113,10 +123,22 @@ export const useClaudeStateQuery = () => {
         ),
       );
 
+      console.log({ decryptedVaults: Date.now() - date3 });
+
+      const date4 = Date.now();
+
       const { vaultsByFolderId, vaultsById } =
         buildVaultsStructures(decryptedVaults);
 
+      console.log({ buildVaultsStructures: Date.now() - date4 });
+
+      const date5 = Date.now();
+
       const folderTree = buildFolderTree(foldersByParentId, "root");
+
+      console.log({ folderTree: Date.now() - date5 });
+
+      const date6 = Date.now();
 
       const computeFolderSize = (folderId: string): IFolderSize => {
         const directVaults = vaultsByFolderId[folderId] ?? [];
@@ -140,6 +162,8 @@ export const useClaudeStateQuery = () => {
       for (const folderId of Object.keys(foldersById)) {
         folderSizesById[folderId] = computeFolderSize(folderId);
       }
+
+      console.log({ computeFolderSize: Date.now() - date6 });
 
       return {
         foldersById,
