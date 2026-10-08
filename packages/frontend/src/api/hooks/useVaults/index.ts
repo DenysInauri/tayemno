@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { IGetVaultsByFolderResponse } from "@tayemno/shared";
 import { axios } from "../../axios";
@@ -7,9 +8,13 @@ import { QueryKeyEnum } from "../../../enums/api/QueryKeyEnum";
 import { EndpointEnum } from "../../../enums/api/EndpointEnum";
 import type { ILocalVault } from "../../../types/local";
 
+interface IUseListOptions {
+  searchQuery?: string;
+}
+
 const collator = new Intl.Collator(undefined, { numeric: true });
 
-export const useVaults = (folderId: string | null) => {
+export const useVaults = (folderId: string | null, options?: IUseListOptions) => {
   const { workspace } = useAuth();
   const { decrypt: decryptVault } = useDecryptVault();
 
@@ -31,8 +36,17 @@ export const useVaults = (folderId: string | null) => {
     enabled: !!workspace,
   });
 
+  const all = query.data ?? [];
+
+  const data = useMemo(() => {
+    if (!options?.searchQuery || !options.searchQuery.length) return all;
+    return all.filter((v) =>
+      v.name.toLowerCase().includes(options.searchQuery!.toLowerCase()),
+    );
+  }, [all, options?.searchQuery]);
+
   return {
-    data: query.data ?? [],
+    data,
     isLoading: query.isLoading,
     isFetching: query.isFetching,
   };

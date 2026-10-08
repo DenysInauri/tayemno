@@ -164,6 +164,12 @@
     "downloadAlert": {
       "title": "Downloading",
       "cancelAll": "Cancel all"
+    },
+    "search": {
+      "placeholder": "Search in current folder"
+    },
+    "emptySearch": {
+      "title": "No matching files or folders"
     }
   }
 }

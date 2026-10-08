@@ -1,9 +1,11 @@
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import { EmptyState } from "../../components/files/EmptyState";
+import { SearchEmptyState } from "../../components/files/SearchEmptyState";
 import { FolderBreadcrumbs } from "../../components/files/FolderBreadcrumbs";
 import { VirtualizedFileTable } from "../../components/files/VirtualizedFileTable";
-import { AddNewEntity } from "../../components/files/AddNewEntity";
+import { FileToolbar } from "../../components/files/FileToolbar";
 import { BreadcrumbSkeleton } from "../../components/files/BreadcrumbSkeleton";
 import { useFolders } from "../../api/hooks/useFolders";
 import { useVaults } from "../../api/hooks/useVaults";
@@ -15,13 +17,21 @@ export const HomePage = () => {
 
   const folderId = routeParams.folderId ?? null;
 
-  const { data: folders, isLoading: foldersLoading } = useFolders(folderId);
-  const { data: vaults, isLoading: vaultsLoading } = useVaults(folderId);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    setSearchQuery("");
+  }, [folderId]);
+
+  const { data: folders, isLoading: foldersLoading } = useFolders(folderId, { searchQuery });
+  const { data: vaults, isLoading: vaultsLoading } = useVaults(folderId, { searchQuery });
   const { data: breadcrumbs, isLoading: breadcrumbsLoading } =
     useBreadcrumbs(folderId);
 
   const isLoading = foldersLoading || vaultsLoading;
-  const isEmpty = !isLoading && folders.length === 0 && vaults.length === 0;
+  const hasNoResults = !isLoading && folders.length === 0 && vaults.length === 0;
+  const isEmpty = hasNoResults && !searchQuery;
+  const isSearchEmpty = hasNoResults && !!searchQuery;
 
   return (
     <div
@@ -33,9 +43,11 @@ export const HomePage = () => {
         gap: SizeEnum.MD,
       }}
     >
-      <div style={{ alignSelf: "flex-end" }}>
-        <AddNewEntity folderId={folderId} />
-      </div>
+      <FileToolbar
+        folderId={folderId}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+      />
 
       <div style={{ minHeight: 20 }}>
         {breadcrumbsLoading && folderId ? (
@@ -47,6 +59,8 @@ export const HomePage = () => {
 
       {isEmpty ? (
         <EmptyState />
+      ) : isSearchEmpty ? (
+        <SearchEmptyState />
       ) : (
         <VirtualizedFileTable
           folders={folders}
