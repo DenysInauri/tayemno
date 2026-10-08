@@ -16,7 +16,6 @@ export const getAllVaults = async (
   return {
     vaults: (rows as any[]).map((row) => ({
       ...row,
-      encryptedSizeBytes: Number(row.encryptedSizeBytes),
       createdAt: new Date(row.createdAt).toISOString(),
       updatedAt: new Date(row.updatedAt).toISOString(),
     })) as Vault[],

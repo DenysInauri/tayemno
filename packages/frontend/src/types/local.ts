@@ -16,7 +16,6 @@ export interface ILocalVault {
   extension: string;
   mimeType: string;
   sizeBytes: number;
-  encryptedSizeBytes: number;
   s3Key: string;
   contentNonce: string;
   symmetricKey: string;

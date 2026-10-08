@@ -76,7 +76,7 @@ export const findByFolderAndUser = async (
       SELECT v.id, v.workspace_id AS "workspaceId", v.folder_id AS "folderId",
              v.encrypted_name AS "encryptedName", v.name_nonce AS "nameNonce",
              v.encrypted_metadata AS "encryptedMetadata", v.metadata_nonce AS "metadataNonce",
-             v.encrypted_size_bytes AS "encryptedSizeBytes",
+
              v.s3_key AS "s3Key", v.content_nonce AS "contentNonce",
              v.encrypted_symmetric_key AS "encryptedSymmetricKey",
              v.symmetric_key_nonce AS "symmetricKeyNonce",
@@ -92,7 +92,7 @@ export const findByFolderAndUser = async (
     SELECT v.id, v.workspace_id AS "workspaceId", v.folder_id AS "folderId",
            v.encrypted_name AS "encryptedName", v.name_nonce AS "nameNonce",
            v.encrypted_metadata AS "encryptedMetadata", v.metadata_nonce AS "metadataNonce",
-           v.encrypted_size_bytes AS "encryptedSizeBytes",
+
            v.s3_key AS "s3Key", v.content_nonce AS "contentNonce",
            v.encrypted_symmetric_key AS "encryptedSymmetricKey",
            v.symmetric_key_nonce AS "symmetricKeyNonce",
@@ -114,7 +114,7 @@ export const findAllByWorkspaceAndUser = async (
     SELECT v.id, v.workspace_id AS "workspaceId", v.folder_id AS "folderId",
            v.encrypted_name AS "encryptedName", v.name_nonce AS "nameNonce",
            v.encrypted_metadata AS "encryptedMetadata", v.metadata_nonce AS "metadataNonce",
-           v.encrypted_size_bytes AS "encryptedSizeBytes",
+
            v.s3_key AS "s3Key", v.content_nonce AS "contentNonce",
            v.encrypted_symmetric_key AS "encryptedSymmetricKey",
            v.symmetric_key_nonce AS "symmetricKeyNonce",

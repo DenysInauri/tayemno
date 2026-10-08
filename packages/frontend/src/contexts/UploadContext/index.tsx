@@ -122,7 +122,7 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
       nameNonce: encryptedNameResult.nonce,
       encryptedMetadata: encryptedMetadataResult.ciphertext,
       metadataNonce: encryptedMetadataResult.nonce,
-      encryptedSizeBytes: encryptedBlob.size,
+
       s3Key: presignResult.s3Key,
       contentNonce: header,
     };

@@ -172,7 +172,6 @@ export const vaults = pgTable("vaults", {
   nameNonce: text("name_nonce").notNull(),
   encryptedMetadata: text("encrypted_metadata").notNull(),
   metadataNonce: text("metadata_nonce").notNull(),
-  encryptedSizeBytes: bigint("encrypted_size_bytes", { mode: "number" }).notNull().default(0),
 
   s3Key: text("s3_key").notNull(),
   contentNonce: text("content_nonce").notNull(),

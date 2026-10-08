@@ -114,7 +114,7 @@ export interface Vault {
   nameNonce: string;
   encryptedMetadata: string;
   metadataNonce: string;
-  encryptedSizeBytes: number;
+
   s3Key: string;
   contentNonce: string;
   encryptedSymmetricKey: string;
@@ -130,7 +130,7 @@ export interface NewVault {
   nameNonce: string;
   encryptedMetadata: string;
   metadataNonce: string;
-  encryptedSizeBytes: number;
+
   s3Key: string;
   contentNonce: string;
   encryptedSymmetricKey: string;
@@ -272,7 +272,7 @@ export interface ICreateVaultRequest {
   nameNonce: string;
   encryptedMetadata: string;
   metadataNonce: string;
-  encryptedSizeBytes: number;
+
   s3Key: string;
   contentNonce: string;
   encryptedSymmetricKey: string;

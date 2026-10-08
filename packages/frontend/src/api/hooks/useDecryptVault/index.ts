@@ -35,7 +35,6 @@ export const useDecryptVault = () => {
       extension: metadata.extension,
       mimeType: metadata.mimeType,
       sizeBytes: metadata.sizeBytes,
-      encryptedSizeBytes: vault.encryptedSizeBytes,
       s3Key: vault.s3Key,
       contentNonce: vault.contentNonce,
       symmetricKey,
