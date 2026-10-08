@@ -37,10 +37,12 @@ export const FileListItem = ({
     </Table.Td>
     <Table.Td visibleFrom="sm">
       <Text c="dimmed" size="sm">
-        {new Date(updatedAt).toLocaleDateString(undefined, {
+        {new Date(updatedAt).toLocaleString(undefined, {
           year: "numeric",
           month: "short",
           day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
         })}
       </Text>
     </Table.Td>
