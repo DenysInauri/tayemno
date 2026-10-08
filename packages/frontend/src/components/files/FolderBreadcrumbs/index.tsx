@@ -16,11 +16,12 @@ export const FolderBreadcrumbs = ({ breadcrumbs }: IProps) => {
   const { t } = useTranslation();
 
   return (
-    <Breadcrumbs>
+    <Breadcrumbs style={{ flexWrap: "nowrap", overflowX: "auto" }}>
       <Anchor
         size="sm"
         component="button"
         type="button"
+        style={{ whiteSpace: "nowrap", flexShrink: 0 }}
         onClick={() => navigate(RouteEnum.HOME)}
       >
         {t("files.breadcrumb.root")}
@@ -32,12 +33,13 @@ export const FolderBreadcrumbs = ({ breadcrumbs }: IProps) => {
             size="sm"
             component="button"
             type="button"
+            style={{ whiteSpace: "nowrap", flexShrink: 0 }}
             onClick={() => navigate(`/folders/${crumb.id}`)}
           >
             {crumb.name}
           </Anchor>
         ) : (
-          <Text key={crumb.id} size="sm">
+          <Text key={crumb.id} size="sm" style={{ whiteSpace: "nowrap", flexShrink: 0 }}>
             {crumb.name}
           </Text>
         ),

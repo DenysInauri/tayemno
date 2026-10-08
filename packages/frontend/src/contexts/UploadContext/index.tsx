@@ -52,7 +52,7 @@ interface IUploadProviderProps {
   children: ReactNode;
 }
 
-const FOLDER_UPLOAD_CONCURRENCY = 5;
+const FOLDER_UPLOAD_CONCURRENCY = 10;
 
 export const UploadProvider = ({ children }: IUploadProviderProps) => {
   const { keyPair, workspace, user } = useAuth();
@@ -122,7 +122,6 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
       nameNonce: encryptedNameResult.nonce,
       encryptedMetadata: encryptedMetadataResult.ciphertext,
       metadataNonce: encryptedMetadataResult.nonce,
-
       s3Key: presignResult.s3Key,
       contentNonce: header,
     };
