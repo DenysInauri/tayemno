@@ -16,7 +16,7 @@ export const FolderBreadcrumbs = ({ breadcrumbs }: IProps) => {
   const { t } = useTranslation();
 
   return (
-    <Breadcrumbs style={{ flexWrap: "nowrap", overflowX: "auto" }}>
+    <Breadcrumbs style={{ flexWrap: "nowrap", overflowX: "auto", overflowY: "hidden" }}>
       <Anchor
         size="sm"
         component="button"
