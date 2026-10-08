@@ -3,7 +3,12 @@ import type { ChangeEvent } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { IconPlus, IconUpload, IconFolderUp, IconRefresh } from "@tabler/icons-react";
+import {
+  IconPlus,
+  IconUpload,
+  IconFolderUp,
+  IconRefresh,
+} from "@tabler/icons-react";
 
 import { Button } from "../../ui/Button";
 import { Group } from "../../ui/Group";
@@ -11,7 +16,6 @@ import { ActionIcon } from "../../ui/ActionIcon";
 import { CreateFolderModal } from "../CreateFolderModal";
 import { usePostCreateFolder } from "../../../api/hooks/usePostCreateFolder";
 import { useAuth } from "../../../contexts/AuthContext";
-import { useClaudeState } from "../../../contexts/ClaudeStateContext";
 import { useUpload } from "../../../contexts/UploadContext";
 import { SymmetricCrypto } from "../../../utils/crypto/SymmetricCrypto";
 import { AsymmetricCrypto } from "../../../utils/crypto/AsymmetricCrypto";
@@ -24,7 +28,6 @@ interface IProps {
 export const AddNewEntity = (props: IProps) => {
   const { t } = useTranslation();
   const { workspace, user, keyPair } = useAuth();
-  const { isFetching } = useClaudeState();
   const { upload, uploadFolder } = useUpload();
   const queryClient = useQueryClient();
   const createFolder = usePostCreateFolder();
@@ -58,7 +61,9 @@ export const AddNewEntity = (props: IProps) => {
       parentFolderId: props.folderId,
     });
 
-    queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.CLAUDE_STATE] });
+    queryClient.invalidateQueries({
+      queryKey: [QueryKeyEnum.FOLDERS, workspace.id, props.folderId],
+    });
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -78,7 +83,12 @@ export const AddNewEntity = (props: IProps) => {
   };
 
   const handleRefresh = () => {
-    queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.CLAUDE_STATE] });
+    queryClient.invalidateQueries({
+      queryKey: [QueryKeyEnum.FOLDERS, workspace?.id, props.folderId],
+    });
+    queryClient.invalidateQueries({
+      queryKey: [QueryKeyEnum.VAULTS, workspace?.id, props.folderId],
+    });
   };
 
   return (
@@ -101,7 +111,7 @@ export const AddNewEntity = (props: IProps) => {
         <Button leftSection={<IconPlus size={16} />} onClick={openFolderModal}>
           {t("files.addFolderButton")}
         </Button>
-        <ActionIcon variant="default" size="input-sm" onClick={handleRefresh} loading={isFetching}>
+        <ActionIcon variant="default" size="input-sm" onClick={handleRefresh}>
           <IconRefresh size={16} />
         </ActionIcon>
       </Group>

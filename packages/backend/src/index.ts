@@ -1,4 +1,5 @@
 import Fastify from "fastify";
+import compress from "@fastify/compress";
 import cors from "@fastify/cors";
 import jwt from "@fastify/jwt";
 import type { Transporter } from "nodemailer";
@@ -33,6 +34,7 @@ declare module "@fastify/jwt" {
 const app = Fastify({ logger: true });
 
 await registerConfig(app);
+await app.register(compress);
 await app.register(cors, {
   origin: true,
   methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],

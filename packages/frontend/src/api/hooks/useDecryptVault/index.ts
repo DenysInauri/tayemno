@@ -2,10 +2,12 @@ import { Vault } from "@tayemno/shared";
 import { useAuth } from "../../../contexts/AuthContext";
 import { AsymmetricCrypto } from "../../../utils/crypto/AsymmetricCrypto";
 import { SymmetricCrypto } from "../../../utils/crypto/SymmetricCrypto";
-import type { ILocalFolder, ILocalVault } from "../../../types/local";
+import type { ILocalVault } from "../../../types/local";
+import { useGetFolderKey } from "../useGetFolderKey";
 
 export const useDecryptVault = () => {
   const { workspace, keyPair } = useAuth();
+  const { getFolderKey } = useGetFolderKey();
 
   const decryptVaultData = async (
     vault: Vault,
@@ -42,14 +44,11 @@ export const useDecryptVault = () => {
     };
   };
 
-  const decrypt = async (
-    vault: Vault,
-    folder: ILocalFolder | null = null,
-  ): Promise<ILocalVault> => {
+  const decrypt = async (vault: Vault): Promise<ILocalVault> => {
     if (!workspace) throw new Error("Workspace not found");
     if (!keyPair) throw new Error("Key pair not found");
 
-    if (!folder) {
+    if (!vault.folderId) {
       const memberPrivateKey = await AsymmetricCrypto.decrypt(
         workspace.encryptedMemberPrivateKey,
         keyPair.publicKey,
@@ -65,12 +64,14 @@ export const useDecryptVault = () => {
       return decryptVaultData(vault, symmetricKey);
     }
 
+    const folderSecret = await getFolderKey(vault.folderId);
+
     const symmetricKey = await SymmetricCrypto.decrypt(
       {
         nonce: vault.symmetricKeyNonce!,
         ciphertext: vault.encryptedSymmetricKey,
       },
-      folder.symmetricKey,
+      folderSecret,
     );
 
     return decryptVaultData(vault, symmetricKey);

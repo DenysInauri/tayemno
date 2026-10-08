@@ -15,7 +15,6 @@ import { ActionIcon } from "../../ui/ActionIcon";
 import { useDownload } from "../../../contexts/DownloadContext";
 import { useDeleteVault } from "../../../api/hooks/useDeleteVault";
 import { useMoveVault } from "../../../api/hooks/useMoveVault";
-import { useClaudeState } from "../../../contexts/ClaudeStateContext";
 
 interface IProps {
   vault: ILocalVault;
@@ -28,7 +27,6 @@ export const VaultListItem = ({ vault }: IProps) => {
   const { move, isMoving } = useMoveVault();
   const [moveModalOpened, { open: openMoveModal, close: closeMoveModal }] =
     useDisclosure();
-  const { data: claudeState } = useClaudeState();
 
   const handleMove = async (targetFolderId: string | null) => {
     await move(vault, targetFolderId);
@@ -82,7 +80,6 @@ export const VaultListItem = ({ vault }: IProps) => {
       <MoveVaultModal
         opened={moveModalOpened}
         currentFolderId={vault.folderId}
-        folderTree={claudeState.folderTree}
         isMoving={isMoving}
         onClose={closeMoveModal}
         onConfirm={handleMove}

@@ -16,7 +16,7 @@ export const usePostCreateVault = () => {
     `${EndpointEnum.WORKSPACES}/${workspace?.id}${EndpointEnum.VAULTS}`,
     {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.CLAUDE_STATE] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.VAULTS] });
       },
     },
   );

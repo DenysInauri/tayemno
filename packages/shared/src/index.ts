@@ -313,3 +313,19 @@ export interface IGetAllVaultsResponse {
   vaults: Vault[];
 }
 
+export interface IGetFoldersByParentResponse {
+  folders: Folder[];
+}
+
+export interface IGetFolderResponse {
+  folder: Folder;
+}
+
+export interface IGetBreadcrumbsResponse {
+  breadcrumbs: Folder[];
+}
+
+export interface IGetVaultsByFolderResponse {
+  vaults: Vault[];
+}
+

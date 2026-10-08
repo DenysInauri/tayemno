@@ -8,4 +8,5 @@ export enum EndpointEnum {
   WORKSPACES = "/workspaces",
   VAULTS_PRESIGN = "/vaults/presign",
   VAULTS = "/vaults",
+  FOLDERS = "/folders",
 }

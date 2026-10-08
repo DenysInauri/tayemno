@@ -65,6 +65,46 @@ export const updateMove = async (
   return result[0] ?? null;
 };
 
+export const findByFolderAndUser = async (
+  db: Database,
+  workspaceId: string,
+  folderId: string | null,
+  userId: string,
+) => {
+  if (folderId) {
+    const rows = await db.execute(sql`
+      SELECT v.id, v.workspace_id AS "workspaceId", v.folder_id AS "folderId",
+             v.encrypted_name AS "encryptedName", v.name_nonce AS "nameNonce",
+             v.encrypted_metadata AS "encryptedMetadata", v.metadata_nonce AS "metadataNonce",
+             v.encrypted_size_bytes AS "encryptedSizeBytes",
+             v.s3_key AS "s3Key", v.content_nonce AS "contentNonce",
+             v.encrypted_symmetric_key AS "encryptedSymmetricKey",
+             v.symmetric_key_nonce AS "symmetricKeyNonce",
+             v.created_at AS "createdAt", v.updated_at AS "updatedAt"
+      FROM vaults v
+      WHERE v.folder_id = ${folderId}
+      AND EXISTS (SELECT 1 FROM folder_members fm WHERE fm.folder_id = ${folderId} AND fm.user_id = ${userId})
+    `);
+    return rows;
+  }
+
+  const rows = await db.execute(sql`
+    SELECT v.id, v.workspace_id AS "workspaceId", v.folder_id AS "folderId",
+           v.encrypted_name AS "encryptedName", v.name_nonce AS "nameNonce",
+           v.encrypted_metadata AS "encryptedMetadata", v.metadata_nonce AS "metadataNonce",
+           v.encrypted_size_bytes AS "encryptedSizeBytes",
+           v.s3_key AS "s3Key", v.content_nonce AS "contentNonce",
+           v.encrypted_symmetric_key AS "encryptedSymmetricKey",
+           v.symmetric_key_nonce AS "symmetricKeyNonce",
+           v.created_at AS "createdAt", v.updated_at AS "updatedAt"
+    FROM vaults v
+    WHERE v.workspace_id = ${workspaceId}
+    AND v.folder_id IS NULL
+    AND EXISTS (SELECT 1 FROM workspace_members wm WHERE wm.workspace_id = ${workspaceId} AND wm.user_id = ${userId})
+  `);
+  return rows;
+};
+
 export const findAllByWorkspaceAndUser = async (
   db: Database,
   workspaceId: string,

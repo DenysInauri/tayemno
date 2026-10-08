@@ -34,12 +34,12 @@ export const FileListItem = ({
     </Table.Td>
     <Table.Td visibleFrom="sm">
       <Text c="dimmed" size="sm">
-        {!!sizeBytes ? formatFileSize(sizeBytes) : ""}
+        {sizeBytes ? formatFileSize(sizeBytes) : isFolder ? "--" : ""}
       </Text>
     </Table.Td>
     <Table.Td visibleFrom="sm">
       <Text c="dimmed" size="sm">
-        {!!encryptedSizeBytes ? formatFileSize(encryptedSizeBytes) : ""}
+        {encryptedSizeBytes ? formatFileSize(encryptedSizeBytes) : isFolder ? "--" : ""}
       </Text>
     </Table.Td>
     <Table.Td visibleFrom="sm">

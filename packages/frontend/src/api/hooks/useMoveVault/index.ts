@@ -4,11 +4,11 @@ import type { IMoveVaultRequest, IMoveVaultResponse } from "@tayemno/shared";
 
 import { axios } from "../../axios";
 import { useAuth } from "../../../contexts/AuthContext";
-import { useClaudeState } from "../../../contexts/ClaudeStateContext";
 import { EndpointEnum } from "../../../enums/api/EndpointEnum";
 import { QueryKeyEnum } from "../../../enums/api/QueryKeyEnum";
 import { SymmetricCrypto } from "../../../utils/crypto/SymmetricCrypto";
 import { AsymmetricCrypto } from "../../../utils/crypto/AsymmetricCrypto";
+import { useGetFolderKey } from "../useGetFolderKey";
 import type { ILocalVault } from "../../../types/local";
 
 interface IEncryptedSymmetricKey {
@@ -18,8 +18,8 @@ interface IEncryptedSymmetricKey {
 
 export const useMoveVault = () => {
   const { keyPair, workspace, user } = useAuth();
-  const { data: claudeState } = useClaudeState();
   const queryClient = useQueryClient();
+  const { getFolderKey } = useGetFolderKey();
   const [isMoving, setIsMoving] = useState(false);
 
   const encryptVaultKey = async (
@@ -31,10 +31,11 @@ export const useMoveVault = () => {
     }
 
     if (targetFolderId) {
-      const folder = claudeState.foldersById[targetFolderId];
+      const folderSymmetricKey = await getFolderKey(targetFolderId);
+
       const encrypted = await SymmetricCrypto.encrypt(
         vaultKey,
-        folder.symmetricKey,
+        folderSymmetricKey,
       );
 
       return {
@@ -71,7 +72,12 @@ export const useMoveVault = () => {
         body,
       );
 
-      queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.CLAUDE_STATE] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeyEnum.VAULTS, workspace.id, vault.folderId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeyEnum.VAULTS, workspace.id, targetFolderId],
+      });
     } finally {
       setIsMoving(false);
     }

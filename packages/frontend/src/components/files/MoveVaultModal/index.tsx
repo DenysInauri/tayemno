@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Tree, useTree, getTreeExpandedState } from "@mantine/core";
+import { Tree, useTree, Loader } from "@mantine/core";
 import type { TreeNodeData, RenderTreeNodePayload } from "@mantine/core";
 import {
   IconFolder,
@@ -8,7 +8,11 @@ import {
   IconChevronRight,
   IconChevronDown,
 } from "@tabler/icons-react";
-import type { IFolderTreeNode } from "../../../contexts/ClaudeStateContext";
+import type { IFolderTreeNode } from "../../../api/hooks/useLazyFolderTree";
+import {
+  useLazyFolderTree,
+  PLACEHOLDER_PREFIX,
+} from "../../../api/hooks/useLazyFolderTree";
 
 import { Modal } from "../../ui/Modal";
 import { Button } from "../../ui/Button";
@@ -22,7 +26,6 @@ const ROOT_VALUE = "root";
 interface IProps {
   opened: boolean;
   currentFolderId: string | null;
-  folderTree: IFolderTreeNode[];
   isMoving: boolean;
   onClose: () => void;
   onConfirm: (targetFolderId: string | null) => void;
@@ -35,7 +38,8 @@ const buildTreeData = (
   const mapNode = (node: IFolderTreeNode): TreeNodeData => ({
     value: node.id,
     label: node.name,
-    children: node.children.length > 0 ? node.children.map(mapNode) : undefined,
+    children:
+      node.children.length > 0 ? node.children.map(mapNode) : undefined,
   });
 
   return [
@@ -50,24 +54,21 @@ const buildTreeData = (
 export const MoveVaultModal = ({
   opened,
   currentFolderId,
-  folderTree,
   isMoving,
   onClose,
   onConfirm,
 }: IProps) => {
   const { t } = useTranslation();
+  const { treeData: folderTree, expandNode } = useLazyFolderTree(opened);
 
   const treeData = useMemo(
     () => buildTreeData(folderTree, t("files.moveVault.rootFolder")),
     [folderTree, t],
   );
 
-  const initialExpandedState = useMemo(
-    () => getTreeExpandedState(treeData, "*"),
-    [treeData],
-  );
-
-  const tree = useTree({ initialExpandedState });
+  const tree = useTree({
+    initialExpandedState: { [ROOT_VALUE]: true },
+  });
 
   const isDisabled = (value: string) => {
     if (currentFolderId === null && value === ROOT_VALUE) return true;
@@ -81,7 +82,7 @@ export const MoveVaultModal = ({
 
   const handleConfirm = () => {
     const selected = tree.selectedState[0];
-    if (!selected) return;
+    if (!selected || selected.startsWith(PLACEHOLDER_PREFIX)) return;
 
     const targetFolderId = selected === ROOT_VALUE ? null : selected;
     onConfirm(targetFolderId);
@@ -93,6 +94,18 @@ export const MoveVaultModal = ({
     expanded,
     elementProps,
   }: RenderTreeNodePayload) => {
+    if (node.value.startsWith(PLACEHOLDER_PREFIX)) {
+      return (
+        <div
+          {...elementProps}
+          onClick={(e) => e.stopPropagation()}
+          style={{ paddingLeft: 28, paddingTop: 4, paddingBottom: 4 }}
+        >
+          <Loader size={14} />
+        </div>
+      );
+    }
+
     const disabled = isDisabled(node.value);
 
     return (
@@ -102,6 +115,9 @@ export const MoveVaultModal = ({
           if (disabled) {
             e.stopPropagation();
             return;
+          }
+          if (hasChildren && !expanded && node.value !== ROOT_VALUE) {
+            expandNode(node.value);
           }
           elementProps.onClick(e);
         }}

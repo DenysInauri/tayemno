@@ -13,7 +13,9 @@ export const useDeleteVault = (vaultId: string) => {
     `${EndpointEnum.WORKSPACES}/${workspace?.id}${EndpointEnum.VAULTS}/${vaultId}`,
     {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.CLAUDE_STATE] });
+        queryClient.invalidateQueries({
+          queryKey: [QueryKeyEnum.VAULTS],
+        });
       },
     },
   );

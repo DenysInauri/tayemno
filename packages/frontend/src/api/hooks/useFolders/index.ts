@@ -1,33 +1,34 @@
-import { useMemo } from "react";
-import { useClaudeState } from "../../../contexts/ClaudeStateContext";
+import { useQuery } from "@tanstack/react-query";
+import type { IGetFoldersByParentResponse } from "@tayemno/shared";
+import { axios } from "../../axios";
+import { useAuth } from "../../../contexts/AuthContext";
+import { useDecryptFolder } from "../useDecryptFolder";
+import { QueryKeyEnum } from "../../../enums/api/QueryKeyEnum";
+import { EndpointEnum } from "../../../enums/api/EndpointEnum";
 import type { ILocalFolder } from "../../../types/local";
 
-export interface IBreadcrumb {
-  id: string;
-  name: string;
-}
+const collator = new Intl.Collator(undefined, { numeric: true });
 
 export const useFolders = (parentFolderId: string | null) => {
-  const { data, isLoading } = useClaudeState();
+  const { workspace } = useAuth();
+  const { decrypt } = useDecryptFolder();
 
-  const key = parentFolderId ?? "root";
-  const folders = data.foldersByParentId[key] ?? [];
+  const query = useQuery<ILocalFolder[]>({
+    queryKey: [QueryKeyEnum.FOLDERS, workspace?.id, parentFolderId],
+    queryFn: async () => {
+      const params = parentFolderId
+        ? `?parentFolderId=${parentFolderId}`
+        : "";
 
-  const breadcrumbs = useMemo<IBreadcrumb[]>(() => {
-    if (!parentFolderId) return [];
+      const { data } = await axios.get<IGetFoldersByParentResponse>(
+        `${EndpointEnum.WORKSPACES}/${workspace!.id}${EndpointEnum.FOLDERS}${params}`,
+      );
 
-    const result: IBreadcrumb[] = [];
-    let currentId: string | null = parentFolderId;
+      const decrypted = await Promise.all(data.folders.map(decrypt));
+      return decrypted.sort((a, b) => collator.compare(a.name, b.name));
+    },
+    enabled: !!workspace,
+  });
 
-    while (currentId) {
-      const folder: ILocalFolder | undefined = data.foldersById[currentId];
-      if (!folder) break;
-      result.unshift({ id: folder.id, name: folder.name });
-      currentId = folder.parentFolderId;
-    }
-
-    return result;
-  }, [data, parentFolderId]);
-
-  return { data: folders, breadcrumbs, isLoading };
+  return { data: query.data ?? [], isLoading: query.isLoading, isFetching: query.isFetching };
 };

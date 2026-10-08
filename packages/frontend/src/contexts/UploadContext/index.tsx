@@ -17,9 +17,9 @@ import type {
   ICreateVaultRequest,
   ICreateVaultResponse,
 } from "@tayemno/shared";
-import { useClaudeState } from "../ClaudeStateContext";
 import { axios } from "../../api";
 import { AsymmetricCrypto } from "../../utils/crypto/AsymmetricCrypto";
+import { useGetFolderKey } from "../../api/hooks/useGetFolderKey";
 import { SymmetricCrypto } from "../../utils/crypto/SymmetricCrypto";
 import { StreamCrypto } from "../../utils/crypto/StreamCrypto";
 import { createThrottledProgress } from "../../utils/createThrottledProgress";
@@ -56,10 +56,10 @@ const FOLDER_UPLOAD_CONCURRENCY = 5;
 
 export const UploadProvider = ({ children }: IUploadProviderProps) => {
   const { keyPair, workspace, user } = useAuth();
-  const { data: claudeState } = useClaudeState();
   const queryClient = useQueryClient();
   const presignVault = usePostPresignVault();
   const createVault = usePostCreateVault();
+  const { getFolderKey } = useGetFolderKey();
 
   const uploadsRef = useRef<Map<string, ITransferItem>>(new Map());
   const controllersRef = useRef<Map<string, AbortController>>(new Map());
@@ -134,12 +134,11 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
     const vaultKey = await SymmetricCrypto.generateKey();
 
     if (folderId) {
-      const folder = claudeState.foldersById[folderId];
-      if (!folder) throw new Error("Folder not found in cache");
+      const folderSymmetricKey = await getFolderKey(folderId);
 
       const encryptedVaultKey = await SymmetricCrypto.encrypt(
         vaultKey,
-        folder.symmetricKey,
+        folderSymmetricKey,
       );
 
       return {
@@ -212,7 +211,7 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
         });
 
         queryClient.invalidateQueries({
-          queryKey: [QueryKeyEnum.CLAUDE_STATE],
+          queryKey: [QueryKeyEnum.VAULTS, workspace.id, folderId],
         });
       } catch (err: any) {
         if (err?.name !== "AbortError") throw err;
@@ -380,7 +379,7 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
 
         tp.flush();
         queryClient.invalidateQueries({
-          queryKey: [QueryKeyEnum.CLAUDE_STATE],
+          queryKey: [QueryKeyEnum.FOLDERS, workspace.id, parentFolderId],
         });
       } catch (err: any) {
         controller.abort();
