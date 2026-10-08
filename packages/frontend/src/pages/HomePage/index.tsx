@@ -33,7 +33,9 @@ export const HomePage = () => {
         gap: SizeEnum.MD,
       }}
     >
-      <AddNewEntity folderId={folderId} />
+      <div style={{ alignSelf: "flex-end" }}>
+        <AddNewEntity folderId={folderId} />
+      </div>
 
       <div style={{ minHeight: 20 }}>
         {breadcrumbsLoading && folderId ? (
