@@ -50,9 +50,6 @@ export const HomePage = () => {
               <Table.Th>{t("files.columns.name")}</Table.Th>
               <Table.Th visibleFrom="sm">{t("files.columns.size")}</Table.Th>
               <Table.Th visibleFrom="sm">
-                {t("files.columns.storedSize")}
-              </Table.Th>
-              <Table.Th visibleFrom="sm">
                 {t("files.columns.modified")}
               </Table.Th>
               <Table.Th w={40} />

@@ -10,7 +10,6 @@ interface IProps {
   name: string;
   isFolder: boolean;
   sizeBytes?: number;
-  encryptedSizeBytes?: number;
   updatedAt: string;
   onClick: () => void;
   actions?: ReactNode;
@@ -20,7 +19,6 @@ export const FileListItem = ({
   name,
   isFolder,
   sizeBytes,
-  encryptedSizeBytes,
   updatedAt,
   onClick,
   actions,
@@ -35,11 +33,6 @@ export const FileListItem = ({
     <Table.Td visibleFrom="sm">
       <Text c="dimmed" size="sm">
         {sizeBytes ? formatFileSize(sizeBytes) : isFolder ? "--" : ""}
-      </Text>
-    </Table.Td>
-    <Table.Td visibleFrom="sm">
-      <Text c="dimmed" size="sm">
-        {encryptedSizeBytes ? formatFileSize(encryptedSizeBytes) : isFolder ? "--" : ""}
       </Text>
     </Table.Td>
     <Table.Td visibleFrom="sm">

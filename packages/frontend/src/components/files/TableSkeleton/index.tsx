@@ -19,9 +19,6 @@ export const TableSkeleton = () => (
           <Skeleton height={14} width={60} />
         </Table.Td>
         <Table.Td visibleFrom="sm">
-          <Skeleton height={14} width={60} />
-        </Table.Td>
-        <Table.Td visibleFrom="sm">
           <Skeleton height={14} width={90} />
         </Table.Td>
         <Table.Td width={40} />
