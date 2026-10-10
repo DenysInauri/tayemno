@@ -149,6 +149,7 @@
     },
     "actions": {
       "download": "Download",
+      "downloadAsZip": "Download as ZIP",
       "delete": "Delete",
       "move": "Move"
     },
