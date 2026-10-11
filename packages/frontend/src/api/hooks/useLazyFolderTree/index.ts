@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { IGetFoldersByParentResponse } from "@tayemno/shared";
 import { axios } from "../../axios";
 import { useAuth } from "../../../contexts/AuthContext";
-import { useDecryptFolder } from "../useDecryptFolder";
+import { useDecryptFolderAsMember } from "../useDecryptFolderAsMember";
 import { QueryKeyEnum } from "../../../enums/api/QueryKeyEnum";
 import { EndpointEnum } from "../../../enums/api/EndpointEnum";
 import type { ILocalFolder } from "../../../types/local";
@@ -20,7 +20,7 @@ export interface IFolderTreeNode {
 
 export const useLazyFolderTree = (enabled: boolean) => {
   const { workspace } = useAuth();
-  const { decrypt } = useDecryptFolder();
+  const { decrypt } = useDecryptFolderAsMember();
 
   const [childrenByParent, setChildrenByParent] = useState<
     Record<string, ILocalFolder[]>

@@ -180,6 +180,7 @@ export const vaults = pgTable("vaults", {
 
   encryptedSymmetricKey: text("encrypted_symmetric_key").notNull(),
   symmetricKeyNonce: text("symmetric_key_nonce"),
+  adminEncryptedSymmetricKey: text("admin_encrypted_symmetric_key"),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()

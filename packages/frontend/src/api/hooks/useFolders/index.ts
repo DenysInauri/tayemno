@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { IGetFoldersByParentResponse } from "@tayemno/shared";
 import { axios } from "../../axios";
 import { useAuth } from "../../../contexts/AuthContext";
-import { useDecryptFolder } from "../useDecryptFolder";
+import { useDecryptFolderAsMember } from "../useDecryptFolderAsMember";
 import { QueryKeyEnum } from "../../../enums/api/QueryKeyEnum";
 import { EndpointEnum } from "../../../enums/api/EndpointEnum";
 import type { ILocalFolder } from "../../../types/local";
@@ -19,7 +19,7 @@ export const useFolders = (
   options?: IUseListOptions,
 ) => {
   const { workspace } = useAuth();
-  const { decrypt } = useDecryptFolder();
+  const { decrypt } = useDecryptFolderAsMember();
 
   const query = useQuery<ILocalFolder[]>({
     queryKey: [QueryKeyEnum.FOLDERS, workspace?.id, parentFolderId],

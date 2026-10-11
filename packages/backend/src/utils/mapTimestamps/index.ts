@@ -1,7 +1,10 @@
 interface IRow {
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date | string;
+  updatedAt: Date | string;
 }
+
+const toISO = (value: Date | string): string =>
+  value instanceof Date ? value.toISOString() : value;
 
 export const mapTimestamps = <T extends IRow>(
   row: T,
@@ -10,6 +13,6 @@ export const mapTimestamps = <T extends IRow>(
   updatedAt: string;
 } => ({
   ...row,
-  createdAt: row.createdAt.toISOString(),
-  updatedAt: row.updatedAt.toISOString(),
+  createdAt: toISO(row.createdAt),
+  updatedAt: toISO(row.updatedAt),
 });

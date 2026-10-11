@@ -1,20 +1,13 @@
-import { Folder } from "@tayemno/shared";
-import { useAuth } from "../../../contexts/AuthContext";
-import { AsymmetricCrypto } from "../../../utils/crypto/AsymmetricCrypto";
+import type { Folder } from "@tayemno/shared";
 import { SymmetricCrypto } from "../../../utils/crypto/SymmetricCrypto";
 import type { ILocalFolder } from "../../../types/local";
+import { useGetFolderKeyAsMember } from "../useGetFolderKeyAsMember";
 
-export const useDecryptFolder = () => {
-  const { keyPair } = useAuth();
+export const useDecryptFolderAsMember = () => {
+  const { getFolderKey } = useGetFolderKeyAsMember();
 
   const decrypt = async (folder: Folder): Promise<ILocalFolder> => {
-    if (!keyPair) throw new Error("Key pair not found");
-
-    const folderKey = await AsymmetricCrypto.decrypt(
-      folder.encryptedSymmetricKey,
-      keyPair.publicKey,
-      keyPair.privateKey,
-    );
+    const folderKey = await getFolderKey(folder.id);
 
     const name = await SymmetricCrypto.decrypt(
       { nonce: folder.nameNonce, ciphertext: folder.encryptedName },

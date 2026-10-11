@@ -1,13 +1,13 @@
-import { Vault } from "@tayemno/shared";
+import type { Vault } from "@tayemno/shared";
 import { useAuth } from "../../../contexts/AuthContext";
 import { AsymmetricCrypto } from "../../../utils/crypto/AsymmetricCrypto";
 import { SymmetricCrypto } from "../../../utils/crypto/SymmetricCrypto";
 import type { ILocalVault } from "../../../types/local";
-import { useGetFolderKey } from "../useGetFolderKey";
+import { useGetFolderKeyAsMember } from "../useGetFolderKeyAsMember";
 
-export const useDecryptVault = () => {
+export const useDecryptVaultAsMember = () => {
   const { workspace, keyPair } = useAuth();
-  const { getFolderKey } = useGetFolderKey();
+  const { getFolderKey } = useGetFolderKeyAsMember();
 
   const decryptVaultData = async (
     vault: Vault,

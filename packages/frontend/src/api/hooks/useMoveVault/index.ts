@@ -8,7 +8,7 @@ import { EndpointEnum } from "../../../enums/api/EndpointEnum";
 import { QueryKeyEnum } from "../../../enums/api/QueryKeyEnum";
 import { SymmetricCrypto } from "../../../utils/crypto/SymmetricCrypto";
 import { AsymmetricCrypto } from "../../../utils/crypto/AsymmetricCrypto";
-import { useGetFolderKey } from "../useGetFolderKey";
+import { useGetFolderKeyAsMember } from "../useGetFolderKeyAsMember";
 import type { ILocalVault } from "../../../types/local";
 
 interface IEncryptedSymmetricKey {
@@ -19,7 +19,7 @@ interface IEncryptedSymmetricKey {
 export const useMoveVault = () => {
   const { keyPair, workspace, user } = useAuth();
   const queryClient = useQueryClient();
-  const { getFolderKey } = useGetFolderKey();
+  const { getFolderKey } = useGetFolderKeyAsMember();
   const [isMoving, setIsMoving] = useState(false);
 
   const encryptVaultKey = async (

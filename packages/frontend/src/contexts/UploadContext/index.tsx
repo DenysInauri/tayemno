@@ -19,7 +19,7 @@ import type {
 } from "@tayemno/shared";
 import { axios } from "../../api";
 import { AsymmetricCrypto } from "../../utils/crypto/AsymmetricCrypto";
-import { useGetFolderKey } from "../../api/hooks/useGetFolderKey";
+import { useGetFolderKeyAsMember } from "../../api/hooks/useGetFolderKeyAsMember";
 import { SymmetricCrypto } from "../../utils/crypto/SymmetricCrypto";
 import { StreamCrypto } from "../../utils/crypto/StreamCrypto";
 import { createThrottledProgress } from "../../utils/createThrottledProgress";
@@ -59,7 +59,7 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
   const queryClient = useQueryClient();
   const presignVault = usePostPresignVault();
   const createVault = usePostCreateVault();
-  const { getFolderKey } = useGetFolderKey();
+  const { getFolderKey } = useGetFolderKeyAsMember();
 
   const uploadsRef = useRef<Map<string, ITransferItem>>(new Map());
   const controllersRef = useRef<Map<string, AbortController>>(new Map());
@@ -131,6 +131,10 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
     if (!keyPair || !workspace || !user) return null;
 
     const vaultKey = await SymmetricCrypto.generateKey();
+    const adminEncryptedSymmetricKey = await AsymmetricCrypto.encrypt(
+      vaultKey,
+      workspace.adminPublicKey,
+    );
 
     if (folderId) {
       const folderSymmetricKey = await getFolderKey(folderId);
@@ -144,6 +148,7 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
         symmetricKey: vaultKey,
         encryptedSymmetricKey: encryptedVaultKey.ciphertext,
         symmetricKeyNonce: encryptedVaultKey.nonce,
+        adminEncryptedSymmetricKey,
       };
     }
 
@@ -156,6 +161,7 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
       encryptedSymmetricKey,
       symmetricKeyNonce: null,
       symmetricKey: vaultKey,
+      adminEncryptedSymmetricKey,
     };
   };
 
@@ -186,8 +192,12 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
         const encryptionKeyResult = await buildVaultEncryptionKey(folderId);
         if (!encryptionKeyResult) return;
 
-        const { encryptedSymmetricKey, symmetricKeyNonce, symmetricKey } =
-          encryptionKeyResult;
+        const {
+          encryptedSymmetricKey,
+          symmetricKeyNonce,
+          symmetricKey,
+          adminEncryptedSymmetricKey,
+        } = encryptionKeyResult;
 
         const vaultData = await encryptAndUploadVault({
           file,
@@ -207,6 +217,7 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
           ...vaultData,
           encryptedSymmetricKey,
           symmetricKeyNonce,
+          adminEncryptedSymmetricKey,
         });
 
         queryClient.invalidateQueries({
@@ -272,6 +283,10 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
           vaultKey,
           folderKey,
         );
+        const adminEncryptedVaultKey = await AsymmetricCrypto.encrypt(
+          vaultKey,
+          workspace!.adminPublicKey,
+        );
 
         const vaultData = await encryptAndUploadVault({
           file,
@@ -297,6 +312,7 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
             ...vaultData,
             encryptedSymmetricKey: encryptedVaultKey.ciphertext,
             symmetricKeyNonce: encryptedVaultKey.nonce,
+            adminEncryptedSymmetricKey: adminEncryptedVaultKey,
           } satisfies ICreateVaultRequest,
         );
 
@@ -307,6 +323,7 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
       const processFolder = async (
         node: IFolderNode,
         parentId: string | null,
+        parentKey: string | null,
       ) => {
         if (controller.signal.aborted) {
           throw new DOMException("Upload aborted", "AbortError");
@@ -317,10 +334,20 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
           folderKey,
           workspace!.adminPublicKey,
         );
-        const memberEncryptedKey = await AsymmetricCrypto.encrypt(
+        const aclEncryptedKey = await AsymmetricCrypto.encrypt(
           folderKey,
           user!.publicKey,
         );
+
+        let wrappedKey: string | null = null;
+        let wrappedKeyNonce: string | null = null;
+
+        if (parentKey) {
+          const wrapped = await SymmetricCrypto.encrypt(folderKey, parentKey);
+          wrappedKey = wrapped.ciphertext;
+          wrappedKeyNonce = wrapped.nonce;
+        }
+
         const encryptedName = await SymmetricCrypto.encrypt(
           node.name,
           folderKey,
@@ -332,7 +359,9 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
             encryptedName: encryptedName.ciphertext,
             nameNonce: encryptedName.nonce,
             encryptedSymmetricKey: adminEncryptedKey,
-            memberEncryptedSymmetricKey: memberEncryptedKey,
+            wrappedKey,
+            wrappedKeyNonce,
+            aclEncryptedFolderKey: aclEncryptedKey,
             parentFolderId: parentId,
           } satisfies ICreateFolderRequest,
         );
@@ -369,12 +398,17 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
         if (firstError) throw firstError;
 
         for (const child of node.children) {
-          await processFolder(child, folderId);
+          await processFolder(child, folderId, folderKey);
         }
       };
 
       try {
-        await processFolder(tree, parentFolderId);
+        let parentKey: string | null = null;
+        if (parentFolderId) {
+          parentKey = await getFolderKey(parentFolderId);
+        }
+
+        await processFolder(tree, parentFolderId, parentKey);
 
         tp.flush();
         queryClient.invalidateQueries({

@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { IGetVaultsByFolderResponse } from "@tayemno/shared";
 import { axios } from "../../axios";
 import { useAuth } from "../../../contexts/AuthContext";
-import { useDecryptVault } from "../useDecryptVault";
+import { useDecryptVaultAsMember } from "../useDecryptVaultAsMember";
 import { QueryKeyEnum } from "../../../enums/api/QueryKeyEnum";
 import { EndpointEnum } from "../../../enums/api/EndpointEnum";
 import type { ILocalVault } from "../../../types/local";
@@ -16,7 +16,7 @@ const collator = new Intl.Collator(undefined, { numeric: true });
 
 export const useVaults = (folderId: string | null, options?: IUseListOptions) => {
   const { workspace } = useAuth();
-  const { decrypt: decryptVault } = useDecryptVault();
+  const { decrypt: decryptVault } = useDecryptVaultAsMember();
 
   const query = useQuery<ILocalVault[]>({
     queryKey: [QueryKeyEnum.VAULTS, workspace?.id, folderId],

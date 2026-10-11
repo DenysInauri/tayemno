@@ -15,8 +15,8 @@ import type {
 import type { ITransferItem } from "../../components/files/TransferAlert";
 import type { ILocalFolder, ILocalVault } from "../../types/local";
 import { useAuth } from "../AuthContext";
-import { useDecryptFolder } from "../../api/hooks/useDecryptFolder";
-import { useDecryptVault } from "../../api/hooks/useDecryptVault";
+import { useDecryptFolderAsMember } from "../../api/hooks/useDecryptFolderAsMember";
+import { useDecryptVaultAsMember } from "../../api/hooks/useDecryptVaultAsMember";
 import { axios } from "../../api";
 import { EndpointEnum } from "../../enums/api/EndpointEnum";
 import { StreamCrypto } from "../../utils/crypto/StreamCrypto";
@@ -52,8 +52,8 @@ interface IDownloadProviderProps {
 
 export const DownloadProvider = ({ children }: IDownloadProviderProps) => {
   const { workspace } = useAuth();
-  const { decrypt: decryptFolder } = useDecryptFolder();
-  const { decrypt: decryptVault } = useDecryptVault();
+  const { decrypt: decryptFolder } = useDecryptFolderAsMember();
+  const { decrypt: decryptVault } = useDecryptVaultAsMember();
 
   const downloadsRef = useRef<Map<string, ITransferItem>>(new Map());
   const controllersRef = useRef<Map<string, AbortController>>(new Map());

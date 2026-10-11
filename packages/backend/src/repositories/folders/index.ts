@@ -12,8 +12,10 @@ export const findByIdAndUserId = async (
            f.encrypted_name AS "encryptedName", f.name_nonce AS "nameNonce",
            f.encrypted_symmetric_key AS "encryptedSymmetricKey",
            f.wrapped_key AS "wrappedKey", f.wrapped_key_nonce AS "wrappedKeyNonce",
+           acl_fa.encrypted_folder_key AS "aclEncryptedFolderKey",
            f.created_at AS "createdAt", f.updated_at AS "updatedAt"
     FROM folders f
+    LEFT JOIN folder_acls acl_fa ON acl_fa.folder_id = f.id AND acl_fa.user_id = ${userId}
     WHERE f.id = ${folderId}
     AND (
       EXISTS (
@@ -67,8 +69,10 @@ export const findByWorkspaceIdAndUserId = async (
            f.encrypted_name AS "encryptedName", f.name_nonce AS "nameNonce",
            f.encrypted_symmetric_key AS "encryptedSymmetricKey",
            f.wrapped_key AS "wrappedKey", f.wrapped_key_nonce AS "wrappedKeyNonce",
+           acl_fa.encrypted_folder_key AS "aclEncryptedFolderKey",
            f.created_at AS "createdAt", f.updated_at AS "updatedAt"
     FROM folders f
+    LEFT JOIN folder_acls acl_fa ON acl_fa.folder_id = f.id AND acl_fa.user_id = ${userId}
     WHERE f.workspace_id = ${workspaceId}
     AND ${parentCondition}
     AND (
@@ -143,13 +147,15 @@ export const findBreadcrumbs = async (
       FROM folders f
       INNER JOIN ancestors a ON f.id = a.parent_folder_id
     )
-    SELECT id, workspace_id AS "workspaceId", parent_folder_id AS "parentFolderId",
-           encrypted_name AS "encryptedName", name_nonce AS "nameNonce",
-           encrypted_symmetric_key AS "encryptedSymmetricKey",
-           wrapped_key AS "wrappedKey", wrapped_key_nonce AS "wrappedKeyNonce",
-           created_at AS "createdAt", updated_at AS "updatedAt"
-    FROM ancestors
-    ORDER BY depth DESC
+    SELECT a.id, a.workspace_id AS "workspaceId", a.parent_folder_id AS "parentFolderId",
+           a.encrypted_name AS "encryptedName", a.name_nonce AS "nameNonce",
+           a.encrypted_symmetric_key AS "encryptedSymmetricKey",
+           a.wrapped_key AS "wrappedKey", a.wrapped_key_nonce AS "wrappedKeyNonce",
+           acl_fa.encrypted_folder_key AS "aclEncryptedFolderKey",
+           a.created_at AS "createdAt", a.updated_at AS "updatedAt"
+    FROM ancestors a
+    LEFT JOIN folder_acls acl_fa ON acl_fa.folder_id = a.id AND acl_fa.user_id = ${userId}
+    ORDER BY a.depth DESC
   `);
   return rows as unknown as any[];
 };
@@ -172,8 +178,10 @@ export const findAllByUser = async (
            f.encrypted_name AS "encryptedName", f.name_nonce AS "nameNonce",
            f.encrypted_symmetric_key AS "encryptedSymmetricKey",
            f.wrapped_key AS "wrappedKey", f.wrapped_key_nonce AS "wrappedKeyNonce",
+           acl_fa.encrypted_folder_key AS "aclEncryptedFolderKey",
            f.created_at AS "createdAt", f.updated_at AS "updatedAt"
     FROM folders f
+    LEFT JOIN folder_acls acl_fa ON acl_fa.folder_id = f.id AND acl_fa.user_id = ${userId}
     WHERE f.workspace_id = ${workspaceId}
     AND (
       EXISTS (

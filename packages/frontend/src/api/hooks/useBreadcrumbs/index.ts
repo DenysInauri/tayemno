@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { IGetBreadcrumbsResponse } from "@tayemno/shared";
 import { axios } from "../../axios";
 import { useAuth } from "../../../contexts/AuthContext";
-import { useDecryptFolder } from "../useDecryptFolder";
+import { useDecryptFolderAsMember } from "../useDecryptFolderAsMember";
 import { QueryKeyEnum } from "../../../enums/api/QueryKeyEnum";
 import { EndpointEnum } from "../../../enums/api/EndpointEnum";
 
@@ -13,7 +13,7 @@ export interface IBreadcrumb {
 
 export const useBreadcrumbs = (folderId: string | null) => {
   const { workspace } = useAuth();
-  const { decrypt } = useDecryptFolder();
+  const { decrypt } = useDecryptFolderAsMember();
 
   const query = useQuery<IBreadcrumb[]>({
     queryKey: [QueryKeyEnum.BREADCRUMBS, workspace?.id, folderId],

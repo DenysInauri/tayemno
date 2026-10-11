@@ -17,6 +17,7 @@ import { CreateFolderModal } from "../CreateFolderModal";
 import { usePostCreateFolder } from "../../../api/hooks/usePostCreateFolder";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useUpload } from "../../../contexts/UploadContext";
+import { useGetFolderKeyAsMember } from "../../../api/hooks/useGetFolderKeyAsMember";
 import { SymmetricCrypto } from "../../../utils/crypto/SymmetricCrypto";
 import { AsymmetricCrypto } from "../../../utils/crypto/AsymmetricCrypto";
 import { QueryKeyEnum } from "../../../enums/api/QueryKeyEnum";
@@ -31,6 +32,7 @@ export const AddNewEntity = (props: IProps) => {
   const { upload, uploadFolder } = useUpload();
   const queryClient = useQueryClient();
   const createFolder = usePostCreateFolder();
+  const { getFolderKey } = useGetFolderKeyAsMember();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
   const [
@@ -46,10 +48,20 @@ export const AddNewEntity = (props: IProps) => {
       folderKey,
       workspace.adminPublicKey,
     );
-    const memberEncryptedKey = await AsymmetricCrypto.encrypt(
+    const aclEncryptedKey = await AsymmetricCrypto.encrypt(
       folderKey,
       user.publicKey,
     );
+
+    let wrappedKey: string | null = null;
+    let wrappedKeyNonce: string | null = null;
+
+    if (props.folderId) {
+      const parentKey = await getFolderKey(props.folderId);
+      const wrapped = await SymmetricCrypto.encrypt(folderKey, parentKey);
+      wrappedKey = wrapped.ciphertext;
+      wrappedKeyNonce = wrapped.nonce;
+    }
 
     const encrypted = await SymmetricCrypto.encrypt(name, folderKey);
 
@@ -57,7 +69,9 @@ export const AddNewEntity = (props: IProps) => {
       encryptedName: encrypted.ciphertext,
       nameNonce: encrypted.nonce,
       encryptedSymmetricKey: adminEncryptedKey,
-      memberEncryptedSymmetricKey: memberEncryptedKey,
+      wrappedKey,
+      wrappedKeyNonce,
+      aclEncryptedFolderKey: aclEncryptedKey,
       parentFolderId: props.folderId,
     });
 

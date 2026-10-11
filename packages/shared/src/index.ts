@@ -81,6 +81,7 @@ export interface Folder {
   encryptedSymmetricKey: string;
   wrappedKey: string | null;
   wrappedKeyNonce: string | null;
+  aclEncryptedFolderKey?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -123,6 +124,7 @@ export interface Vault {
   contentNonce: string;
   encryptedSymmetricKey: string;
   symmetricKeyNonce: string | null;
+  adminEncryptedSymmetricKey: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -139,6 +141,7 @@ export interface NewVault {
   contentNonce: string;
   encryptedSymmetricKey: string;
   symmetricKeyNonce?: string | null;
+  adminEncryptedSymmetricKey?: string | null;
 }
 
 export interface HealthCheckResponse {
@@ -283,9 +286,14 @@ export interface ICreateVaultRequest {
   contentNonce: string;
   encryptedSymmetricKey: string;
   symmetricKeyNonce?: string | null;
+  adminEncryptedSymmetricKey: string;
 }
 
 export interface ICreateVaultResponse {
+  vault: Vault;
+}
+
+export interface IGetVaultResponse {
   vault: Vault;
 }
 
