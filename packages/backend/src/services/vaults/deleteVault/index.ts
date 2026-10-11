@@ -42,12 +42,19 @@ export const deleteVault = async (
     }
   }
 
-  await s3.send(
-    new DeleteObjectCommand({
-      Bucket: bucket,
-      Key: vault.s3Key,
-    }),
-  );
+  const deleteOps = [
+    s3.send(new DeleteObjectCommand({ Bucket: bucket, Key: vault.s3Key })),
+  ];
+
+  if (vault.thumbnailS3Key) {
+    deleteOps.push(
+      s3.send(
+        new DeleteObjectCommand({ Bucket: bucket, Key: vault.thumbnailS3Key }),
+      ),
+    );
+  }
+
+  await Promise.all(deleteOps);
 
   await vaultsRepo.deleteById(db, vaultId);
 
