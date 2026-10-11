@@ -29,6 +29,7 @@ interface IProps {
   isMoving: boolean;
   onClose: () => void;
   onConfirm: (targetFolderId: string | null) => void;
+  disabledFolders?: string[];
 }
 
 const buildTreeData = (
@@ -38,8 +39,7 @@ const buildTreeData = (
   const mapNode = (node: IFolderTreeNode): TreeNodeData => ({
     value: node.id,
     label: node.name,
-    children:
-      node.children.length > 0 ? node.children.map(mapNode) : undefined,
+    children: node.children.map(mapNode),
   });
 
   return [
@@ -51,20 +51,29 @@ const buildTreeData = (
   ];
 };
 
-export const MoveVaultModal = ({
+export const MoveItemModal = ({
   opened,
   currentFolderId,
   isMoving,
   onClose,
   onConfirm,
+  disabledFolders,
 }: IProps) => {
   const { t } = useTranslation();
   const { treeData: folderTree, expandNode } = useLazyFolderTree(opened);
 
   const treeData = useMemo(
-    () => buildTreeData(folderTree, t("files.moveVault.rootFolder")),
+    () => buildTreeData(folderTree, t("files.moveItem.rootFolder")),
     [folderTree, t],
   );
+
+  const disabledFolderIds = useMemo(() => {
+    const ids = new Set<string>();
+    if (!disabledFolders) return ids;
+
+    disabledFolders.forEach((id) => ids.add(id));
+    return ids;
+  }, [disabledFolders]);
 
   const tree = useTree({
     initialExpandedState: { [ROOT_VALUE]: true },
@@ -72,7 +81,7 @@ export const MoveVaultModal = ({
 
   const isDisabled = (value: string) => {
     if (currentFolderId === null && value === ROOT_VALUE) return true;
-    return value === currentFolderId;
+    return disabledFolderIds.has(value);
   };
 
   const handleClose = () => {
@@ -112,10 +121,6 @@ export const MoveVaultModal = ({
       <div
         {...elementProps}
         onClick={(e) => {
-          if (disabled) {
-            e.stopPropagation();
-            return;
-          }
           if (hasChildren && !expanded && node.value !== ROOT_VALUE) {
             expandNode(node.value);
           }
@@ -149,13 +154,13 @@ export const MoveVaultModal = ({
     <Modal
       opened={opened}
       onClose={handleClose}
-      title={t("files.moveVault.title")}
+      title={t("files.moveItem.title")}
     >
       <Stack>
         <Text size="sm" c={TextColorEnum.TERTIARY}>
-          {t("files.moveVault.description")}
+          {t("files.moveItem.description")}
         </Text>
-        <Text size="sm">{t("files.moveVault.selectLabel")}</Text>
+        <Text size="sm">{t("files.moveItem.selectLabel")}</Text>
         <Tree
           data={treeData}
           tree={tree}
@@ -164,14 +169,14 @@ export const MoveVaultModal = ({
         />
         <Group justify="space-between">
           <Button variant="default" onClick={handleClose}>
-            {t("files.moveVault.cancel")}
+            {t("files.moveItem.cancel")}
           </Button>
           <Button
             loading={isMoving}
             disabled={tree.selectedState.length === 0}
             onClick={handleConfirm}
           >
-            {t("files.moveVault.submit")}
+            {t("files.moveItem.submit")}
           </Button>
         </Group>
       </Stack>

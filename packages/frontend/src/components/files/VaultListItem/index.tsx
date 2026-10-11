@@ -10,7 +10,7 @@ import {
 import type { ILocalVault } from "../../../types/local";
 
 import { FileListItem } from "../FileListItem";
-import { MoveVaultModal } from "../MoveVaultModal";
+import { MoveItemModal } from "../MoveItemModal";
 import { ActionIcon } from "../../ui/ActionIcon";
 import { useDownload } from "../../../contexts/DownloadContext";
 import { useDeleteVault } from "../../../api/hooks/useDeleteVault";
@@ -76,7 +76,7 @@ export const VaultListItem = ({ vault }: IProps) => {
           </Menu>
         }
       />
-      <MoveVaultModal
+      <MoveItemModal
         opened={moveModalOpened}
         currentFolderId={vault.folderId}
         isMoving={isMoving}
