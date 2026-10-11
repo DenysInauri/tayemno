@@ -1,6 +1,7 @@
 import type { IGetAllFoldersResponse } from "@tayemno/shared";
 import type { Database } from "../../../db";
 import * as foldersRepo from "../../../repositories/folders";
+import * as folderAclsRepo from "../../../repositories/folderAcls";
 import { mapTimestamps } from "../../../utils/mapTimestamps";
 
 export const getAllFolders = async (
@@ -8,6 +9,13 @@ export const getAllFolders = async (
   userId: string,
   workspaceId: string,
 ): Promise<IGetAllFoldersResponse> => {
-  const rows = await foldersRepo.findAllByUser(db, workspaceId, userId);
-  return { folders: rows.map(mapTimestamps) };
+  const [rows, acls] = await Promise.all([
+    foldersRepo.findAllByUser(db, workspaceId, userId),
+    folderAclsRepo.findByUserIdAndWorkspaceId(db, userId, workspaceId),
+  ]);
+
+  return {
+    folders: rows.map(mapTimestamps) as IGetAllFoldersResponse["folders"],
+    acls: acls.map(mapTimestamps) as IGetAllFoldersResponse["acls"],
+  };
 };

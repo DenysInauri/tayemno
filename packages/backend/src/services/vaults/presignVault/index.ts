@@ -4,7 +4,7 @@ import type { IPresignVaultRequest, IPresignVaultResponse } from "@tayemno/share
 import type { Database } from "../../../db";
 import type { S3 } from "../../../utils/s3";
 import * as workspaceMembersRepo from "../../../repositories/workspaceMembers";
-import * as folderMembersRepo from "../../../repositories/folderMembers";
+import * as folderAclsRepo from "../../../repositories/folderAcls";
 import { HttpError } from "../../../utils/httpError";
 
 export const presignVault = async (
@@ -15,7 +15,7 @@ export const presignVault = async (
   data: IPresignVaultRequest,
 ): Promise<IPresignVaultResponse> => {
   if (data.folderId) {
-    const folderMembership = await folderMembersRepo.findByFolderIdAndUserId(
+    const folderMembership = await folderAclsRepo.findByFolderIdAndUserId(
       db,
       data.folderId,
       userId,

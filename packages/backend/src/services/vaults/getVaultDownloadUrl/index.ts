@@ -4,7 +4,7 @@ import type { IGetVaultDownloadUrlResponse } from "@tayemno/shared";
 import type { Database } from "../../../db";
 import type { S3 } from "../../../utils/s3";
 import * as vaultsRepo from "../../../repositories/vaults";
-import * as folderMembersRepo from "../../../repositories/folderMembers";
+import * as folderAclsRepo from "../../../repositories/folderAcls";
 import * as workspaceMembersRepo from "../../../repositories/workspaceMembers";
 import { HttpError } from "../../../utils/httpError";
 
@@ -22,7 +22,7 @@ export const getVaultDownloadUrl = async (
   }
 
   if (vault.folderId) {
-    const membership = await folderMembersRepo.findByFolderIdAndUserId(
+    const membership = await folderAclsRepo.findByFolderIdAndUserId(
       db,
       vault.folderId,
       userId,

@@ -4,3 +4,6 @@ export { getAllFolders } from "./getAllFolders";
 export { getFoldersByParent } from "./getFoldersByParent";
 export { getFolder } from "./getFolder";
 export { getBreadcrumbs } from "./getBreadcrumbs";
+export { moveFolder } from "./moveFolder";
+export { createFolderAcl } from "./createFolderAcl";
+export { deleteFolderAcl } from "./deleteFolderAcl";

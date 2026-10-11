@@ -127,6 +127,8 @@ export const folders = pgTable("folders", {
   encryptedName: text("encrypted_name").notNull(),
   nameNonce: text("name_nonce").notNull(),
   encryptedSymmetricKey: text("encrypted_symmetric_key").notNull(),
+  wrappedKey: text("wrapped_key"),
+  wrappedKeyNonce: text("wrapped_key_nonce"),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
@@ -137,8 +139,8 @@ export const folders = pgTable("folders", {
     .$onUpdate(() => new Date()),
 });
 
-export const folderMembers = pgTable(
-  "folder_members",
+export const folderAcls = pgTable(
+  "folder_acls",
   {
     id: uuid("id").defaultRandom().primaryKey(),
     folderId: uuid("folder_id")
@@ -147,7 +149,7 @@ export const folderMembers = pgTable(
     userId: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    encryptedSymmetricKey: text("encrypted_symmetric_key").notNull(),
+    encryptedFolderKey: text("encrypted_folder_key").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),

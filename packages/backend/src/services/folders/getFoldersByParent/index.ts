@@ -28,5 +28,5 @@ export const getFoldersByParent = async (
     parentFolderId,
   );
 
-  return { folders: rows.map(mapTimestamps) };
+  return { folders: rows.map(mapTimestamps) as IGetFoldersByParentResponse["folders"] };
 };

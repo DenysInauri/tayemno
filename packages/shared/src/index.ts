@@ -79,6 +79,8 @@ export interface Folder {
   encryptedName: string;
   nameNonce: string;
   encryptedSymmetricKey: string;
+  wrappedKey: string | null;
+  wrappedKeyNonce: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -89,21 +91,23 @@ export interface NewFolder {
   encryptedName: string;
   nameNonce: string;
   encryptedSymmetricKey: string;
+  wrappedKey?: string | null;
+  wrappedKeyNonce?: string | null;
 }
 
-export interface FolderMember {
+export interface FolderAcl {
   id: string;
   folderId: string;
   userId: string;
-  encryptedSymmetricKey: string;
+  encryptedFolderKey: string;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface NewFolderMember {
+export interface NewFolderAcl {
   folderId: string;
   userId: string;
-  encryptedSymmetricKey: string;
+  encryptedFolderKey: string;
 }
 
 export interface Vault {
@@ -247,7 +251,9 @@ export interface ICreateFolderRequest {
   encryptedName: string;
   nameNonce: string;
   encryptedSymmetricKey: string;
-  memberEncryptedSymmetricKey: string;
+  wrappedKey: string | null;
+  wrappedKeyNonce: string | null;
+  aclEncryptedFolderKey: string;
   parentFolderId?: string | null;
 }
 
@@ -307,6 +313,7 @@ export interface IMoveVaultResponse {
 
 export interface IGetAllFoldersResponse {
   folders: Folder[];
+  acls: FolderAcl[];
 }
 
 export interface IGetAllVaultsResponse {
@@ -327,5 +334,29 @@ export interface IGetBreadcrumbsResponse {
 
 export interface IGetVaultsByFolderResponse {
   vaults: Vault[];
+}
+
+export interface IMoveFolderRequest {
+  newParentFolderId: string | null;
+  wrappedKey: string | null;
+  wrappedKeyNonce: string | null;
+  encryptedSymmetricKey: string;
+}
+
+export interface IMoveFolderResponse {
+  folder: Folder;
+}
+
+export interface ICreateFolderAclRequest {
+  userId: string;
+  encryptedFolderKey: string;
+}
+
+export interface ICreateFolderAclResponse {
+  acl: FolderAcl;
+}
+
+export interface IDeleteFolderAclResponse {
+  message: string;
 }
 

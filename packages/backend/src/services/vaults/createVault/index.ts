@@ -5,7 +5,7 @@ import type {
 import type { Database } from "../../../db";
 import { create as insertVault } from "../../../repositories/vaults";
 import * as workspaceMembersRepo from "../../../repositories/workspaceMembers";
-import * as folderMembersRepo from "../../../repositories/folderMembers";
+import * as folderAclsRepo from "../../../repositories/folderAcls";
 import { HttpError } from "../../../utils/httpError";
 import { mapTimestamps } from "../../../utils/mapTimestamps";
 
@@ -15,7 +15,7 @@ export const createVault = async (
   data: ICreateVaultRequest,
 ): Promise<ICreateVaultResponse> => {
   if (data.folderId) {
-    const folderMembership = await folderMembersRepo.findByFolderIdAndUserId(
+    const folderMembership = await folderAclsRepo.findByFolderIdAndUserId(
       db,
       data.folderId,
       userId,

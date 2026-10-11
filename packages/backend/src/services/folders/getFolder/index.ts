@@ -15,5 +15,5 @@ export const getFolder = async (
     throw new HttpError(404, "Folder not found");
   }
 
-  return { folder: mapTimestamps(folder) };
+  return { folder: mapTimestamps(folder) as IGetFolderResponse["folder"] };
 };

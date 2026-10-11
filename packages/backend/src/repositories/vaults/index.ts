@@ -83,7 +83,7 @@ export const findByFolderAndUser = async (
              v.created_at AS "createdAt", v.updated_at AS "updatedAt"
       FROM vaults v
       WHERE v.folder_id = ${folderId}
-      AND EXISTS (SELECT 1 FROM folder_members fm WHERE fm.folder_id = ${folderId} AND fm.user_id = ${userId})
+      AND EXISTS (SELECT 1 FROM folder_acls fa WHERE fa.folder_id = ${folderId} AND fa.user_id = ${userId})
     `);
     return rows;
   }
@@ -124,7 +124,7 @@ export const findAllByWorkspaceAndUser = async (
     AND EXISTS (SELECT 1 FROM workspace_members wm WHERE wm.workspace_id = ${workspaceId} AND wm.user_id = ${userId})
     AND (
       v.folder_id IS NULL
-      OR v.folder_id IN (SELECT fm.folder_id FROM folder_members fm WHERE fm.user_id = ${userId})
+      OR v.folder_id IN (SELECT fa.folder_id FROM folder_acls fa WHERE fa.user_id = ${userId})
     )
   `);
   return rows;

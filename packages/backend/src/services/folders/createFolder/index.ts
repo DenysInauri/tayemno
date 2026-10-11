@@ -4,7 +4,7 @@ import type {
   ICreateFolderResponse,
 } from "@tayemno/shared";
 import { create as insertFolder } from "../../../repositories/folders";
-import * as folderMembersRepo from "../../../repositories/folderMembers";
+import * as folderAclsRepo from "../../../repositories/folderAcls";
 import * as workspaceMembersRepo from "../../../repositories/workspaceMembers";
 import { HttpError } from "../../../utils/httpError";
 import { mapTimestamps } from "../../../utils/mapTimestamps";
@@ -26,13 +26,13 @@ export const createFolder = async (
   }
 
   if (data.parentFolderId) {
-    const parentMembership = await folderMembersRepo.findByFolderIdAndUserId(
+    const parentAcl = await folderAclsRepo.findByFolderIdAndUserId(
       db,
       data.parentFolderId,
       userId,
     );
 
-    if (!parentMembership) {
+    if (!parentAcl && membership.role === "member") {
       throw new HttpError(403, "Access denied to parent folder");
     }
   }
@@ -42,19 +42,16 @@ export const createFolder = async (
     encryptedName: data.encryptedName,
     nameNonce: data.nameNonce,
     encryptedSymmetricKey: data.encryptedSymmetricKey,
+    wrappedKey: data.wrappedKey ?? null,
+    wrappedKeyNonce: data.wrappedKeyNonce ?? null,
     parentFolderId: data.parentFolderId ?? null,
   });
 
-  const folderMember = await folderMembersRepo.create(db, {
+  await folderAclsRepo.create(db, {
     folderId: folder.id,
     userId,
-    encryptedSymmetricKey: data.memberEncryptedSymmetricKey,
+    encryptedFolderKey: data.aclEncryptedFolderKey,
   });
 
-  const folderWithMemberKey = {
-    ...folder,
-    encryptedSymmetricKey: folderMember.encryptedSymmetricKey,
-  };
-
-  return { folder: mapTimestamps(folderWithMemberKey) };
+  return { folder: mapTimestamps(folder) };
 };

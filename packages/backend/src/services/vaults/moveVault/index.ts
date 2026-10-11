@@ -2,7 +2,7 @@ import type { IMoveVaultRequest, IMoveVaultResponse } from "@tayemno/shared";
 import type { Database } from "../../../db";
 import * as vaultsRepo from "../../../repositories/vaults";
 import * as workspaceMembersRepo from "../../../repositories/workspaceMembers";
-import * as folderMembersRepo from "../../../repositories/folderMembers";
+import * as folderAclsRepo from "../../../repositories/folderAcls";
 import { HttpError } from "../../../utils/httpError";
 import { mapTimestamps } from "../../../utils/mapTimestamps";
 
@@ -19,7 +19,7 @@ export const moveVault = async (
   }
 
   if (vault.folderId) {
-    const membership = await folderMembersRepo.findByFolderIdAndUserId(
+    const membership = await folderAclsRepo.findByFolderIdAndUserId(
       db,
       vault.folderId,
       userId,
@@ -35,7 +35,7 @@ export const moveVault = async (
   }
 
   if (data.targetFolderId) {
-    const membership = await folderMembersRepo.findByFolderIdAndUserId(
+    const membership = await folderAclsRepo.findByFolderIdAndUserId(
       db,
       data.targetFolderId,
       userId,

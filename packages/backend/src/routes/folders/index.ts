@@ -6,6 +6,9 @@ import { getAllFoldersRoute } from "./getAllFolders";
 import { getFoldersByParentRoute } from "./getFoldersByParent";
 import { getFolderRoute } from "./getFolder";
 import { getBreadcrumbsRoute } from "./getBreadcrumbs";
+import { moveFolderRoute } from "./moveFolder";
+import { createFolderAclRoute } from "./createFolderAcl";
+import { deleteFolderAclRoute } from "./deleteFolderAcl";
 
 export const foldersRoutes = async (app: FastifyInstance) => {
   app.addHook("onRequest", authenticate);
@@ -16,4 +19,7 @@ export const foldersRoutes = async (app: FastifyInstance) => {
   await app.register(getFoldersByParentRoute);
   await app.register(createFolderRoute);
   await app.register(deleteFolderRoute);
+  await app.register(moveFolderRoute);
+  await app.register(createFolderAclRoute);
+  await app.register(deleteFolderAclRoute);
 };
