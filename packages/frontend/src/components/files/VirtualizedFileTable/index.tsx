@@ -6,15 +6,10 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import type { ILocalFolder, ILocalVault } from "../../../types/local";
 import { FolderListItem } from "../FolderListItem";
 import { VaultListItem } from "../VaultListItem";
-import {
-  PreviewOverlay,
-  type IPreviewOverlayHandle,
-} from "../PreviewOverlay";
+import { PreviewOverlay, type IPreviewOverlayHandle } from "../PreviewOverlay";
 import { TableSkeleton } from "../TableSkeleton";
 
-type ListItem =
-  | { type: "folder"; data: ILocalFolder }
-  | { type: "vault"; data: ILocalVault };
+type ListItem = ILocalFolder | ILocalVault;
 
 const ROW_HEIGHT = 48;
 
@@ -39,10 +34,7 @@ export const VirtualizedFileTable = ({
   );
 
   const items = useMemo<ListItem[]>(
-    () => [
-      ...folders.map((f) => ({ type: "folder" as const, data: f })),
-      ...vaults.map((v) => ({ type: "vault" as const, data: v })),
-    ],
+    () => [...folders, ...vaults],
     [folders, vaults],
   );
 
@@ -88,25 +80,35 @@ export const VirtualizedFileTable = ({
               <>
                 {paddingTop > 0 && (
                   <tr>
-                    <td style={{ height: paddingTop, padding: 0, border: "none" }} />
+                    <td
+                      style={{ height: paddingTop, padding: 0, border: "none" }}
+                    />
                   </tr>
                 )}
                 {virtualItems.map((virtualRow) => {
                   const item = items[virtualRow.index];
-                  return item.type === "folder" ? (
-                    <FolderListItem key={item.data.id} folder={item.data} />
-                  ) : (
-                    <VaultListItem
-                      key={item.data.id}
-                      vault={item.data}
-                      onPreview={handlePreview}
-                    />
-                  );
+                  const isFile = "mimeType" in item;
+
+                  if (isFile) {
+                    return (
+                      <VaultListItem
+                        key={item.id}
+                        vault={item}
+                        onPreview={handlePreview}
+                      />
+                    );
+                  }
+
+                  return <FolderListItem key={item.id} folder={item} />;
                 })}
                 {paddingBottom > 0 && (
                   <tr>
                     <td
-                      style={{ height: paddingBottom, padding: 0, border: "none" }}
+                      style={{
+                        height: paddingBottom,
+                        padding: 0,
+                        border: "none",
+                      }}
                     />
                   </tr>
                 )}
