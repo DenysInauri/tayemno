@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 declare const self: ServiceWorkerGlobalScope;
 
+// @ts-ignore
 import sodium from "libsodium-wrappers-sumo";
 import {
   SW_MSG_REGISTER_PREVIEW,
@@ -32,9 +33,7 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("message", (event) => {
-  const data = event.data as
-    | ISwPreviewRegistration
-    | ISwPreviewDeregistration;
+  const data = event.data as ISwPreviewRegistration | ISwPreviewDeregistration;
 
   if (data.type === SW_MSG_REGISTER_PREVIEW) {
     if (previews.size >= MAX_PENDING) {
@@ -65,9 +64,7 @@ self.addEventListener("fetch", (event) => {
   if (!url.pathname.startsWith(SW_FILE_PREFIX)) return;
   if (event.request.method !== "GET") return;
 
-  const id = decodeURIComponent(
-    url.pathname.slice(SW_FILE_PREFIX.length),
-  );
+  const id = decodeURIComponent(url.pathname.slice(SW_FILE_PREFIX.length));
   const preview = previews.get(id);
 
   if (!preview) {
@@ -83,9 +80,7 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(handlePreview(preview));
 });
 
-const handlePreview = async (
-  preview: IPendingPreview,
-): Promise<Response> => {
+const handlePreview = async (preview: IPendingPreview): Promise<Response> => {
   try {
     await sodium.ready;
 
@@ -96,6 +91,7 @@ const handlePreview = async (
     );
 
     const encryptedResponse = await fetch(preview.presignedUrl);
+
     if (!encryptedResponse.ok) {
       return new Response("failed to fetch encrypted file", { status: 502 });
     }
@@ -120,12 +116,11 @@ const handlePreview = async (
             const slice = encryptedBlob.slice(offset, end);
             const buffer = new Uint8Array(await slice.arrayBuffer());
 
-            const result =
-              sodium.crypto_secretstream_xchacha20poly1305_pull(
-                state,
-                buffer,
-                null,
-              );
+            const result = sodium.crypto_secretstream_xchacha20poly1305_pull(
+              state,
+              buffer,
+              null,
+            );
 
             if (!result) {
               controller.error(

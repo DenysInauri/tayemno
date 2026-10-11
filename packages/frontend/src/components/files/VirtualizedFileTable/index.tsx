@@ -1,4 +1,4 @@
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Table } from "@mantine/core";
 import { useVirtualizer } from "@tanstack/react-virtual";
@@ -6,6 +6,10 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import type { ILocalFolder, ILocalVault } from "../../../types/local";
 import { FolderListItem } from "../FolderListItem";
 import { VaultListItem } from "../VaultListItem";
+import {
+  PreviewOverlay,
+  type IPreviewOverlayHandle,
+} from "../PreviewOverlay";
 import { TableSkeleton } from "../TableSkeleton";
 
 type ListItem =
@@ -27,6 +31,12 @@ export const VirtualizedFileTable = ({
 }: IProps) => {
   const { t } = useTranslation();
   const parentRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<IPreviewOverlayHandle>(null);
+
+  const handlePreview = useCallback(
+    (vault: ILocalVault) => previewRef.current?.open(vault),
+    [],
+  );
 
   const items = useMemo<ListItem[]>(
     () => [
@@ -51,54 +61,61 @@ export const VirtualizedFileTable = ({
       : 0;
 
   return (
-    <div ref={parentRef} style={{ flex: 1, overflow: "auto" }}>
-      <Table highlightOnHover>
-        <Table.Thead
-          style={{
-            position: "sticky",
-            top: 0,
-            zIndex: 1,
-            background: "var(--mantine-color-body)",
-          }}
-        >
-          <Table.Tr>
-            <Table.Th>{t("files.columns.name")}</Table.Th>
-            <Table.Th visibleFrom="sm">{t("files.columns.size")}</Table.Th>
-            <Table.Th visibleFrom="sm">
-              {t("files.columns.modified")}
-            </Table.Th>
-            <Table.Th w={40} />
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {isLoading ? (
-            <TableSkeleton />
-          ) : (
-            <>
-              {paddingTop > 0 && (
-                <tr>
-                  <td style={{ height: paddingTop, padding: 0, border: "none" }} />
-                </tr>
-              )}
-              {virtualItems.map((virtualRow) => {
-                const item = items[virtualRow.index];
-                return item.type === "folder" ? (
-                  <FolderListItem key={item.data.id} folder={item.data} />
-                ) : (
-                  <VaultListItem key={item.data.id} vault={item.data} />
-                );
-              })}
-              {paddingBottom > 0 && (
-                <tr>
-                  <td
-                    style={{ height: paddingBottom, padding: 0, border: "none" }}
-                  />
-                </tr>
-              )}
-            </>
-          )}
-        </Table.Tbody>
-      </Table>
-    </div>
+    <>
+      <div ref={parentRef} style={{ flex: 1, overflow: "auto" }}>
+        <Table highlightOnHover>
+          <Table.Thead
+            style={{
+              position: "sticky",
+              top: 0,
+              zIndex: 1,
+              background: "var(--mantine-color-body)",
+            }}
+          >
+            <Table.Tr>
+              <Table.Th>{t("files.columns.name")}</Table.Th>
+              <Table.Th visibleFrom="sm">{t("files.columns.size")}</Table.Th>
+              <Table.Th visibleFrom="sm">
+                {t("files.columns.modified")}
+              </Table.Th>
+              <Table.Th w={40} />
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {isLoading ? (
+              <TableSkeleton />
+            ) : (
+              <>
+                {paddingTop > 0 && (
+                  <tr>
+                    <td style={{ height: paddingTop, padding: 0, border: "none" }} />
+                  </tr>
+                )}
+                {virtualItems.map((virtualRow) => {
+                  const item = items[virtualRow.index];
+                  return item.type === "folder" ? (
+                    <FolderListItem key={item.data.id} folder={item.data} />
+                  ) : (
+                    <VaultListItem
+                      key={item.data.id}
+                      vault={item.data}
+                      onPreview={handlePreview}
+                    />
+                  );
+                })}
+                {paddingBottom > 0 && (
+                  <tr>
+                    <td
+                      style={{ height: paddingBottom, padding: 0, border: "none" }}
+                    />
+                  </tr>
+                )}
+              </>
+            )}
+          </Table.Tbody>
+        </Table>
+      </div>
+      <PreviewOverlay ref={previewRef} vaults={vaults} />
+    </>
   );
 };

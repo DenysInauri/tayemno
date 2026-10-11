@@ -172,5 +172,25 @@
     "emptySearch": {
       "title": "No matching files or folders"
     }
+  },
+  "preview": {
+    "close": "Close",
+    "download": "Download",
+    "previous": "Previous",
+    "next": "Next",
+    "unsupported": {
+      "title": "Preview not available",
+      "description": "This file type cannot be previewed. Download it to view."
+    },
+    "tooLarge": {
+      "title": "File too large to preview",
+      "description": "This file is {{size}}. Files over 100 MB cannot be previewed."
+    },
+    "error": {
+      "title": "Failed to load preview",
+      "description": "Something went wrong while loading the preview."
+    },
+    "loading": "Loading preview...",
+    "counter": "{{current}} / {{total}}"
   }
 }

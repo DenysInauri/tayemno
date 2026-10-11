@@ -18,9 +18,10 @@ import { useMoveVault } from "../../../api/hooks/useMoveVault";
 
 interface IProps {
   vault: ILocalVault;
+  onPreview: (vault: ILocalVault) => void;
 }
 
-export const VaultListItem = ({ vault }: IProps) => {
+export const VaultListItem = ({ vault, onPreview }: IProps) => {
   const { t } = useTranslation();
   const { download, isDownloading } = useDownload();
   const { deleteVault, isDeleting } = useDeleteVault(vault.id);
@@ -40,7 +41,7 @@ export const VaultListItem = ({ vault }: IProps) => {
         isFolder={false}
         sizeBytes={vault.sizeBytes}
         updatedAt={vault.updatedAt}
-        onClick={() => {}}
+        onClick={() => onPreview(vault)}
         actions={
           <Menu position="bottom-end">
             <Menu.Target>
