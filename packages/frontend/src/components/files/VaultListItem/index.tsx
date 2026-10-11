@@ -15,6 +15,7 @@ import { ActionIcon } from "../../ui/ActionIcon";
 import { useDownload } from "../../../contexts/DownloadContext";
 import { useDeleteVault } from "../../../api/hooks/useDeleteVault";
 import { useMoveVault } from "../../../api/hooks/useMoveVault";
+import { useThumbnail } from "../../../hooks/useThumbnail";
 
 interface IProps {
   vault: ILocalVault;
@@ -23,6 +24,7 @@ interface IProps {
 
 export const VaultListItem = ({ vault, onPreview }: IProps) => {
   const { t } = useTranslation();
+  const thumbnailUrl = useThumbnail(vault);
   const { download, isDownloading } = useDownload();
   const { deleteVault, isDeleting } = useDeleteVault(vault.id);
   const { move, isMoving } = useMoveVault();
@@ -41,6 +43,7 @@ export const VaultListItem = ({ vault, onPreview }: IProps) => {
         isFolder={false}
         sizeBytes={vault.sizeBytes}
         updatedAt={vault.updatedAt}
+        thumbnailUrl={thumbnailUrl}
         onClick={() => onPreview(vault)}
         actions={
           <Menu position="bottom-end">

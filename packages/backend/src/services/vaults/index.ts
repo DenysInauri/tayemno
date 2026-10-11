@@ -3,6 +3,7 @@ export { createVault } from "./createVault";
 export { getAllVaults } from "./getAllVaults";
 export { getVault } from "./getVault";
 export { getVaultDownloadUrl } from "./getVaultDownloadUrl";
+export { getVaultThumbnailUrl } from "./getVaultThumbnailUrl";
 export { deleteVault } from "./deleteVault";
 export { moveVault } from "./moveVault";
 export { getVaultsByFolder } from "./getVaultsByFolder";

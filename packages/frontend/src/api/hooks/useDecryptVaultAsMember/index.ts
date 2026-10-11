@@ -38,6 +38,8 @@ export const useDecryptVaultAsMember = () => {
       s3Key: vault.s3Key,
       contentNonce: vault.contentNonce,
       symmetricKey,
+      thumbnailS3Key: vault.thumbnailS3Key,
+      thumbnailNonce: vault.thumbnailNonce,
       createdAt: vault.createdAt,
       updatedAt: vault.updatedAt,
     };

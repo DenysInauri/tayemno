@@ -6,6 +6,7 @@ import { getAllVaultsRoute } from "./getAllVaults";
 import { getVaultsByFolderRoute } from "./getVaultsByFolder";
 import { getVaultRoute } from "./getVault";
 import { getVaultDownloadUrlRoute } from "./getVaultDownloadUrl";
+import { getVaultThumbnailUrlRoute } from "./getVaultThumbnailUrl";
 import { deleteVaultRoute } from "./deleteVault";
 import { moveVaultRoute } from "./moveVault";
 
@@ -18,6 +19,7 @@ export const vaultsRoutes = async (app: FastifyInstance) => {
   await app.register(getVaultsByFolderRoute);
   await app.register(getVaultRoute);
   await app.register(getVaultDownloadUrlRoute);
+  await app.register(getVaultThumbnailUrlRoute);
   await app.register(deleteVaultRoute);
   await app.register(moveVaultRoute);
 };

@@ -27,6 +27,7 @@ import { uploadWithProgress } from "../../utils/uploadWithProgress";
 import { buildFolderTree, type IFolderNode } from "../../utils/buildFolderTree";
 import { QueryKeyEnum } from "../../enums/api/QueryKeyEnum";
 import { EndpointEnum } from "../../enums/api/EndpointEnum";
+import { generateThumbnail } from "../../utils/generateThumbnail";
 
 interface IEncryptAndUploadParams {
   file: File;
@@ -70,15 +71,15 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
     setUploads([...uploadsRef.current.values()]);
   };
 
-  const encryptAndUploadVault = async ({
-    file,
-    vaultKey,
-    workspaceId,
-    folderId,
-    signal,
-    onEncryptProgress,
-    onUploadProgress,
-  }: IEncryptAndUploadParams) => {
+  const encryptAndUploadFile = async (
+    file: File,
+    vaultKey: string,
+    workspaceId: string,
+    folderId: string | null,
+    signal: AbortSignal,
+    onEncryptProgress: (ratio: number) => void,
+    onUploadProgress: (ratio: number) => void,
+  ) => {
     const { header, encryptedBlob } = await StreamCrypto.encryptFile(
       file,
       vaultKey,
@@ -90,25 +91,15 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
     const extension = fileName.includes(".") ? fileName.split(".").pop()! : "";
     const mimeType = file.type || "application/octet-stream";
 
-    const encryptedNameResult = await SymmetricCrypto.encrypt(
-      fileName,
-      vaultKey,
-    );
-
-    const metadata = JSON.stringify({
-      extension,
-      mimeType,
-      sizeBytes: file.size,
-    });
-    const encryptedMetadataResult = await SymmetricCrypto.encrypt(
-      metadata,
-      vaultKey,
-    );
-
-    const presignResult = await presignVault.mutateAsync({
-      workspaceId,
-      folderId,
-    });
+    const [encryptedNameResult, encryptedMetadataResult, presignResult] =
+      await Promise.all([
+        SymmetricCrypto.encrypt(fileName, vaultKey),
+        SymmetricCrypto.encrypt(
+          JSON.stringify({ extension, mimeType, sizeBytes: file.size }),
+          vaultKey,
+        ),
+        presignVault.mutateAsync({ workspaceId, folderId }),
+      ]);
 
     await uploadWithProgress(
       presignResult.presignedUrl,
@@ -125,6 +116,62 @@ export const UploadProvider = ({ children }: IUploadProviderProps) => {
       s3Key: presignResult.s3Key,
       contentNonce: header,
     };
+  };
+
+  const encryptAndUploadThumbnail = async (
+    file: File,
+    vaultKey: string,
+    workspaceId: string,
+    folderId: string | null,
+    signal: AbortSignal,
+  ) => {
+    const thumbnailBlob = await generateThumbnail(file);
+    if (!thumbnailBlob) return { thumbnailS3Key: null, thumbnailNonce: null };
+
+    const thumbFile = new File([thumbnailBlob], "thumb.jpg", {
+      type: "image/jpeg",
+    });
+    const [thumbEncrypted, thumbPresign] = await Promise.all([
+      StreamCrypto.encryptFile(thumbFile, vaultKey, () => {}, signal),
+      presignVault.mutateAsync({ workspaceId, folderId }),
+    ]);
+
+    await uploadWithProgress(
+      thumbPresign.presignedUrl,
+      thumbEncrypted.encryptedBlob,
+      () => {},
+      signal,
+    );
+
+    return {
+      thumbnailS3Key: thumbPresign.s3Key,
+      thumbnailNonce: thumbEncrypted.header,
+    };
+  };
+
+  const encryptAndUploadVault = async ({
+    file,
+    vaultKey,
+    workspaceId,
+    folderId,
+    signal,
+    onEncryptProgress,
+    onUploadProgress,
+  }: IEncryptAndUploadParams) => {
+    const [fileResult, thumbResult] = await Promise.all([
+      encryptAndUploadFile(
+        file,
+        vaultKey,
+        workspaceId,
+        folderId,
+        signal,
+        onEncryptProgress,
+        onUploadProgress,
+      ),
+      encryptAndUploadThumbnail(file, vaultKey, workspaceId, folderId, signal),
+    ]);
+
+    return { ...fileResult, ...thumbResult };
   };
 
   const buildVaultEncryptionKey = async (folderId: string | null) => {

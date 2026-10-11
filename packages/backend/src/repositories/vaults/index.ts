@@ -80,6 +80,8 @@ export const findByFolderAndUser = async (
              v.s3_key AS "s3Key", v.content_nonce AS "contentNonce",
              v.encrypted_symmetric_key AS "encryptedSymmetricKey",
              v.symmetric_key_nonce AS "symmetricKeyNonce",
+             v.thumbnail_s3_key AS "thumbnailS3Key",
+             v.thumbnail_nonce AS "thumbnailNonce",
              v.created_at AS "createdAt", v.updated_at AS "updatedAt"
       FROM vaults v
       WHERE v.folder_id = ${folderId}
@@ -96,6 +98,8 @@ export const findByFolderAndUser = async (
            v.s3_key AS "s3Key", v.content_nonce AS "contentNonce",
            v.encrypted_symmetric_key AS "encryptedSymmetricKey",
            v.symmetric_key_nonce AS "symmetricKeyNonce",
+           v.thumbnail_s3_key AS "thumbnailS3Key",
+           v.thumbnail_nonce AS "thumbnailNonce",
            v.created_at AS "createdAt", v.updated_at AS "updatedAt"
     FROM vaults v
     WHERE v.workspace_id = ${workspaceId}
@@ -118,6 +122,8 @@ export const findAllByWorkspaceAndUser = async (
            v.s3_key AS "s3Key", v.content_nonce AS "contentNonce",
            v.encrypted_symmetric_key AS "encryptedSymmetricKey",
            v.symmetric_key_nonce AS "symmetricKeyNonce",
+           v.thumbnail_s3_key AS "thumbnailS3Key",
+           v.thumbnail_nonce AS "thumbnailNonce",
            v.created_at AS "createdAt", v.updated_at AS "updatedAt"
     FROM vaults v
     WHERE v.workspace_id = ${workspaceId}

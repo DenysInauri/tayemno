@@ -13,6 +13,7 @@ interface IProps {
   updatedAt: string;
   onClick: () => void;
   actions?: ReactNode;
+  thumbnailUrl?: string | null;
 }
 
 export const FileListItem = ({
@@ -22,11 +23,27 @@ export const FileListItem = ({
   updatedAt,
   onClick,
   actions,
+  thumbnailUrl,
 }: IProps) => (
   <Table.Tr onClick={onClick} style={{ cursor: "pointer" }}>
     <Table.Td style={{ position: "relative" }}>
       <Group gap="sm">
-        {isFolder ? <IconFolder size={20} /> : <IconFile size={20} />}
+        {thumbnailUrl ? (
+          <img
+            src={thumbnailUrl}
+            alt=""
+            style={{
+              width: 20,
+              height: 20,
+              borderRadius: 2,
+              objectFit: "cover",
+            }}
+          />
+        ) : isFolder ? (
+          <IconFolder size={20} />
+        ) : (
+          <IconFile size={20} />
+        )}
         <Text size="sm">{name}</Text>
       </Group>
     </Table.Td>

@@ -19,6 +19,8 @@ export interface ILocalVault {
   s3Key: string;
   contentNonce: string;
   symmetricKey: string;
+  thumbnailS3Key: string | null;
+  thumbnailNonce: string | null;
   createdAt: string;
   updatedAt: string;
 }

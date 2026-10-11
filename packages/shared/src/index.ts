@@ -122,6 +122,8 @@ export interface Vault {
 
   s3Key: string;
   contentNonce: string;
+  thumbnailS3Key: string | null;
+  thumbnailNonce: string | null;
   encryptedSymmetricKey: string;
   symmetricKeyNonce: string | null;
   adminEncryptedSymmetricKey: string | null;
@@ -139,6 +141,8 @@ export interface NewVault {
 
   s3Key: string;
   contentNonce: string;
+  thumbnailS3Key?: string | null;
+  thumbnailNonce?: string | null;
   encryptedSymmetricKey: string;
   symmetricKeyNonce?: string | null;
   adminEncryptedSymmetricKey?: string | null;
@@ -287,6 +291,8 @@ export interface ICreateVaultRequest {
   encryptedSymmetricKey: string;
   symmetricKeyNonce?: string | null;
   adminEncryptedSymmetricKey: string;
+  thumbnailS3Key?: string | null;
+  thumbnailNonce?: string | null;
 }
 
 export interface ICreateVaultResponse {
@@ -298,6 +304,10 @@ export interface IGetVaultResponse {
 }
 
 export interface IGetVaultDownloadUrlResponse {
+  presignedUrl: string;
+}
+
+export interface IGetVaultThumbnailUrlResponse {
   presignedUrl: string;
 }
 

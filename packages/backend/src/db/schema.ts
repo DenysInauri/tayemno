@@ -178,6 +178,9 @@ export const vaults = pgTable("vaults", {
   s3Key: text("s3_key").notNull(),
   contentNonce: text("content_nonce").notNull(),
 
+  thumbnailS3Key: text("thumbnail_s3_key"),
+  thumbnailNonce: text("thumbnail_nonce"),
+
   encryptedSymmetricKey: text("encrypted_symmetric_key").notNull(),
   symmetricKeyNonce: text("symmetric_key_nonce"),
   adminEncryptedSymmetricKey: text("admin_encrypted_symmetric_key"),

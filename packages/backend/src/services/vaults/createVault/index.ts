@@ -48,6 +48,8 @@ export const createVault = async (
     encryptedSymmetricKey: data.encryptedSymmetricKey,
     symmetricKeyNonce: data.symmetricKeyNonce || null,
     adminEncryptedSymmetricKey: data.adminEncryptedSymmetricKey,
+    thumbnailS3Key: data.thumbnailS3Key || null,
+    thumbnailNonce: data.thumbnailNonce || null,
   });
 
   return { vault: mapTimestamps(vault) };
