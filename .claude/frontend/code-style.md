@@ -208,6 +208,10 @@ const isLoaded = data !== undefined && data.isFree;
 const isLoaded = data !== null && data.isFree;
 ```
 
+## Component Size Limit
+
+Files must not exceed **150 lines** (including imports). If a component grows beyond this, extract sub-components and local hooks into sibling files within the same folder.
+
 ## Import Conventions
 
 1. External libraries first (`react`, `formik`, `yup`, `i18next`, `react-i18next`)
