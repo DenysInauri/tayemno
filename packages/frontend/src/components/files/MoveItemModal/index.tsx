@@ -1,25 +1,18 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Tree, useTree, Loader } from "@mantine/core";
-import type { TreeNodeData, RenderTreeNodePayload } from "@mantine/core";
-import {
-  IconFolder,
-  IconFolderOpen,
-  IconChevronRight,
-  IconChevronDown,
-} from "@tabler/icons-react";
-import type { IFolderTreeNode } from "../../../api/hooks/useLazyFolderTree";
+import { Tree, useTree } from "@mantine/core";
 import {
   useLazyFolderTree,
   PLACEHOLDER_PREFIX,
 } from "../../../api/hooks/useLazyFolderTree";
-
 import { Modal } from "../../ui/Modal";
 import { Button } from "../../ui/Button";
 import { Stack } from "../../ui/Stack";
 import { Group } from "../../ui/Group";
 import { Text } from "../../ui/Text";
 import { TextColorEnum } from "../../../enums/ui/TextColorEnum";
+import { FolderTreeNode } from "./FolderTreeNode";
+import { buildTreeData } from "./buildTreeData";
 
 const ROOT_VALUE = "root";
 
@@ -31,25 +24,6 @@ interface IProps {
   onConfirm: (targetFolderId: string | null) => void;
   disabledFolders?: string[];
 }
-
-const buildTreeData = (
-  folders: IFolderTreeNode[],
-  rootLabel: string,
-): TreeNodeData[] => {
-  const mapNode = (node: IFolderTreeNode): TreeNodeData => ({
-    value: node.id,
-    label: node.name,
-    children: node.children.map(mapNode),
-  });
-
-  return [
-    {
-      value: ROOT_VALUE,
-      label: rootLabel,
-      children: folders.map(mapNode),
-    },
-  ];
-};
 
 export const MoveItemModal = ({
   opened,
@@ -97,59 +71,6 @@ export const MoveItemModal = ({
     onConfirm(targetFolderId);
   };
 
-  const renderNode = ({
-    node,
-    hasChildren,
-    expanded,
-    elementProps,
-  }: RenderTreeNodePayload) => {
-    if (node.value.startsWith(PLACEHOLDER_PREFIX)) {
-      return (
-        <div
-          {...elementProps}
-          onClick={(e) => e.stopPropagation()}
-          style={{ paddingLeft: 28, paddingTop: 4, paddingBottom: 4 }}
-        >
-          <Loader size={14} />
-        </div>
-      );
-    }
-
-    const disabled = isDisabled(node.value);
-
-    return (
-      <div
-        {...elementProps}
-        onClick={(e) => {
-          if (hasChildren && !expanded && node.value !== ROOT_VALUE) {
-            expandNode(node.value);
-          }
-          elementProps.onClick(e);
-        }}
-        style={{
-          ...elementProps.style,
-          display: "flex",
-          alignItems: "center",
-          opacity: disabled ? 0.5 : 1,
-          cursor: disabled ? "not-allowed" : "pointer",
-        }}
-      >
-        {hasChildren &&
-          (expanded ? (
-            <IconChevronDown size={14} style={{ marginRight: 4 }} />
-          ) : (
-            <IconChevronRight size={14} style={{ marginRight: 4 }} />
-          ))}
-        {expanded ? (
-          <IconFolderOpen size={16} style={{ marginRight: 6 }} />
-        ) : (
-          <IconFolder size={16} style={{ marginRight: 6 }} />
-        )}
-        <span>{node.label}</span>
-      </div>
-    );
-  };
-
   return (
     <Modal
       opened={opened}
@@ -165,7 +86,13 @@ export const MoveItemModal = ({
           data={treeData}
           tree={tree}
           selectOnClick
-          renderNode={renderNode}
+          renderNode={(payload) => (
+            <FolderTreeNode
+              {...payload}
+              disabled={isDisabled(payload.node.value)}
+              onExpand={expandNode}
+            />
+          )}
         />
         <Group justify="space-between">
           <Button variant="default" onClick={handleClose}>
