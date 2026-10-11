@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
-import srp from "secure-remote-password/client";
 import { useNavigate } from "react-router-dom";
 import { Anchor } from "../../components/ui/Anchor";
 import { Button } from "../../components/ui/Button";
@@ -20,9 +19,8 @@ import { usePostSignInInit } from "../../api/hooks/usePostSignInInit";
 import { usePostSignInVerify } from "../../api/hooks/usePostSignInVerify";
 import { signInSchema } from "../../validations/signInSchema";
 import { getApiErrorMessage } from "../../utils/getApiErrorMessage";
-import { deriveKey } from "../../utils/crypto/deriveKey";
-import { SymmetricCrypto } from "../../utils/crypto/SymmetricCrypto";
 import { useAuth } from "../../contexts/AuthContext";
+import { performSignIn } from "./performSignIn";
 
 interface ISignInFormValues {
   identifier: string;
@@ -51,59 +49,14 @@ export const SignInPage = () => {
       setIsSubmitting(true);
 
       try {
-        const initResponse = await signInInit({
+        const result = await performSignIn({
           identifier: values.identifier,
-        });
-
-        const { email } = initResponse;
-
-        const srpPrivateKey = srp.derivePrivateKey(
-          initResponse.srpSalt,
-          email,
-          values.password,
-        );
-
-        const clientEphemeral = srp.generateEphemeral();
-
-        const clientSession = srp.deriveSession(
-          clientEphemeral.secret,
-          initResponse.serverPublicEphemeral,
-          initResponse.srpSalt,
-          email,
-          srpPrivateKey,
-        );
-
-        const verifyResponse = await signInVerify({
-          email,
-          clientPublicEphemeral: clientEphemeral.public,
-          clientSessionProof: clientSession.proof,
-        });
-
-        srp.verifySession(
-          clientEphemeral.public,
-          clientSession,
-          verifyResponse.serverSessionProof,
-        );
-
-        const kek = await deriveKey({
           password: values.password,
-          saltHex: verifyResponse.user.kdfSalt,
-          iterations: verifyResponse.user.kdfIterations,
-          memoryLimit: verifyResponse.user.kdfMemoryKib * 1024,
+          signInInit,
+          signInVerify,
         });
 
-        const privateKey = await SymmetricCrypto.decrypt(
-          {
-            ciphertext: verifyResponse.user.encryptedPrivateKey,
-            nonce: verifyResponse.user.privateKeyNonce,
-          },
-          kek,
-        );
-
-        signIn(verifyResponse.token, verifyResponse.user, {
-          publicKey: verifyResponse.user.publicKey,
-          privateKey,
-        }, verifyResponse.workspace);
+        signIn(result.token, result.user, result.keyPair, result.workspace);
         navigate(RouteEnum.HOME);
       } catch (err: any) {
         setSubmitError(getApiErrorMessage(err, t));
