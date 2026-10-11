@@ -8,5 +8,6 @@
     "noEmit": true
   },
   "include": ["src", "vite-env.d.ts"],
+  "exclude": ["src/sw"],
   "references": [{ "path": "../shared" }]
 }

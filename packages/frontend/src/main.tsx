@@ -7,6 +7,9 @@ import "./i18n/i18n";
 import { App } from "./App";
 import { queryClient } from "./api/queryClient";
 import { MobileBlockScreen } from "./components/layout/MobileBlockScreen";
+import { registerServiceWorker } from "./utils/serviceWorker";
+
+registerServiceWorker();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
