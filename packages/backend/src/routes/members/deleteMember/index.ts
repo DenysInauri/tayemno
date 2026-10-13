@@ -1,20 +1,22 @@
 import type { FastifyInstance } from "fastify";
-import type { IDeleteMemberResponse } from "@tayemno/shared";
-import { deleteMember } from "../../../services/members";
+import type {
+  IDeleteMembersRequest,
+  IDeleteMembersResponse,
+} from "@tayemno/shared";
+import { deleteMembers } from "../../../services/members";
 
 export const deleteMemberRoute = async (app: FastifyInstance) => {
-  app.delete<{
-    Params: { workspaceId: string; memberId: string };
-  }>("/:memberId", async (request, reply): Promise<IDeleteMemberResponse> => {
+  app.post<{
+    Params: { workspaceId: string };
+    Body: IDeleteMembersRequest;
+  }>("/delete", async (request, reply): Promise<IDeleteMembersResponse> => {
     try {
-      const result = await deleteMember({
+      return await deleteMembers({
         db: app.db,
         requestingUserId: request.user.sub,
         workspaceId: request.params.workspaceId,
-        memberId: request.params.memberId,
+        memberIds: request.body.memberIds,
       });
-
-      return result;
     } catch (err: any) {
       return reply.status(err.statusCode || 500).send({
         message: err.message || "Internal server error",

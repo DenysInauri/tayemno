@@ -92,10 +92,79 @@
   "nav": {
     "files": "Files",
     "settings": "Settings",
+    "users": "Users",
     "signOut": "Sign out"
   },
   "settings": {
     "title": "Settings"
+  },
+  "users": {
+    "title": "Users",
+    "inviteButton": "Invite User",
+    "search": {
+      "placeholder": "Search by name or email"
+    },
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "invited": "Invited"
+    },
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "member": "Member",
+      "external_member": "External Member"
+    },
+    "invite": {
+      "title": "Invite User",
+      "fields": {
+        "email": {
+          "label": "Email",
+          "placeholder": "user@example.com"
+        },
+        "name": {
+          "label": "Name",
+          "placeholder": "Full name"
+        },
+        "role": {
+          "label": "Role"
+        }
+      },
+      "roleDescriptions": {
+        "admin": "Full access to all files, folders, keys, and member management. Has backup copies of all members' private keys.",
+        "member": "Access to all files outside folders from the moment of invite. Can be added to folders later by an admin or owner.",
+        "external_member": "No access to anything initially. Can only access folders explicitly granted by an admin or owner."
+      },
+      "submit": "Send Invite",
+      "validation": {
+        "emailRequired": "Email is required",
+        "emailInvalid": "Please enter a valid email address",
+        "nameRequired": "Name is required",
+        "roleRequired": "Role is required"
+      },
+      "errors": {
+        "userExists": "A user with this email already exists"
+      }
+    },
+    "actions": {
+      "reinvite": "Resend invite",
+      "delete": "Remove member"
+    },
+    "reinvite": {
+      "success": "Invite resent successfully"
+    },
+    "delete": {
+      "title": "Remove member?",
+      "description": "This member will lose access to all workspace data. This action cannot be undone.",
+      "confirm": "Remove",
+      "cancel": "Cancel"
+    }
   },
   "files": {
     "breadcrumb": {

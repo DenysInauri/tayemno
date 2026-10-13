@@ -14,6 +14,7 @@ import { usePostVerifyEmail } from "../../api/hooks/usePostVerifyEmail";
 import { usePostResendVerification } from "../../api/hooks/usePostResendVerification";
 import { getApiErrorMessage } from "../../utils/getApiErrorMessage";
 import { useAuth } from "../../contexts/AuthContext";
+import { decryptWorkspaceName } from "../../utils/crypto/decryptWorkspaceName";
 
 const PIN_INPUT_LENGTH = 6;
 
@@ -36,24 +37,21 @@ export const VerifyEmailPage = () => {
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
 
-  const { mutate: verify, isPending: isVerifying } = usePostVerifyEmail();
+  const { mutateAsync: verify, isPending: isVerifying } = usePostVerifyEmail();
   const { mutate: resend, isPending: isResending } =
     usePostResendVerification();
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     setError("");
-    verify(
-      { email, code },
-      {
-        onSuccess: (data) => {
-          signIn(data.token, data.user, { publicKey, privateKey }, data.workspace);
-          navigate(RouteEnum.HOME);
-        },
-        onError: (err) => {
-          setError(getApiErrorMessage(err, t));
-        },
-      },
-    );
+    try {
+      const data = await verify({ email, code });
+      const keyPair = { publicKey, privateKey };
+      const workspaceName = await decryptWorkspaceName(data.workspace, keyPair);
+      signIn({ token: data.token, user: data.user, keyPair, workspace: data.workspace, workspaceName });
+      navigate(RouteEnum.HOME);
+    } catch (err: any) {
+      setError(getApiErrorMessage(err, t));
+    }
   };
 
   const handleResend = () => {

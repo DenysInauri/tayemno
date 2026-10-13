@@ -1,4 +1,4 @@
 export { inviteMember } from "./inviteMember";
 export { listMembers } from "./listMembers";
-export { deleteMember } from "./deleteMember";
+export { deleteMembers } from "./deleteMember";
 export { reinviteMember } from "./reinviteMember";

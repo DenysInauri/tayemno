@@ -1,7 +1,8 @@
 import { AppShell as MantineAppShell, NavLink } from "@mantine/core";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { IconFolder, IconSettings, IconLogout } from "@tabler/icons-react";
+import { IconFolder, IconSettings, IconUsers, IconLogout } from "@tabler/icons-react";
+import { RoleWrapper } from "../../routing/RoleWrapper";
 
 import { useAuth } from "../../../contexts/AuthContext";
 import { RouteEnum } from "../../../enums/routing/RouteEnum";
@@ -31,6 +32,14 @@ export const AppShellLayout = () => {
             active={location.pathname === RouteEnum.SETTINGS}
             onClick={() => navigate(RouteEnum.SETTINGS)}
           />
+          <RoleWrapper allowedFor={["owner", "admin"]}>
+            <NavLink
+              label={t("nav.users")}
+              leftSection={<IconUsers size={20} />}
+              active={location.pathname === RouteEnum.USERS}
+              onClick={() => navigate(RouteEnum.USERS)}
+            />
+          </RoleWrapper>
         </MantineAppShell.Section>
 
         <MantineAppShell.Section>

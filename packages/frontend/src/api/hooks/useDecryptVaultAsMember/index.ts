@@ -50,6 +50,10 @@ export const useDecryptVaultAsMember = () => {
     if (!keyPair) throw new Error("Key pair not found");
 
     if (!vault.folderId) {
+      if (!workspace.encryptedMemberPrivateKey) {
+        throw new Error("Member private key not available");
+      }
+
       const memberPrivateKey = await AsymmetricCrypto.decrypt(
         workspace.encryptedMemberPrivateKey,
         keyPair.publicKey,

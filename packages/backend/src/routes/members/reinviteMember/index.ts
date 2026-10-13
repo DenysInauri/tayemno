@@ -10,7 +10,6 @@ export const reinviteMemberRoute = async (app: FastifyInstance) => {
     try {
       const result = await reinviteMember({
         db: app.db,
-        requestingUserId: request.user.sub,
         workspaceId: request.params.workspaceId,
         memberId: request.params.memberId,
         data: request.body,

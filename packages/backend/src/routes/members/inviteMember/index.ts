@@ -10,7 +10,6 @@ export const inviteMemberRoute = async (app: FastifyInstance) => {
     try {
       const member = await inviteMember({
         db: app.db,
-        requestingUserId: request.user.sub,
         workspaceId: request.params.workspaceId,
         data: request.body,
         mailTransport: app.mailTransport,

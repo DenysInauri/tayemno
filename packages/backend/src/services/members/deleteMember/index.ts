@@ -7,40 +7,37 @@ interface IParams {
   db: Database;
   requestingUserId: string;
   workspaceId: string;
-  memberId: string;
+  memberIds: string[];
 }
 
-export const deleteMember = async ({
+export const deleteMembers = async ({
   db,
   requestingUserId,
   workspaceId,
-  memberId,
+  memberIds,
 }: IParams) => {
-  const requester = await workspaceMembersRepo.findByWorkspaceIdAndUserId(
+  const members = await workspaceMembersRepo.findByIdsAndWorkspaceId(
     db,
+    memberIds,
     workspaceId,
-    requestingUserId,
   );
 
-  if (!requester || (requester.role !== "owner" && requester.role !== "admin")) {
-    throw new HttpError(403, "Only owners and admins can delete members");
+  if (members.length !== memberIds.length) {
+    throw new HttpError(404, "One or more members not found in this workspace");
   }
 
-  const target = await workspaceMembersRepo.findById(db, memberId);
+  for (const member of members) {
+    if (member.role === "owner") {
+      throw new HttpError(403, "Cannot delete the workspace owner");
+    }
 
-  if (!target || target.workspaceId !== workspaceId) {
-    throw new HttpError(404, "Member not found");
+    if (member.userId === requestingUserId) {
+      throw new HttpError(403, "Cannot delete yourself");
+    }
   }
 
-  if (target.role === "owner") {
-    throw new HttpError(403, "Cannot delete the workspace owner");
-  }
+  const userIds = members.map((m) => m.userId);
+  await usersRepo.deleteByIds(db, userIds);
 
-  if (target.userId === requestingUserId) {
-    throw new HttpError(403, "Cannot delete yourself");
-  }
-
-  await usersRepo.deleteById(db, target.userId);
-
-  return { message: "Member deleted" };
+  return { message: "Members deleted" };
 };

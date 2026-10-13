@@ -8,7 +8,6 @@ import { HttpError } from "../../../utils/httpError";
 
 interface IParams {
   db: Database;
-  requestingUserId: string;
   workspaceId: string;
   memberId: string;
   data: IReinviteMemberRequest;
@@ -19,7 +18,6 @@ interface IParams {
 
 export const reinviteMember = async ({
   db,
-  requestingUserId,
   workspaceId,
   memberId,
   data,
@@ -27,16 +25,6 @@ export const reinviteMember = async ({
   smtpFrom,
   frontendUrl,
 }: IParams) => {
-  const requester = await workspaceMembersRepo.findByWorkspaceIdAndUserId(
-    db,
-    workspaceId,
-    requestingUserId,
-  );
-
-  if (!requester || (requester.role !== "owner" && requester.role !== "admin")) {
-    throw new HttpError(403, "Only owners and admins can reinvite members");
-  }
-
   const target = await workspaceMembersRepo.findById(db, memberId);
 
   if (!target || target.workspaceId !== workspaceId) {

@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import type { Database } from "../../db";
 import { users } from "../../db/schema.js";
 
@@ -44,4 +44,8 @@ export const update = async (
 
 export const deleteById = async (db: Database, id: string) => {
   await db.delete(users).where(eq(users.id, id));
+};
+
+export const deleteByIds = async (db: Database, ids: string[]) => {
+  await db.delete(users).where(inArray(users.id, ids));
 };

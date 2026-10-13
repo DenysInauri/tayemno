@@ -1,4 +1,4 @@
-import { eq, and } from "drizzle-orm";
+import { eq, and, inArray } from "drizzle-orm";
 import type { Database } from "../../db";
 import { workspaceMembers, users } from "../../db/schema.js";
 
@@ -66,6 +66,22 @@ export const findById = async (db: Database, id: string) => {
     .limit(1);
 
   return result[0];
+};
+
+export const findByIdsAndWorkspaceId = async (
+  db: Database,
+  ids: string[],
+  workspaceId: string,
+) => {
+  return db
+    .select()
+    .from(workspaceMembers)
+    .where(
+      and(
+        inArray(workspaceMembers.id, ids),
+        eq(workspaceMembers.workspaceId, workspaceId),
+      ),
+    );
 };
 
 export const updateStatusByUserId = async (

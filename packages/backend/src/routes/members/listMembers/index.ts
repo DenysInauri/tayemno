@@ -9,7 +9,6 @@ export const listMembersRoute = async (app: FastifyInstance) => {
     try {
       const members = await listMembers({
         db: app.db,
-        requestingUserId: request.user.sub,
         workspaceId: request.params.workspaceId,
       });
 

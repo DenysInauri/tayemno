@@ -12,6 +12,7 @@ import { ProtectedRoute } from "./components/routing/ProtectedRoute";
 import { HomePage } from "./pages/HomePage";
 import { AppShellLayout } from "./components/layout/AppShell";
 import { SettingsPage } from "./pages/SettingsPage";
+import { UsersPage } from "./pages/UsersPage";
 import { TransferPanel } from "./components/files/TransferPanel";
 
 export const App = () => (
@@ -34,6 +35,7 @@ export const App = () => (
                 <Route path={RouteEnum.HOME} element={<HomePage />} />
                 <Route path={RouteEnum.FOLDER} element={<HomePage />} />
                 <Route path={RouteEnum.SETTINGS} element={<SettingsPage />} />
+                <Route path={RouteEnum.USERS} element={<UsersPage />} />
               </Route>
             </Route>
             <Route path="*" element={<Navigate to={RouteEnum.HOME} replace />} />

@@ -8,7 +8,6 @@ import { HttpError } from "../../../utils/httpError";
 
 interface IParams {
   db: Database;
-  requestingUserId: string;
   workspaceId: string;
   data: IInviteMemberRequest;
   mailTransport: Transporter;
@@ -18,23 +17,12 @@ interface IParams {
 
 export const inviteMember = async ({
   db,
-  requestingUserId,
   workspaceId,
   data,
   mailTransport,
   smtpFrom,
   frontendUrl,
 }: IParams): Promise<IMemberItem> => {
-  const requester = await workspaceMembersRepo.findByWorkspaceIdAndUserId(
-    db,
-    workspaceId,
-    requestingUserId,
-  );
-
-  if (!requester || (requester.role !== "owner" && requester.role !== "admin")) {
-    throw new HttpError(403, "Only owners and admins can invite members");
-  }
-
   const existingUser = await usersRepo.findByEmail(db, data.email.toLowerCase());
   if (existingUser) {
     throw new HttpError(409, "User with this email already exists");

@@ -427,7 +427,11 @@ export interface IListMembersResponse {
   members: IMemberItem[];
 }
 
-export interface IDeleteMemberResponse {
+export interface IDeleteMembersRequest {
+  memberIds: string[];
+}
+
+export interface IDeleteMembersResponse {
   message: string;
 }
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Anchor } from "../../components/ui/Anchor";
 import { Button } from "../../components/ui/Button";
 import { Container } from "../../components/ui/Container";
@@ -20,6 +20,7 @@ import { usePostSignInVerify } from "../../api/hooks/usePostSignInVerify";
 import { signInSchema } from "../../validations/signInSchema";
 import { getApiErrorMessage } from "../../utils/getApiErrorMessage";
 import { useAuth } from "../../contexts/AuthContext";
+import { decryptWorkspaceName } from "../../utils/crypto/decryptWorkspaceName";
 import { performSignIn } from "./performSignIn";
 
 interface ISignInFormValues {
@@ -36,9 +37,11 @@ export const SignInPage = () => {
   const { mutateAsync: signInInit } = usePostSignInInit();
   const { mutateAsync: signInVerify } = usePostSignInVerify();
 
+  const [searchParams] = useSearchParams();
+
   const formik = useFormik<ISignInFormValues>({
     initialValues: {
-      identifier: "",
+      identifier: searchParams.get("email") ?? "",
       password: "",
     },
     validationSchema: signInSchema,
@@ -56,7 +59,11 @@ export const SignInPage = () => {
           signInVerify,
         });
 
-        signIn(result.token, result.user, result.keyPair, result.workspace);
+        const workspaceName = await decryptWorkspaceName(
+          result.workspace,
+          result.keyPair,
+        );
+        signIn({ ...result, workspaceName });
         navigate(RouteEnum.HOME);
       } catch (err: any) {
         setSubmitError(getApiErrorMessage(err, t));
@@ -94,11 +101,7 @@ export const SignInPage = () => {
                 {t("signIn.signUpLink")}
               </Anchor>
             </Text>
-            <Text
-              c="dimmed"
-              size="sm"
-              ta={{ base: "center", md: "left" }}
-            >
+            <Text c="dimmed" size="sm" ta={{ base: "center", md: "left" }}>
               <Anchor
                 size="sm"
                 component="button"
