@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { authenticate } from "../../utils/authenticate";
+import { requirePasswordChanged } from "../../utils/requirePasswordChanged";
 import { createFolderRoute } from "./createFolder";
 import { deleteFolderRoute } from "./deleteFolder";
 import { getAllFoldersRoute } from "./getAllFolders";
@@ -12,6 +13,7 @@ import { deleteFolderAclRoute } from "./deleteFolderAcl";
 
 export const foldersRoutes = async (app: FastifyInstance) => {
   app.addHook("onRequest", authenticate);
+  app.addHook("onRequest", requirePasswordChanged);
 
   await app.register(getBreadcrumbsRoute);
   await app.register(getAllFoldersRoute);

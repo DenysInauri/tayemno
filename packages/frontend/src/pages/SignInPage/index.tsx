@@ -64,7 +64,12 @@ export const SignInPage = () => {
           result.keyPair,
         );
         signIn({ ...result, workspaceName });
-        navigate(RouteEnum.HOME);
+
+        navigate(
+          result.user.forcePasswordChange
+            ? RouteEnum.CHANGE_PASSWORD
+            : RouteEnum.HOME,
+        );
       } catch (err: any) {
         setSubmitError(getApiErrorMessage(err, t));
       } finally {

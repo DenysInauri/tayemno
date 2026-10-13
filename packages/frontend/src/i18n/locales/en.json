@@ -82,6 +82,31 @@
     },
     "submitButton": "Sign in"
   },
+  "changePassword": {
+    "title": "Change your password",
+    "subtitle": "You must set a new master password to continue.",
+    "fields": {
+      "password": {
+        "label": "New master password",
+        "placeholder": "Enter new password"
+      },
+      "confirmPassword": {
+        "label": "Confirm new password",
+        "placeholder": "Re-enter new password"
+      }
+    },
+    "validation": {
+      "passwordRequired": "Password is required",
+      "passwordMinLength": "Has at least 6 characters",
+      "passwordIncludesNumber": "Includes number",
+      "passwordIncludesLowercase": "Includes lowercase letter",
+      "passwordIncludesUppercase": "Includes uppercase letter",
+      "passwordIncludesSpecial": "Includes special symbol",
+      "confirmPasswordRequired": "Please confirm your password",
+      "confirmPasswordMismatch": "Passwords do not match"
+    },
+    "submitButton": "Set new password"
+  },
   "forgotPassword": {
     "title": "Forgot master password"
   },

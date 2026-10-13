@@ -10,4 +10,5 @@ export enum EndpointEnum {
   VAULTS = "/vaults",
   FOLDERS = "/folders",
   MEMBERS = "/members",
+  CHANGE_PASSWORD = "/auth/change-password",
 }

@@ -60,6 +60,7 @@ interface IAuthContext extends IAuthState {
   isAuthenticated: boolean;
   signIn: (params: ISignInParams) => void;
   signOut: () => void;
+  updateUser: (updates: Partial<ISignInUserData>) => void;
 }
 
 const AuthContext = createContext<IAuthContext | null>(null);
@@ -85,6 +86,16 @@ export const AuthProvider = ({ children }: IAuthProviderProps) => {
         setAuthToken(null);
         setAuthState(EMPTY_STATE);
         clearPersistedAuthState();
+      },
+      updateUser: (updates) => {
+        setAuthState((prev) => {
+          const next = {
+            ...prev,
+            user: prev.user ? { ...prev.user, ...updates } : null,
+          };
+          persistAuthState(next);
+          return next;
+        });
       },
     }),
     [authState],

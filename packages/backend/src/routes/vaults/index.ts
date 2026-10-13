@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { authenticate } from "../../utils/authenticate";
+import { requirePasswordChanged } from "../../utils/requirePasswordChanged";
 import { presignVaultRoute } from "./presignVault";
 import { createVaultRoute } from "./createVault";
 import { getAllVaultsRoute } from "./getAllVaults";
@@ -12,6 +13,7 @@ import { moveVaultRoute } from "./moveVault";
 
 export const vaultsRoutes = async (app: FastifyInstance) => {
   app.addHook("onRequest", authenticate);
+  app.addHook("onRequest", requirePasswordChanged);
 
   await app.register(presignVaultRoute);
   await app.register(createVaultRoute);
