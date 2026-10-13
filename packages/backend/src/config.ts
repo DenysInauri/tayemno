@@ -6,6 +6,7 @@ const schema = {
   required: [
     "DATABASE_URL",
     "JWT_SECRET",
+    "FRONTEND_URL",
     "S3_ENDPOINT",
     "S3_ACCESS_KEY_ID",
     "S3_SECRET_ACCESS_KEY",
@@ -21,6 +22,7 @@ const schema = {
     SMTP_USER: { type: "string", default: "mackenzie.bernier@ethereal.email" },
     SMTP_PASS: { type: "string", default: "xStMVjj91Dp5UMbUfc" },
     SMTP_FROM: { type: "string", default: "noreply@tayemno.com" },
+    FRONTEND_URL: { type: "string" },
     S3_ENDPOINT: { type: "string" },
     S3_REGION: { type: "string", default: "auto" },
     S3_ACCESS_KEY_ID: { type: "string" },
@@ -39,6 +41,7 @@ type Config = {
   SMTP_USER: string;
   SMTP_PASS: string;
   SMTP_FROM: string;
+  FRONTEND_URL: string;
   S3_ENDPOINT: string;
   S3_REGION: string;
   S3_ACCESS_KEY_ID: string;

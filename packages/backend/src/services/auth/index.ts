@@ -3,3 +3,4 @@ export { verifyEmail } from "./verifyEmail";
 export { resendVerification } from "./resendVerification";
 export { signInInit } from "./signInInit";
 export { signInVerify } from "./signInVerify";
+export { changePassword } from "./changePassword";

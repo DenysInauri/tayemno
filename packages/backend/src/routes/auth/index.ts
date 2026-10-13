@@ -4,6 +4,7 @@ import { verifyEmailRoute } from "./verifyEmail";
 import { resendVerificationRoute } from "./resendVerification";
 import { signInInitRoute } from "./signInInit";
 import { signInVerifyRoute } from "./signInVerify";
+import { changePasswordRoute } from "./changePassword";
 
 export const authRoutes = async (app: FastifyInstance) => {
   await app.register(registerRoute);
@@ -11,4 +12,5 @@ export const authRoutes = async (app: FastifyInstance) => {
   await app.register(resendVerificationRoute);
   await app.register(signInInitRoute);
   await app.register(signInVerifyRoute);
+  await app.register(changePasswordRoute);
 };

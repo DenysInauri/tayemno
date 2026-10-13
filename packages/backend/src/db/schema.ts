@@ -34,6 +34,8 @@ export const users = pgTable("users", {
   encryptedPrivateKey: text("encrypted_private_key").notNull(),
   privateKeyNonce: text("private_key_nonce").notNull(),
 
+  forcePasswordChange: boolean("force_password_change").default(false).notNull(),
+
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
@@ -105,7 +107,9 @@ export const workspaceMembers = pgTable(
       .references(() => users.id, { onDelete: "cascade" }),
     role: varchar("role", { length: 32 }).notNull(),
     encryptedAdminPrivateKey: text("encrypted_admin_private_key"),
-    encryptedMemberPrivateKey: text("encrypted_member_private_key").notNull(),
+    encryptedMemberPrivateKey: text("encrypted_member_private_key"),
+    status: varchar("status", { length: 32 }).default("active").notNull(),
+    adminEncryptedUserPrivateKey: text("admin_encrypted_user_private_key"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),

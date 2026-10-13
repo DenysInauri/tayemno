@@ -96,6 +96,7 @@ export const verifyEmail = async (
       kdfMemoryKib: user.kdfMemoryKib,
       kdfIterations: user.kdfIterations,
       kdfParallelism: user.kdfParallelism,
+      forcePasswordChange: user.forcePasswordChange,
     },
     workspace: {
       id: workspace.id,

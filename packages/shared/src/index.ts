@@ -36,7 +36,9 @@ export interface NewUser {
   privateKeyNonce: string;
 }
 
-export type WorkspaceRole = "owner" | "admin" | "member";
+export type WorkspaceRole = "owner" | "admin" | "member" | "external_member";
+
+export type WorkspaceMemberStatus = "invited" | "active";
 
 export interface Workspace {
   id: string;
@@ -59,7 +61,9 @@ export interface WorkspaceMember {
   userId: string;
   role: WorkspaceRole;
   encryptedAdminPrivateKey: string | null;
-  encryptedMemberPrivateKey: string;
+  encryptedMemberPrivateKey: string | null;
+  status: WorkspaceMemberStatus;
+  adminEncryptedUserPrivateKey: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -69,7 +73,9 @@ export interface NewWorkspaceMember {
   userId: string;
   role: WorkspaceRole;
   encryptedAdminPrivateKey?: string | null;
-  encryptedMemberPrivateKey: string;
+  encryptedMemberPrivateKey?: string | null;
+  status?: WorkspaceMemberStatus;
+  adminEncryptedUserPrivateKey?: string | null;
 }
 
 export interface Folder {
@@ -185,7 +191,7 @@ export interface IWorkspaceData {
   adminPublicKey: string;
   memberPublicKey: string;
   encryptedAdminPrivateKey: string | null;
-  encryptedMemberPrivateKey: string;
+  encryptedMemberPrivateKey: string | null;
   role: WorkspaceRole;
 }
 
@@ -240,6 +246,7 @@ export interface ISignInUserData {
   kdfMemoryKib: number;
   kdfIterations: number;
   kdfParallelism: number;
+  forcePasswordChange: boolean;
 }
 
 export interface ISignInVerifyResponse {
@@ -375,6 +382,86 @@ export interface ICreateFolderAclResponse {
 }
 
 export interface IDeleteFolderAclResponse {
+  message: string;
+}
+
+export interface IMemberItem {
+  id: string;
+  userId: string;
+  name: string;
+  email: string;
+  role: WorkspaceRole;
+  status: WorkspaceMemberStatus;
+  adminEncryptedUserPrivateKey: string | null;
+  createdAt: string;
+}
+
+export type InvitableRole = Exclude<WorkspaceRole, "owner">;
+
+export interface IInviteMemberRequest {
+  email: string;
+  name: string;
+  role: InvitableRole;
+  srpSalt: string;
+  srpVerifier: string;
+  kdfSalt: string;
+  kdfAlgorithm: "argon2id";
+  kdfMemoryKib: number;
+  kdfIterations: number;
+  kdfParallelism: number;
+  publicKey: string;
+  encryptedPrivateKey: string;
+  privateKeyNonce: string;
+  adminEncryptedUserPrivateKey: string;
+  encryptedAdminPrivateKey: string | null;
+  encryptedMemberPrivateKey: string | null;
+  tempPassword: string;
+  workspaceName: string;
+}
+
+export interface IInviteMemberResponse {
+  member: IMemberItem;
+}
+
+export interface IListMembersResponse {
+  members: IMemberItem[];
+}
+
+export interface IDeleteMemberResponse {
+  message: string;
+}
+
+export interface IReinviteMemberRequest {
+  srpSalt: string;
+  srpVerifier: string;
+  kdfSalt: string;
+  kdfAlgorithm: "argon2id";
+  kdfMemoryKib: number;
+  kdfIterations: number;
+  kdfParallelism: number;
+  encryptedPrivateKey: string;
+  privateKeyNonce: string;
+  tempPassword: string;
+  workspaceName: string;
+}
+
+export interface IReinviteMemberResponse {
+  message: string;
+}
+
+export interface IChangePasswordRequest {
+  srpSalt: string;
+  srpVerifier: string;
+  kdfSalt: string;
+  kdfAlgorithm: "argon2id";
+  kdfMemoryKib: number;
+  kdfIterations: number;
+  kdfParallelism: number;
+  encryptedPrivateKey: string;
+  privateKeyNonce: string;
+}
+
+export interface IChangePasswordResponse {
   message: string;
 }
 
