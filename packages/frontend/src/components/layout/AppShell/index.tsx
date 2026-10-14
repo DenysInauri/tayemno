@@ -1,59 +1,33 @@
-import { AppShell as MantineAppShell, NavLink } from "@mantine/core";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { IconFolder, IconSettings, IconUsers, IconLogout } from "@tabler/icons-react";
-import { RoleWrapper } from "../../routing/RoleWrapper";
+import { AppShell as MantineAppShell } from "@mantine/core";
+import { Outlet } from "react-router-dom";
 
-import { useAuth } from "../../../contexts/AuthContext";
-import { RouteEnum } from "../../../enums/routing/RouteEnum";
+import { NavbarContent } from "./NavbarContent";
+import { AsideContent } from "./AsideContent";
+import { useAppShellLayout } from "./useAppShellLayout";
 
 export const AppShellLayout = () => {
-  const { signOut } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { t } = useTranslation();
+  const { navbarExpanded, toggleNavbar, navbarWidth, asideWidth, showAside } =
+    useAppShellLayout();
 
   return (
-    <MantineAppShell navbar={{ width: 250, breakpoint: "sm" }}>
+    <MantineAppShell
+      navbar={{ width: navbarWidth, breakpoint: "sm" }}
+      aside={{
+        width: asideWidth,
+        breakpoint: "sm",
+        collapsed: { desktop: !showAside },
+      }}
+      transitionDuration={200}
+    >
       <MantineAppShell.Navbar p="md">
-        <MantineAppShell.Section grow>
-          <NavLink
-            label={t("nav.files")}
-            leftSection={<IconFolder size={20} />}
-            active={
-              location.pathname === RouteEnum.HOME ||
-              location.pathname.startsWith(RouteEnum.FOLDERS)
-            }
-            onClick={() => navigate(RouteEnum.HOME)}
-          />
-          <NavLink
-            label={t("nav.settings")}
-            leftSection={<IconSettings size={20} />}
-            active={location.pathname === RouteEnum.SETTINGS}
-            onClick={() => navigate(RouteEnum.SETTINGS)}
-          />
-          <RoleWrapper allowedFor={["owner", "admin"]}>
-            <NavLink
-              label={t("nav.users")}
-              leftSection={<IconUsers size={20} />}
-              active={location.pathname === RouteEnum.USERS}
-              onClick={() => navigate(RouteEnum.USERS)}
-            />
-          </RoleWrapper>
-        </MantineAppShell.Section>
-
-        <MantineAppShell.Section>
-          <NavLink
-            label={t("nav.signOut")}
-            leftSection={<IconLogout size={20} />}
-            onClick={signOut}
-          />
-        </MantineAppShell.Section>
+        <NavbarContent expanded={navbarExpanded} onToggle={toggleNavbar} />
       </MantineAppShell.Navbar>
 
       <MantineAppShell.Main>
         <Outlet />
       </MantineAppShell.Main>
+
+      {showAside && <AsideContent />}
     </MantineAppShell>
   );
 };

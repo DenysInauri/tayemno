@@ -120,6 +120,9 @@
     "users": "Users",
     "signOut": "Sign out"
   },
+  "aside": {
+    "title": "Details"
+  },
   "settings": {
     "title": "Settings"
   },
