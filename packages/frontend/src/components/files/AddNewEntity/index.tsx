@@ -7,6 +7,7 @@ import { QueryKeyEnum } from "../../../enums/api/QueryKeyEnum";
 import { UploadFileActions } from "./UploadFileActions";
 import { UploadFolderAction } from "./UploadFolderAction";
 import { CreateFolderAction } from "./CreateFolderAction";
+import { RoleWrapper } from "../../routing/RoleWrapper";
 
 interface IProps {
   folderId: string | null;
@@ -27,9 +28,20 @@ export const AddNewEntity = ({ folderId }: IProps) => {
 
   return (
     <Group gap="xs">
-      <UploadFileActions folderId={folderId} />
-      <UploadFolderAction folderId={folderId} />
-      <CreateFolderAction folderId={folderId} />
+      <RoleWrapper allowedFor={["owner", "admin", "member"]}>
+        <UploadFileActions folderId={folderId} />
+        <UploadFolderAction folderId={folderId} />
+        <CreateFolderAction folderId={folderId} />
+      </RoleWrapper>
+
+      {folderId && (
+        <RoleWrapper allowedFor={["external_member"]}>
+          <UploadFileActions folderId={folderId} />
+          <UploadFolderAction folderId={folderId} />
+          <CreateFolderAction folderId={folderId} />
+        </RoleWrapper>
+      )}
+
       <ActionIcon variant="default" size="input-sm" onClick={handleRefresh}>
         <IconRefresh size={16} />
       </ActionIcon>

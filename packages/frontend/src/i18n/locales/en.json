@@ -206,7 +206,8 @@
     "uploadFolderButton": "Upload folder",
     "empty": {
       "title": "No files or folders yet",
-      "createFolder": "Create a folder"
+      "createFolder": "Create a folder",
+      "externalMembers": "Please ask an admin to share a working directory with you."
     },
     "createFolder": {
       "title": "Create folder",
