@@ -26,13 +26,13 @@ export const getVaultThumbnailUrl = async (
   }
 
   if (vault.folderId) {
-    const membership = await folderAclsRepo.findByFolderIdAndUserId(
+    const hasAccess = await folderAclsRepo.hasAccessToFolder(
       db,
       vault.folderId,
       userId,
     );
 
-    if (!membership) {
+    if (!hasAccess) {
       throw new HttpError(403, "Access denied");
     }
   } else {

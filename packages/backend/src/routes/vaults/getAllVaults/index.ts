@@ -6,7 +6,6 @@ export const getAllVaultsRoute = async (app: FastifyInstance) => {
   app.get<{ Params: { workspaceId: string } }>(
     "/all",
     async (request, reply): Promise<IGetAllVaultsResponse> => {
-      const start = Date.now();
       try {
         return await getAllVaults(
           app.db,
@@ -17,8 +16,6 @@ export const getAllVaultsRoute = async (app: FastifyInstance) => {
         return reply.status(err.statusCode || 500).send({
           message: err.message || "Internal server error",
         });
-      } finally {
-        console.log(`getAllVaults took ${Date.now() - start}ms`);
       }
     },
   );

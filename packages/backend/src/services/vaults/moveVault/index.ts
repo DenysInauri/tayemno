@@ -19,12 +19,12 @@ export const moveVault = async (
   }
 
   if (vault.folderId) {
-    const membership = await folderAclsRepo.findByFolderIdAndUserId(
+    const hasAccess = await folderAclsRepo.hasAccessToFolder(
       db,
       vault.folderId,
       userId,
     );
-    if (!membership) throw new HttpError(403, "Access denied");
+    if (!hasAccess) throw new HttpError(403, "Access denied");
   } else {
     const membership = await workspaceMembersRepo.findByWorkspaceIdAndUserId(
       db,
@@ -35,12 +35,12 @@ export const moveVault = async (
   }
 
   if (data.targetFolderId) {
-    const membership = await folderAclsRepo.findByFolderIdAndUserId(
+    const hasAccess = await folderAclsRepo.hasAccessToFolder(
       db,
       data.targetFolderId,
       userId,
     );
-    if (!membership) throw new HttpError(403, "Access denied to target folder");
+    if (!hasAccess) throw new HttpError(403, "Access denied to target folder");
   } else {
     const membership = await workspaceMembersRepo.findByWorkspaceIdAndUserId(
       db,

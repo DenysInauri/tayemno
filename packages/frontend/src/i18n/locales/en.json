@@ -122,16 +122,25 @@
   },
   "aside": {
     "title": "Details",
+    "tabs": {
+      "members": "Members"
+    },
     "members": {
       "title": "Members",
       "description": "Users with access to this folder.",
       "emptyRoot": "Select a folder to view members.",
       "you": "You",
+      "accessThrough": "via",
       "search": {
         "placeholder": "Search by name or email"
       },
       "actions": {
         "revoke": "Revoke access"
+      },
+      "add": {
+        "placeholder": "Select users to add",
+        "submit": "Add",
+        "cancel": "Cancel"
       }
     }
   },

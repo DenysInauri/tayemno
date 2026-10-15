@@ -389,6 +389,10 @@ export interface IFolderMemberItem {
   userId: string;
   name: string;
   email: string;
+  inherited: boolean;
+  ancestorFolderId?: string;
+  ancestorEncryptedName?: string;
+  ancestorNameNonce?: string;
   createdAt: string;
 }
 

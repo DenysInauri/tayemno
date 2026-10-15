@@ -7,22 +7,27 @@ export const useDecryptFolderAsMember = () => {
   const { getFolderKey } = useGetFolderKeyAsMember();
 
   const decrypt = async (folder: Folder): Promise<ILocalFolder> => {
-    const folderKey = await getFolderKey(folder.id);
+    try {
+      const folderKey = await getFolderKey(folder.id);
 
-    const name = await SymmetricCrypto.decrypt(
-      { nonce: folder.nameNonce, ciphertext: folder.encryptedName },
-      folderKey,
-    );
+      const name = await SymmetricCrypto.decrypt(
+        { nonce: folder.nameNonce, ciphertext: folder.encryptedName },
+        folderKey,
+      );
 
-    return {
-      id: folder.id,
-      parentFolderId: folder.parentFolderId,
-      workspaceId: folder.workspaceId,
-      name,
-      symmetricKey: folderKey,
-      createdAt: folder.createdAt,
-      updatedAt: folder.updatedAt,
-    };
+      return {
+        id: folder.id,
+        parentFolderId: folder.parentFolderId,
+        workspaceId: folder.workspaceId,
+        name,
+        symmetricKey: folderKey,
+        createdAt: folder.createdAt,
+        updatedAt: folder.updatedAt,
+      };
+    } catch (e) {
+      console.error("Failed to decrypt folder", e);
+      throw e;
+    }
   };
 
   return { decrypt };

@@ -1,16 +1,23 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { IconSearch } from "@tabler/icons-react";
-import type { IFolderMemberItem } from "@tayemno/shared";
+import { IconSearch, IconPlus } from "@tabler/icons-react";
+import type { IFolderMemberItem, IMemberItem } from "@tayemno/shared";
 import { TextInput } from "../../../../ui/TextInput";
 import { Text } from "../../../../ui/Text";
 import { Stack } from "../../../../ui/Stack";
 import { Title } from "../../../../ui/Title";
+import { Group } from "../../../../ui/Group";
+import { ActionIcon } from "../../../../ui/ActionIcon";
 import { useGetFolderMembers } from "../../../../../api/hooks/useGetFolderMembers";
 import { useDeleteFolderAcl } from "../../../../../api/hooks/useDeleteFolderAcl";
+import { usePostBulkFolderAcl } from "../../../../../api/hooks/usePostBulkFolderAcl";
+import { useDecryptAncestorFolderNames } from "../../../../../api/hooks/useDecryptAncestorFolderNames";
 import { useAuth } from "../../../../../contexts/AuthContext";
+import { useGetFolderKeyAsAdmin } from "../../../../../api/hooks/useGetFolderKeyAsAdmin";
 import { SizeEnum } from "../../../../../enums/ui/SizeEnum";
 import { FolderMembersList } from "./FolderMembersList";
+import { AddMemberSelect } from "./AddMemberSelect";
+import { buildAddMembersPayload } from "./buildAddMembersPayload";
 
 interface IProps {
   folderId: string;
@@ -21,7 +28,12 @@ export const FolderMembersSection = ({ folderId }: IProps) => {
   const { user } = useAuth();
   const { data } = useGetFolderMembers(folderId);
   const deleteMutation = useDeleteFolderAcl(folderId);
+  const { getFolderKey } = useGetFolderKeyAsAdmin();
+  const bulkAddMutation = usePostBulkFolderAcl(folderId);
+  const { ancestorMap } = useDecryptAncestorFolderNames(data?.members ?? []);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showAddMember, setShowAddMember] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const filteredMembers = useMemo(() => {
     if (!data?.members) return [];
@@ -37,22 +49,56 @@ export const FolderMembersSection = ({ folderId }: IProps) => {
     await deleteMutation.mutateAsync(member.userId);
   };
 
+  const handleAddMembers = async (members: IMemberItem[]) => {
+    setIsSubmitting(true);
+    try {
+      const folderKey = await getFolderKey(folderId);
+      const payload = await buildAddMembersPayload({
+        selectedMembers: members,
+        folderKey,
+      });
+      await bulkAddMutation.mutateAsync(payload);
+      setShowAddMember(false);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <Stack gap={SizeEnum.SM}>
+    <Stack gap={SizeEnum.SM} style={{ flex: 1, minHeight: 0 }} mt={SizeEnum.SM}>
       <Title order={5}>{t("aside.members.title")}</Title>
       <Text size="sm" c="dimmed">
         {t("aside.members.description")}
       </Text>
-      <TextInput
-        placeholder={t("aside.members.search.placeholder")}
-        leftSection={<IconSearch size={16} />}
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.currentTarget.value)}
-        size="sm"
-      />
+      <Group gap={SizeEnum.XS}>
+        <TextInput
+          placeholder={t("aside.members.search.placeholder")}
+          leftSection={<IconSearch size={16} />}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.currentTarget.value)}
+          size="sm"
+          style={{ flex: 1 }}
+        />
+        <ActionIcon
+          variant="default"
+          size="input-sm"
+          onClick={() => setShowAddMember(true)}
+        >
+          <IconPlus size={16} />
+        </ActionIcon>
+      </Group>
+      {showAddMember && (
+        <AddMemberSelect
+          folderMembers={data?.members ?? []}
+          isSubmitting={isSubmitting}
+          onAdd={handleAddMembers}
+          onCancel={() => setShowAddMember(false)}
+        />
+      )}
       <FolderMembersList
         members={filteredMembers}
         currentUserId={user!.id}
+        ancestorMap={ancestorMap}
         onRevoke={handleRevoke}
       />
     </Stack>

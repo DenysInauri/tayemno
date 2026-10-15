@@ -73,6 +73,12 @@ export const findByFolderAndUser = async (
 ) => {
   if (folderId) {
     const rows = await db.execute(sql`
+      WITH RECURSIVE ancestors AS (
+        SELECT id, parent_folder_id FROM folders WHERE id = ${folderId}
+        UNION ALL
+        SELECT f.id, f.parent_folder_id FROM folders f
+        INNER JOIN ancestors a ON f.id = a.parent_folder_id
+      )
       SELECT v.id, v.workspace_id AS "workspaceId", v.folder_id AS "folderId",
              v.encrypted_name AS "encryptedName", v.name_nonce AS "nameNonce",
              v.encrypted_metadata AS "encryptedMetadata", v.metadata_nonce AS "metadataNonce",
@@ -85,7 +91,17 @@ export const findByFolderAndUser = async (
              v.created_at AS "createdAt", v.updated_at AS "updatedAt"
       FROM vaults v
       WHERE v.folder_id = ${folderId}
-      AND EXISTS (SELECT 1 FROM folder_acls fa WHERE fa.folder_id = ${folderId} AND fa.user_id = ${userId})
+      AND (
+        EXISTS (
+          SELECT 1 FROM workspace_members wm
+          WHERE wm.workspace_id = ${workspaceId} AND wm.user_id = ${userId}
+          AND wm.role IN ('owner', 'admin')
+        )
+        OR EXISTS (
+          SELECT 1 FROM folder_acls fa
+          WHERE fa.folder_id IN (SELECT id FROM ancestors) AND fa.user_id = ${userId}
+        )
+      )
     `);
     return rows;
   }
@@ -104,7 +120,11 @@ export const findByFolderAndUser = async (
     FROM vaults v
     WHERE v.workspace_id = ${workspaceId}
     AND v.folder_id IS NULL
-    AND EXISTS (SELECT 1 FROM workspace_members wm WHERE wm.workspace_id = ${workspaceId} AND wm.user_id = ${userId})
+    AND EXISTS (
+      SELECT 1 FROM workspace_members wm
+      WHERE wm.workspace_id = ${workspaceId} AND wm.user_id = ${userId}
+      AND wm.role != 'external_member'
+    )
   `);
   return rows;
 };

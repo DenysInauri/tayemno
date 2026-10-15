@@ -15,14 +15,23 @@ export const listFolderMembers = async (
     throw new HttpError(403, "Access denied");
   }
 
-  const rows = await folderAclsRepo.findAllByFolderId(db, folderId);
+  const rows = await folderAclsRepo.findAllByFolderIdWithAncestors(db, folderId);
 
   return {
-    members: rows.map((row) => ({
-      userId: row.userId,
-      name: row.name,
-      email: row.email,
-      createdAt: row.createdAt.toISOString(),
-    })),
+    members: rows.map((row) => {
+      const inherited = row.folderId !== folderId;
+      return {
+        userId: row.userId,
+        name: row.name,
+        email: row.email,
+        inherited,
+        ...(inherited && {
+          ancestorFolderId: row.folderId,
+          ancestorEncryptedName: row.encryptedName,
+          ancestorNameNonce: row.nameNonce,
+        }),
+        createdAt: new Date(row.createdAt).toISOString(),
+      };
+    }),
   };
 };

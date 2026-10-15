@@ -2,18 +2,24 @@ import { useRef } from "react";
 import { Table } from "@mantine/core";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import type { IFolderMemberItem } from "@tayemno/shared";
+import type { IDecryptedAncestor } from "../../../../../../api/hooks/useDecryptAncestorFolderNames";
 import { FolderMemberRow } from "../FolderMemberRow";
 
-const ROW_HEIGHT = 48;
-const VISIBLE_ROWS = 5;
+const ROW_HEIGHT = 64;
 
 interface IProps {
   members: IFolderMemberItem[];
   currentUserId: string;
+  ancestorMap: Record<string, IDecryptedAncestor>;
   onRevoke: (member: IFolderMemberItem) => void;
 }
 
-export const FolderMembersList = ({ members, currentUserId, onRevoke }: IProps) => {
+export const FolderMembersList = ({
+  members,
+  currentUserId,
+  ancestorMap,
+  onRevoke,
+}: IProps) => {
   const parentRef = useRef<HTMLDivElement>(null);
 
   const virtualizer = useVirtualizer({
@@ -34,7 +40,8 @@ export const FolderMembersList = ({ members, currentUserId, onRevoke }: IProps) 
     <div
       ref={parentRef}
       style={{
-        height: ROW_HEIGHT * VISIBLE_ROWS,
+        flex: 1,
+        minHeight: 0,
         overflow: "auto",
       }}
     >
@@ -45,14 +52,18 @@ export const FolderMembersList = ({ members, currentUserId, onRevoke }: IProps) 
               <td style={{ height: paddingTop, padding: 0, border: "none" }} />
             </tr>
           )}
-          {virtualItems.map((virtualRow) => (
-            <FolderMemberRow
-              key={members[virtualRow.index].userId}
-              member={members[virtualRow.index]}
-              isCurrentUser={members[virtualRow.index].userId === currentUserId}
-              onRevoke={onRevoke}
-            />
-          ))}
+          {virtualItems.map((virtualRow) => {
+            const member = members[virtualRow.index];
+            return (
+              <FolderMemberRow
+                key={member.userId}
+                member={member}
+                isCurrentUser={member.userId === currentUserId}
+                ancestor={ancestorMap[member.userId]}
+                onRevoke={onRevoke}
+              />
+            );
+          })}
           {paddingBottom > 0 && (
             <tr>
               <td

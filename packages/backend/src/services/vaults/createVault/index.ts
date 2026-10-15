@@ -15,13 +15,13 @@ export const createVault = async (
   data: ICreateVaultRequest,
 ): Promise<ICreateVaultResponse> => {
   if (data.folderId) {
-    const folderMembership = await folderAclsRepo.findByFolderIdAndUserId(
+    const hasAccess = await folderAclsRepo.hasAccessToFolder(
       db,
       data.folderId,
       userId,
     );
 
-    if (!folderMembership) {
+    if (!hasAccess) {
       throw new HttpError(403, "Access denied");
     }
   } else {
