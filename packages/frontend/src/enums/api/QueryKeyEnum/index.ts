@@ -5,4 +5,5 @@ export enum QueryKeyEnum {
   BREADCRUMBS = "breadcrumbs",
   FOLDER_TREE = "folderTree",
   MEMBERS = "members",
+  FOLDER_MEMBERS = "folderMembers",
 }

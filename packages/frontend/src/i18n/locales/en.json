@@ -121,7 +121,19 @@
     "signOut": "Sign out"
   },
   "aside": {
-    "title": "Details"
+    "title": "Details",
+    "members": {
+      "title": "Members",
+      "description": "Users with access to this folder.",
+      "emptyRoot": "Select a folder to view members.",
+      "you": "You",
+      "search": {
+        "placeholder": "Search by name or email"
+      },
+      "actions": {
+        "revoke": "Revoke access"
+      }
+    }
   },
   "settings": {
     "title": "Settings"
