@@ -385,11 +385,31 @@ export interface IDeleteFolderAclResponse {
   message: string;
 }
 
+export interface IFolderMemberItem {
+  userId: string;
+  name: string;
+  email: string;
+  createdAt: string;
+}
+
+export interface IListFolderMembersResponse {
+  members: IFolderMemberItem[];
+}
+
+export interface IBulkCreateFolderAclRequest {
+  acls: ICreateFolderAclRequest[];
+}
+
+export interface IBulkCreateFolderAclResponse {
+  acls: FolderAcl[];
+}
+
 export interface IMemberItem {
   id: string;
   userId: string;
   name: string;
   email: string;
+  publicKey: string;
   role: WorkspaceRole;
   status: WorkspaceMemberStatus;
   adminEncryptedUserPrivateKey: string | null;

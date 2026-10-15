@@ -52,6 +52,7 @@ export const findAllByWorkspaceId = async (
       createdAt: workspaceMembers.createdAt,
       name: users.name,
       email: users.email,
+      publicKey: users.publicKey,
     })
     .from(workspaceMembers)
     .innerJoin(users, eq(workspaceMembers.userId, users.id))

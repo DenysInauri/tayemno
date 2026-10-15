@@ -1,6 +1,6 @@
 import { eq, and } from "drizzle-orm";
 import type { Database } from "../../db";
-import { folderAcls, folders } from "../../db/schema.js";
+import { folderAcls, folders, users } from "../../db/schema.js";
 
 export const create = async (
   db: Database,
@@ -27,6 +27,31 @@ export const findByFolderIdAndUserId = async (
     .limit(1);
 
   return result[0];
+};
+
+export const findAllByFolderId = async (
+  db: Database,
+  folderId: string,
+) => {
+  return db
+    .select({
+      userId: folderAcls.userId,
+      encryptedFolderKey: folderAcls.encryptedFolderKey,
+      createdAt: folderAcls.createdAt,
+      name: users.name,
+      email: users.email,
+    })
+    .from(folderAcls)
+    .innerJoin(users, eq(folderAcls.userId, users.id))
+    .where(eq(folderAcls.folderId, folderId));
+};
+
+export const bulkCreate = async (
+  db: Database,
+  data: (typeof folderAcls.$inferInsert)[],
+) => {
+  const result = await db.insert(folderAcls).values(data).returning();
+  return result;
 };
 
 export const findByUserIdAndWorkspaceId = async (

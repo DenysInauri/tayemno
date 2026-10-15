@@ -18,6 +18,7 @@ export const listMembers = async ({
     userId: row.userId,
     name: row.name,
     email: row.email,
+    publicKey: row.publicKey,
     role: row.role as WorkspaceRole,
     status: (row.status ?? "active") as WorkspaceMemberStatus,
     adminEncryptedUserPrivateKey: row.adminEncryptedUserPrivateKey,

@@ -9,7 +9,9 @@ import { getFolderRoute } from "./getFolder";
 import { getBreadcrumbsRoute } from "./getBreadcrumbs";
 import { moveFolderRoute } from "./moveFolder";
 import { createFolderAclRoute } from "./createFolderAcl";
+import { bulkCreateFolderAclRoute } from "./bulkCreateFolderAcl";
 import { deleteFolderAclRoute } from "./deleteFolderAcl";
+import { listFolderMembersRoute } from "./listFolderMembers";
 
 export const foldersRoutes = async (app: FastifyInstance) => {
   app.addHook("onRequest", authenticate);
@@ -24,4 +26,6 @@ export const foldersRoutes = async (app: FastifyInstance) => {
   await app.register(moveFolderRoute);
   await app.register(createFolderAclRoute);
   await app.register(deleteFolderAclRoute);
+  await app.register(listFolderMembersRoute);
+  await app.register(bulkCreateFolderAclRoute);
 };

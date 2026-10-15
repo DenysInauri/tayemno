@@ -6,4 +6,6 @@ export { getFolder } from "./getFolder";
 export { getBreadcrumbs } from "./getBreadcrumbs";
 export { moveFolder } from "./moveFolder";
 export { createFolderAcl } from "./createFolderAcl";
+export { bulkCreateFolderAcl } from "./bulkCreateFolderAcl";
 export { deleteFolderAcl } from "./deleteFolderAcl";
+export { listFolderMembers } from "./listFolderMembers";

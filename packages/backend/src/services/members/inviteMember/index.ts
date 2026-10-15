@@ -69,6 +69,7 @@ export const inviteMember = async ({
     userId: user.id,
     name: user.name,
     email: user.email,
+    publicKey: user.publicKey,
     role: membership.role as InvitableRole,
     status: "invited",
     adminEncryptedUserPrivateKey: membership.adminEncryptedUserPrivateKey,
