@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { IconFolderUp } from "@tabler/icons-react";
 import { Button } from "../../../ui/Button";
 import { useUpload } from "../../../../contexts/UploadContext";
+import classes from "./index.module.css";
 
 interface IProps {
   folderId: string | null;
@@ -35,7 +36,7 @@ export const UploadFolderAction = ({ folderId }: IProps) => {
         ref={folderInputRef}
         type="file"
         onChange={handleFolderChange}
-        style={{ display: "none" }}
+        className={classes.hiddenInput}
         {...{ webkitdirectory: "", directory: "" }}
       />
     </>

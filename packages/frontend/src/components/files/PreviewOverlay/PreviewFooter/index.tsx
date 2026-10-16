@@ -4,6 +4,7 @@ import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { Group } from "../../../ui/Group";
 import { Text } from "../../../ui/Text";
 import { ActionIcon } from "../../../ui/ActionIcon";
+import classes from "./index.module.css";
 
 interface IProps {
   currentIndex: number;
@@ -28,9 +29,7 @@ export const PreviewFooter = ({
       gap="md"
       px="md"
       py="xs"
-      style={{
-        borderTop: "1px solid var(--mantine-color-default-border)",
-      }}
+      className={classes.container}
     >
       <ActionIcon variant="subtle" color="gray" onClick={onPrev}>
         <IconChevronLeft size={18} />

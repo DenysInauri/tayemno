@@ -8,6 +8,7 @@ import { Text } from "../../../ui/Text";
 import { ImageViewer } from "../ImageViewer";
 import { UnsupportedPreview } from "../UnsupportedPreview";
 import { TooLargePreview } from "../TooLargePreview";
+import classes from "./index.module.css";
 
 const MAX_PREVIEW_SIZE = 100 * 1024 * 1024;
 
@@ -33,7 +34,7 @@ export const PreviewBody = ({ vault, url, isLoading, error }: IProps) => {
 
   if (isLoading) {
     return (
-      <Stack align="center" justify="center" style={{ flex: 1 }}>
+      <Stack align="center" justify="center" className={classes.centered}>
         <Loader />
         <Text c="dimmed">{t("preview.loading")}</Text>
       </Stack>
@@ -42,7 +43,7 @@ export const PreviewBody = ({ vault, url, isLoading, error }: IProps) => {
 
   if (error || !url) {
     return (
-      <Stack align="center" justify="center" style={{ flex: 1 }}>
+      <Stack align="center" justify="center" className={classes.centered}>
         <Text size="lg" fw={500}>
           {t("preview.error.title")}
         </Text>

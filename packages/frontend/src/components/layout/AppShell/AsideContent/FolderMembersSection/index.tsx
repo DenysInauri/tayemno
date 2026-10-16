@@ -18,6 +18,7 @@ import { SizeEnum } from "../../../../../enums/ui/SizeEnum";
 import { FolderMembersList } from "./FolderMembersList";
 import { AddMemberSelect } from "./AddMemberSelect";
 import { buildAddMembersPayload } from "./buildAddMembersPayload";
+import classes from "./index.module.css";
 
 interface IProps {
   folderId: string;
@@ -65,7 +66,7 @@ export const FolderMembersSection = ({ folderId }: IProps) => {
   };
 
   return (
-    <Stack gap={SizeEnum.SM} style={{ flex: 1, minHeight: 0 }} mt={SizeEnum.SM}>
+    <Stack gap={SizeEnum.SM} className={classes.container} mt={SizeEnum.SM}>
       <Title order={5}>{t("aside.members.title")}</Title>
       <Text size="sm" c="dimmed">
         {t("aside.members.description")}
@@ -77,7 +78,7 @@ export const FolderMembersSection = ({ folderId }: IProps) => {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.currentTarget.value)}
           size="sm"
-          style={{ flex: 1 }}
+          className={classes.searchInput}
         />
         <ActionIcon
           variant="default"

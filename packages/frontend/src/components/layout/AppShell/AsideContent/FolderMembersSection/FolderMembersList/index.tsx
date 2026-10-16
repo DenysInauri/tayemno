@@ -4,6 +4,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import type { IFolderMemberItem } from "@tayemno/shared";
 import type { IDecryptedAncestor } from "../../../../../../api/hooks/useDecryptAncestorFolderNames";
 import { FolderMemberRow } from "../FolderMemberRow";
+import classes from "./index.module.css";
 
 const ROW_HEIGHT = 64;
 
@@ -39,11 +40,7 @@ export const FolderMembersList = ({
   return (
     <div
       ref={parentRef}
-      style={{
-        flex: 1,
-        minHeight: 0,
-        overflow: "auto",
-      }}
+      className={classes.scrollContainer}
     >
       <Table striped highlightOnHover>
         <Table.Tbody>

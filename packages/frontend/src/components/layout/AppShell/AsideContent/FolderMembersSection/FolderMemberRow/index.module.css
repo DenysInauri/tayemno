@@ -1,0 +1,16 @@
+.cell {
+  vertical-align: middle;
+  max-width: 1px;
+}
+
+.nameStack {
+  min-width: 0;
+}
+
+.detailsGroup {
+  overflow: hidden;
+}
+
+.noWrapText {
+  white-space: nowrap;
+}

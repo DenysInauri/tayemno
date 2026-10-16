@@ -8,6 +8,7 @@ import { Stack } from "../../ui/Stack";
 import { Button } from "../../ui/Button";
 import { ActionIcon } from "../../ui/ActionIcon";
 import { SizeEnum } from "../../../enums/ui/SizeEnum";
+import classes from "./index.module.css";
 
 export interface ITransferItem {
   id: string;
@@ -30,7 +31,7 @@ export const TransferAlert = ({
   onCancelAll,
   cancelAllLabel,
 }: IProps) => (
-  <Paper shadow="md" radius="md" style={{ width: 320, overflow: "hidden" }}>
+  <Paper shadow="md" radius="md" className={classes.paper}>
     <Box bg="gray.2" p={SizeEnum.SM}>
       <Text fw={600} size="sm">
         {title}
@@ -40,10 +41,7 @@ export const TransferAlert = ({
     <Box
       bg="gray.0"
       p={SizeEnum.SM}
-      style={{
-        borderTop: "1px solid var(--mantine-color-gray-3)",
-        borderBottom: "1px solid var(--mantine-color-gray-3)",
-      }}
+      className={classes.itemList}
     >
       <Stack gap={SizeEnum.SM}>
         {items.map((item) => (

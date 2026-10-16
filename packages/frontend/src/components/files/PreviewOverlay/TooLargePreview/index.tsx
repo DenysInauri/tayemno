@@ -7,6 +7,7 @@ import { formatFileSize } from "../../../../utils/formatFileSize";
 import { Stack } from "../../../ui/Stack";
 import { Text } from "../../../ui/Text";
 import { Button } from "../../../ui/Button";
+import classes from "./index.module.css";
 
 interface IProps {
   vault: ILocalVault;
@@ -17,7 +18,7 @@ export const TooLargePreview = ({ vault }: IProps) => {
   const { download, isDownloading } = useDownload();
 
   return (
-    <Stack align="center" justify="center" gap="md" style={{ flex: 1 }}>
+    <Stack align="center" justify="center" gap="md" className={classes.container}>
       <Text size="lg" fw={500}>
         {t("preview.tooLarge.title")}
       </Text>

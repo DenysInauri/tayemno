@@ -1,0 +1,10 @@
+.breadcrumbs {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.crumbItem {
+  white-space: nowrap;
+  flex-shrink: 0;
+}

@@ -10,6 +10,7 @@ import { Text } from "../../../../../ui/Text";
 import { Group } from "../../../../../ui/Group";
 import { Stack } from "../../../../../ui/Stack";
 import { RouteEnum } from "../../../../../../enums/routing/RouteEnum";
+import classes from "./index.module.css";
 
 interface IProps {
   member: IFolderMemberItem;
@@ -29,9 +30,9 @@ export const FolderMemberRow = ({
 
   return (
     <Table.Tr>
-      <Table.Td style={{ verticalAlign: "middle", maxWidth: 1 }}>
+      <Table.Td className={classes.cell}>
         <Group justify="space-between" wrap="nowrap">
-          <Stack gap={2} style={{ minWidth: 0 }}>
+          <Stack gap={2} className={classes.nameStack}>
             <Group gap={4} wrap="nowrap">
               <Text size="sm" fw={500} truncate>
                 {member.name}
@@ -42,7 +43,7 @@ export const FolderMemberRow = ({
                 </Badge>
               )}
             </Group>
-            <Group gap={4} wrap="nowrap" style={{ overflow: "hidden" }}>
+            <Group gap={4} wrap="nowrap" className={classes.detailsGroup}>
               <Text size="xs" c="dimmed" truncate>
                 {member.email}
               </Text>
@@ -51,7 +52,7 @@ export const FolderMemberRow = ({
                   <Text size="xs" c="dimmed">
                     ·
                   </Text>
-                  <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
+                  <Text size="xs" c="dimmed" className={classes.noWrapText}>
                     {t("aside.members.accessThrough")}
                   </Text>
                   <Anchor

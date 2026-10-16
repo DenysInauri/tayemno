@@ -1,0 +1,9 @@
+.paper {
+  width: 320px;
+  overflow: hidden;
+}
+
+.itemList {
+  border-top: 1px solid var(--mantine-color-gray-3);
+  border-bottom: 1px solid var(--mantine-color-gray-3);
+}

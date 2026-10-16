@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { IconUpload } from "@tabler/icons-react";
 import { Button } from "../../../ui/Button";
 import { useUpload } from "../../../../contexts/UploadContext";
+import classes from "./index.module.css";
 
 interface IProps {
   folderId: string | null;
@@ -36,7 +37,7 @@ export const UploadFileActions = ({ folderId }: IProps) => {
         type="file"
         multiple
         onChange={handleFileChange}
-        style={{ display: "none" }}
+        className={classes.hiddenInput}
       />
     </>
   );

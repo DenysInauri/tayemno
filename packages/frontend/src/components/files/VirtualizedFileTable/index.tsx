@@ -8,6 +8,7 @@ import { FolderListItem } from "../FolderListItem";
 import { VaultListItem } from "../VaultListItem";
 import { PreviewOverlay, type IPreviewOverlayHandle } from "../PreviewOverlay";
 import { TableSkeleton } from "../TableSkeleton";
+import classes from "./index.module.css";
 
 type ListItem = ILocalFolder | ILocalVault;
 
@@ -54,16 +55,9 @@ export const VirtualizedFileTable = ({
 
   return (
     <>
-      <div ref={parentRef} style={{ flex: 1, overflow: "auto" }}>
+      <div ref={parentRef} className={classes.scrollContainer}>
         <Table highlightOnHover>
-          <Table.Thead
-            style={{
-              position: "sticky",
-              top: 0,
-              zIndex: 1,
-              background: "var(--mantine-color-body)",
-            }}
-          >
+          <Table.Thead className={classes.stickyHeader}>
             <Table.Tr>
               <Table.Th>{t("files.columns.name")}</Table.Th>
               <Table.Th visibleFrom="sm">{t("files.columns.size")}</Table.Th>

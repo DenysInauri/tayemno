@@ -4,6 +4,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { useTranslation } from "react-i18next";
 import type { IMemberItem } from "@tayemno/shared";
 import { MemberRow } from "./MemberRow";
+import classes from "./index.module.css";
 
 const ROW_HEIGHT = 48;
 
@@ -38,16 +39,9 @@ export const UsersTable = ({
       : 0;
 
   return (
-    <div ref={parentRef} style={{ flex: 1, overflow: "auto" }}>
+    <div ref={parentRef} className={classes.scrollContainer}>
       <Table striped highlightOnHover>
-        <Table.Thead
-          style={{
-            position: "sticky",
-            top: 0,
-            zIndex: 1,
-            background: "var(--mantine-color-body)",
-          }}
-        >
+        <Table.Thead className={classes.stickyHeader}>
           <Table.Tr>
             <Table.Th>{t("users.columns.name")}</Table.Th>
             <Table.Th>{t("users.columns.email")}</Table.Th>

@@ -6,6 +6,7 @@ import { useDownload } from "../../../../contexts/DownloadContext";
 import { Group } from "../../../ui/Group";
 import { Text } from "../../../ui/Text";
 import { ActionIcon } from "../../../ui/ActionIcon";
+import classes from "./index.module.css";
 
 interface IProps {
   vault: ILocalVault;
@@ -21,11 +22,9 @@ export const PreviewHeader = ({ vault, onClose }: IProps) => {
       justify="space-between"
       px="md"
       py="xs"
-      style={{
-        borderBottom: "1px solid var(--mantine-color-default-border)",
-      }}
+      className={classes.container}
     >
-      <Text size="sm" fw={500} lineClamp={1} style={{ flex: 1 }}>
+      <Text size="sm" fw={500} lineClamp={1} className={classes.title}>
         {vault.name}
       </Text>
       <Group gap="xs">

@@ -5,6 +5,7 @@ import { IconFolder, IconFile } from "@tabler/icons-react";
 import { Group } from "../../ui/Group";
 import { Text } from "../../ui/Text";
 import { formatFileSize } from "../../../utils/formatFileSize";
+import classes from "./index.module.css";
 
 interface IProps {
   name: string;
@@ -25,19 +26,14 @@ export const FileListItem = ({
   actions,
   thumbnailUrl,
 }: IProps) => (
-  <Table.Tr onClick={onClick} style={{ cursor: "pointer" }}>
-    <Table.Td style={{ position: "relative" }}>
+  <Table.Tr onClick={onClick} className={classes.row}>
+    <Table.Td className={classes.nameCell}>
       <Group gap="sm">
         {thumbnailUrl ? (
           <img
             src={thumbnailUrl}
             alt=""
-            style={{
-              width: 20,
-              height: 20,
-              borderRadius: 2,
-              objectFit: "cover",
-            }}
+            className={classes.thumbnail}
           />
         ) : isFolder ? (
           <IconFolder size={20} />

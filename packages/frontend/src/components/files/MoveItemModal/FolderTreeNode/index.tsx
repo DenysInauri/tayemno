@@ -7,6 +7,7 @@ import {
   IconChevronDown,
 } from "@tabler/icons-react";
 import { PLACEHOLDER_PREFIX } from "../../../../api/hooks/useLazyFolderTree";
+import classes from "./index.module.css";
 
 const ROOT_VALUE = "root";
 
@@ -28,7 +29,7 @@ export const FolderTreeNode = ({
       <div
         {...elementProps}
         onClick={(e) => e.stopPropagation()}
-        style={{ paddingLeft: 28, paddingTop: 4, paddingBottom: 4 }}
+        className={classes.placeholder}
       >
         <Loader size={14} />
       </div>
@@ -38,30 +39,26 @@ export const FolderTreeNode = ({
   return (
     <div
       {...elementProps}
+      className={`${classes.node} ${elementProps.className ?? ""}`}
+      data-disabled={disabled || undefined}
+      style={elementProps.style}
       onClick={(e) => {
         if (hasChildren && !expanded && node.value !== ROOT_VALUE) {
           onExpand(node.value);
         }
         elementProps.onClick(e);
       }}
-      style={{
-        ...elementProps.style,
-        display: "flex",
-        alignItems: "center",
-        opacity: disabled ? 0.5 : 1,
-        cursor: disabled ? "not-allowed" : "pointer",
-      }}
     >
       {hasChildren &&
         (expanded ? (
-          <IconChevronDown size={14} style={{ marginRight: 4 }} />
+          <IconChevronDown size={14} className={classes.chevron} />
         ) : (
-          <IconChevronRight size={14} style={{ marginRight: 4 }} />
+          <IconChevronRight size={14} className={classes.chevron} />
         ))}
       {expanded ? (
-        <IconFolderOpen size={16} style={{ marginRight: 6 }} />
+        <IconFolderOpen size={16} className={classes.folderIcon} />
       ) : (
-        <IconFolder size={16} style={{ marginRight: 6 }} />
+        <IconFolder size={16} className={classes.folderIcon} />
       )}
       <span>{node.label}</span>
     </div>

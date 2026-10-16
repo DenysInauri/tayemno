@@ -1,0 +1,14 @@
+.row {
+  cursor: pointer;
+}
+
+.nameCell {
+  position: relative;
+}
+
+.thumbnail {
+  width: 20px;
+  height: 20px;
+  border-radius: 2px;
+  object-fit: cover;
+}

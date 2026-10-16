@@ -6,6 +6,7 @@ import { Breadcrumbs } from "../../ui/Breadcrumbs";
 import { Anchor } from "../../ui/Anchor";
 import { Text } from "../../ui/Text";
 import { RouteEnum } from "../../../enums/routing/RouteEnum";
+import classes from "./index.module.css";
 
 interface IProps {
   breadcrumbs: IBreadcrumb[];
@@ -16,12 +17,12 @@ export const FolderBreadcrumbs = ({ breadcrumbs }: IProps) => {
   const { t } = useTranslation();
 
   return (
-    <Breadcrumbs style={{ flexWrap: "nowrap", overflowX: "auto", overflowY: "hidden" }}>
+    <Breadcrumbs className={classes.breadcrumbs}>
       <Anchor
         size="sm"
         component="button"
         type="button"
-        style={{ whiteSpace: "nowrap", flexShrink: 0 }}
+        className={classes.crumbItem}
         onClick={() => navigate(RouteEnum.HOME)}
       >
         {t("files.breadcrumb.root")}
@@ -33,13 +34,13 @@ export const FolderBreadcrumbs = ({ breadcrumbs }: IProps) => {
             size="sm"
             component="button"
             type="button"
-            style={{ whiteSpace: "nowrap", flexShrink: 0 }}
+            className={classes.crumbItem}
             onClick={() => navigate(`/folders/${crumb.id}`)}
           >
             {crumb.name}
           </Anchor>
         ) : (
-          <Text key={crumb.id} size="sm" style={{ whiteSpace: "nowrap", flexShrink: 0 }}>
+          <Text key={crumb.id} size="sm" className={classes.crumbItem}>
             {crumb.name}
           </Text>
         ),

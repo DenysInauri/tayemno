@@ -1,0 +1,11 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 20px;
+  gap: 20px;
+}
+
+.breadcrumbWrapper {
+  min-height: 20px;
+}

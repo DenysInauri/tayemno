@@ -14,7 +14,7 @@ import { RoleWrapper } from "../../../routing/RoleWrapper";
 import { ActionIcon } from "../../../ui/ActionIcon";
 import { useAuth } from "../../../../contexts/AuthContext";
 import { RouteEnum } from "../../../../enums/routing/RouteEnum";
-import { SizeEnum } from "../../../../enums/ui/SizeEnum";
+import classes from "./index.module.css";
 
 interface IProps {
   expanded: boolean;
@@ -64,7 +64,7 @@ export const NavbarContent = ({ expanded, onToggle }: IProps) => {
         <ActionIcon
           variant="subtle"
           onClick={onToggle}
-          style={{ margin: SizeEnum.SM }}
+          className={classes.toggleButton}
         >
           {expanded ? (
             <IconChevronLeft size={18} />

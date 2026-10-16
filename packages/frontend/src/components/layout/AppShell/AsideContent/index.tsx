@@ -6,6 +6,7 @@ import { Tabs, TabsList, TabsTab, TabsPanel } from "../../../ui/Tabs";
 import { Text } from "../../../ui/Text";
 import { SizeEnum } from "../../../../enums/ui/SizeEnum";
 import { FolderMembersSection } from "./FolderMembersSection";
+import classes from "./index.module.css";
 
 export const AsideContent = () => {
   const { t } = useTranslation();
@@ -14,18 +15,18 @@ export const AsideContent = () => {
   return (
     <MantineAppShell.Aside
       p={SizeEnum.MD}
-      style={{ display: "flex", flexDirection: "column" }}
+      className={classes.aside}
     >
       <Tabs
         defaultValue="members"
-        style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}
+        className={classes.tabs}
       >
         <TabsList>
           <TabsTab value="members">{t("aside.tabs.members")}</TabsTab>
         </TabsList>
         <TabsPanel
           value="members"
-          style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}
+          className={classes.tabPanel}
         >
           {folderId ? (
             <FolderMembersSection folderId={folderId} />

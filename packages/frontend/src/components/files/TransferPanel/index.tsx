@@ -4,6 +4,7 @@ import { TransferAlert } from "../TransferAlert";
 import { Stack } from "../../ui/Stack";
 import { useDownload } from "../../../contexts/DownloadContext";
 import { useUpload } from "../../../contexts/UploadContext";
+import classes from "./index.module.css";
 
 export const TransferPanel = () => {
   const { t } = useTranslation();
@@ -23,12 +24,7 @@ export const TransferPanel = () => {
   return (
     <Stack
       gap="sm"
-      style={{
-        position: "fixed",
-        bottom: 20,
-        right: 20,
-        zIndex: 1000,
-      }}
+      className={classes.container}
     >
       {uploads.length > 0 && (
         <TransferAlert

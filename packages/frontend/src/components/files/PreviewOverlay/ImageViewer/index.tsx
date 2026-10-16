@@ -3,6 +3,7 @@ import { Loader } from "@mantine/core";
 
 import { Text } from "../../../ui/Text";
 import { Stack } from "../../../ui/Stack";
+import classes from "./index.module.css";
 
 interface IProps {
   url: string;
@@ -74,7 +75,7 @@ export const ImageViewer = ({ url, fileName }: IProps) => {
 
   if (imgError) {
     return (
-      <Stack align="center" justify="center" style={{ flex: 1 }}>
+      <Stack align="center" justify="center" className={classes.centered}>
         <Text c="dimmed">Failed to load image</Text>
       </Stack>
     );
@@ -82,12 +83,8 @@ export const ImageViewer = ({ url, fileName }: IProps) => {
 
   return (
     <div
+      className={classes.viewer}
       style={{
-        flex: 1,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        overflow: "hidden",
         cursor: scale > 1 ? (isDragging.current ? "grabbing" : "grab") : "default",
       }}
       onWheel={handleWheel}
@@ -103,13 +100,10 @@ export const ImageViewer = ({ url, fileName }: IProps) => {
         onLoad={() => setLoaded(true)}
         onError={() => setImgError(true)}
         onDoubleClick={handleDoubleClick}
+        className={classes.image}
         style={{
-          maxWidth: "100%",
-          maxHeight: "100%",
-          objectFit: "contain",
           transform: `scale(${scale}) translate(${translate.x / scale}px, ${translate.y / scale}px)`,
           display: loaded ? "block" : "none",
-          userSelect: "none",
         }}
       />
     </div>

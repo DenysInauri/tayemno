@@ -10,7 +10,7 @@ import { BreadcrumbSkeleton } from "../../components/files/BreadcrumbSkeleton";
 import { useFolders } from "../../api/hooks/useFolders";
 import { useVaults } from "../../api/hooks/useVaults";
 import { useBreadcrumbs } from "../../api/hooks/useBreadcrumbs";
-import { SizeEnum } from "../../enums/ui/SizeEnum";
+import classes from "./index.module.css";
 
 export const HomePage = () => {
   const routeParams = useParams<{ folderId: string }>();
@@ -34,22 +34,14 @@ export const HomePage = () => {
   const isSearchEmpty = hasNoResults && !!searchQuery;
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        padding: SizeEnum.MD,
-        gap: SizeEnum.MD,
-      }}
-    >
+    <div className={classes.page}>
       <FileToolbar
         folderId={folderId}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
       />
 
-      <div style={{ minHeight: 20 }}>
+      <div className={classes.breadcrumbWrapper}>
         {breadcrumbsLoading && folderId ? (
           <BreadcrumbSkeleton />
         ) : (
