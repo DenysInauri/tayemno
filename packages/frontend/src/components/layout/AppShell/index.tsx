@@ -1,16 +1,17 @@
 import { AppShell as MantineAppShell } from "@mantine/core";
 import { Outlet } from "react-router-dom";
 
+import { HeaderContent } from "./HeaderContent";
 import { NavbarContent } from "./NavbarContent";
 import { AsideContent } from "./AsideContent";
 import { useAppShellLayout } from "./useAppShellLayout";
 
 export const AppShellLayout = () => {
-  const { navbarExpanded, toggleNavbar, navbarWidth, asideWidth, showAside } =
-    useAppShellLayout();
+  const { navbarWidth, asideWidth, showAside } = useAppShellLayout();
 
   return (
     <MantineAppShell
+      header={{ height: 60 }}
       navbar={{ width: navbarWidth, breakpoint: "sm" }}
       aside={{
         width: asideWidth,
@@ -19,8 +20,10 @@ export const AppShellLayout = () => {
       }}
       transitionDuration={200}
     >
+      <HeaderContent />
+
       <MantineAppShell.Navbar p="md">
-        <NavbarContent expanded={navbarExpanded} onToggle={toggleNavbar} />
+        <NavbarContent />
       </MantineAppShell.Navbar>
 
       <MantineAppShell.Main>

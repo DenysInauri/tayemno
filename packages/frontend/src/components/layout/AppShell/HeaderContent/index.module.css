@@ -1,0 +1,21 @@
+.headerGroup {
+  justify-content: space-between;
+  height: 100%;
+  padding-inline: var(--mantine-spacing-md);
+}
+
+.workspaceName {
+  font-weight: 600;
+}
+
+.displayName {
+  cursor: pointer;
+}
+
+.userGroup {
+  gap: var(--mantine-spacing-xs);
+}
+
+.userName {
+  font-size: var(--mantine-font-size-sm);
+}
