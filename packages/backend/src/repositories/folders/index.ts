@@ -97,6 +97,13 @@ export const findByWorkspaceIdAndUserId = async (
       SELECT fa.folder_id AS id FROM folder_acls fa
       INNER JOIN folders fl ON fa.folder_id = fl.id
       WHERE fa.user_id = ${userId} AND fl.workspace_id = ${workspaceId}
+      AND fl.parent_folder_id IS NOT NULL
+      AND fl.parent_folder_id NOT IN (SELECT id FROM accessible)
+      AND NOT EXISTS (
+        SELECT 1 FROM workspace_members wm
+        WHERE wm.workspace_id = ${workspaceId} AND wm.user_id = ${userId}
+        AND wm.role IN ('owner', 'admin')
+      )
     )
     SELECT f.id, f.workspace_id AS "workspaceId",
            CASE
