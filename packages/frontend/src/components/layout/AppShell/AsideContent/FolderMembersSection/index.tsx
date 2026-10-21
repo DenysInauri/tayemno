@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { IconSearch, IconPlus } from "@tabler/icons-react";
-import type { IFolderMemberItem, IMemberItem } from "@tayemno/shared";
+import { AuditActionEnum, type IFolderMemberItem, type IMemberItem } from "@tayemno/shared";
 import { TextInput } from "../../../../ui/TextInput";
 import { Text } from "../../../../ui/Text";
 import { Stack } from "../../../../ui/Stack";
@@ -14,6 +14,7 @@ import { usePostBulkFolderAcl } from "../../../../../api/hooks/usePostBulkFolder
 import { useDecryptAncestorFolderNames } from "../../../../../api/hooks/useDecryptAncestorFolderNames";
 import { useAuth } from "../../../../../contexts/AuthContext";
 import { useGetFolderKeyAsAdmin } from "../../../../../api/hooks/useGetFolderKeyAsAdmin";
+import { usePostAuditLog } from "../../../../../api/hooks/usePostAuditLog";
 import { SizeEnum } from "../../../../../enums/ui/SizeEnum";
 import { FolderMembersList } from "./FolderMembersList";
 import { AddMemberSelect } from "./AddMemberSelect";
@@ -31,6 +32,7 @@ export const FolderMembersSection = ({ folderId }: IProps) => {
   const deleteMutation = useDeleteFolderAcl(folderId);
   const { getFolderKey } = useGetFolderKeyAsAdmin();
   const bulkAddMutation = usePostBulkFolderAcl(folderId);
+  const { logAction } = usePostAuditLog();
   const { ancestorMap } = useDecryptAncestorFolderNames(data?.members ?? []);
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddMember, setShowAddMember] = useState(false);
@@ -59,6 +61,9 @@ export const FolderMembersSection = ({ folderId }: IProps) => {
         folderKey,
       });
       await bulkAddMutation.mutateAsync(payload);
+      members.forEach((member) => {
+        logAction({ action: AuditActionEnum.FOLDER_ACL_CREATED, folderId, memberName: member.name, memberEmail: member.email });
+      });
       setShowAddMember(false);
     } finally {
       setIsSubmitting(false);

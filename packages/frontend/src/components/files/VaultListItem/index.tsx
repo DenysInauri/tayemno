@@ -7,7 +7,8 @@ import {
   IconFolderSymlink,
   IconTrash,
 } from "@tabler/icons-react";
-import type { ILocalVault } from "../../../types/local";
+import { AuditActionEnum } from "@tayemno/shared";
+import type { ILocalFolder, ILocalVault } from "../../../types/local";
 
 import { FileListItem } from "../FileListItem";
 import { MoveItemModal } from "../MoveItemModal";
@@ -15,26 +16,40 @@ import { ActionIcon } from "../../ui/ActionIcon";
 import { useDownload } from "../../../contexts/DownloadContext";
 import { useDeleteVault } from "../../../api/hooks/useDeleteVault";
 import { useMoveVault } from "../../../api/hooks/useMoveVault";
+import { usePostAuditLog } from "../../../api/hooks/usePostAuditLog";
 import { useThumbnail } from "../../../hooks/useThumbnail";
 
 interface IProps {
   vault: ILocalVault;
   onPreview: (vault: ILocalVault) => void;
+  selected?: boolean;
+  onSelect: () => void;
+  currentFolderName: string;
 }
 
-export const VaultListItem = ({ vault, onPreview }: IProps) => {
+export const VaultListItem = ({ vault, onPreview, selected, onSelect, currentFolderName }: IProps) => {
   const { t } = useTranslation();
   const thumbnailUrl = useThumbnail(vault);
   const { download, isDownloading } = useDownload();
   const { deleteVault, isDeleting } = useDeleteVault(vault.id);
   const { move, isMoving } = useMoveVault();
+  const { logAction } = usePostAuditLog();
   const [moveModalOpened, { open: openMoveModal, close: closeMoveModal }] =
     useDisclosure();
 
-  const handleMove = async (targetFolderId: string | null) => {
-    await move(vault, targetFolderId);
+  const handleMove = async (targetFolder: ILocalFolder | null) => {
+    await move(vault, targetFolder?.id ?? null);
+    logAction({ action: AuditActionEnum.VAULT_MOVED_FROM, vault, currentFolderName, targetFolder });
+    logAction({ action: AuditActionEnum.VAULT_MOVED_TO, vault, currentFolderName, targetFolder });
     closeMoveModal();
   };
+
+  const handleDelete = async () => {
+    await deleteVault();
+    logAction({ action: AuditActionEnum.VAULT_DELETED, vault });
+  };
+
+  const handleDownload = () => download(vault);
 
   return (
     <>
@@ -44,7 +59,9 @@ export const VaultListItem = ({ vault, onPreview }: IProps) => {
         sizeBytes={vault.sizeBytes}
         updatedAt={vault.updatedAt}
         thumbnailUrl={thumbnailUrl}
-        onClick={() => onPreview(vault)}
+        selected={selected}
+        onClick={onSelect}
+        onDoubleClick={() => onPreview(vault)}
         actions={
           <Menu position="bottom-end">
             <Menu.Target>
@@ -59,7 +76,7 @@ export const VaultListItem = ({ vault, onPreview }: IProps) => {
             <Menu.Dropdown>
               <Menu.Item
                 leftSection={<IconDownload size={16} />}
-                onClick={() => download(vault)}
+                onClick={handleDownload}
               >
                 {t("files.actions.download")}
               </Menu.Item>
@@ -72,7 +89,7 @@ export const VaultListItem = ({ vault, onPreview }: IProps) => {
               <Menu.Item
                 color="red"
                 leftSection={<IconTrash size={16} />}
-                onClick={() => deleteVault()}
+                onClick={handleDelete}
               >
                 {t("files.actions.delete")}
               </Menu.Item>

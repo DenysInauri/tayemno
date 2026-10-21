@@ -1,6 +1,8 @@
 import { useCallback } from "react";
+import { AuditActionEnum } from "@tayemno/shared";
 import type { ILocalVault } from "../../../types/local";
 import { useAuth } from "../../AuthContext";
+import { usePostAuditLog } from "../../../api/hooks/usePostAuditLog";
 import { createThrottledProgress } from "../../../utils/createThrottledProgress";
 import { downloadBlob } from "../../../utils/downloadBlob";
 import { downloadAndDecryptVault } from "../downloadAndDecryptVault";
@@ -8,6 +10,7 @@ import type { IDownloadState } from "../useDownloadState";
 
 export const useFileDownload = (state: IDownloadState) => {
   const { workspace } = useAuth();
+  const { logAction } = usePostAuditLog();
 
   return useCallback(
     async (vault: ILocalVault) => {
@@ -33,6 +36,7 @@ export const useFileDownload = (state: IDownloadState) => {
         tp.flush();
 
         downloadBlob(decryptedBlob, vault.name, vault.mimeType);
+        logAction({ action: AuditActionEnum.VAULT_DOWNLOADED, vault });
       } catch (err: any) {
         if (err?.name !== "AbortError") throw err;
       } finally {

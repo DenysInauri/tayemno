@@ -1,11 +1,11 @@
-CREATE TABLE "folder_members" (
+CREATE TABLE "folder_acls" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
 	"folder_id" uuid NOT NULL,
 	"user_id" uuid NOT NULL,
-	"encrypted_symmetric_key" text NOT NULL,
+	"encrypted_folder_key" text NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "folder_members_folder_id_user_id_unique" UNIQUE("folder_id","user_id")
+	CONSTRAINT "folder_acls_folder_id_user_id_unique" UNIQUE("folder_id","user_id")
 );
 --> statement-breakpoint
 CREATE TABLE "folders" (
@@ -15,6 +15,8 @@ CREATE TABLE "folders" (
 	"encrypted_name" text NOT NULL,
 	"name_nonce" text NOT NULL,
 	"encrypted_symmetric_key" text NOT NULL,
+	"wrapped_key" text,
+	"wrapped_key_nonce" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -33,7 +35,7 @@ CREATE TABLE "pending_registrations" (
 	"public_key" text NOT NULL,
 	"encrypted_private_key" text NOT NULL,
 	"private_key_nonce" text NOT NULL,
-	"workspace_encrypted_name" text NOT NULL,
+	"workspace_name" text NOT NULL,
 	"workspace_admin_public_key" text NOT NULL,
 	"workspace_member_public_key" text NOT NULL,
 	"encrypted_workspace_admin_private_key" text NOT NULL,
@@ -60,6 +62,7 @@ CREATE TABLE "users" (
 	"public_key" text NOT NULL,
 	"encrypted_private_key" text NOT NULL,
 	"private_key_nonce" text NOT NULL,
+	"force_password_change" boolean DEFAULT false NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -72,11 +75,13 @@ CREATE TABLE "vaults" (
 	"name_nonce" text NOT NULL,
 	"encrypted_metadata" text NOT NULL,
 	"metadata_nonce" text NOT NULL,
-	"encrypted_size_bytes" bigint DEFAULT 0 NOT NULL,
 	"s3_key" text NOT NULL,
 	"content_nonce" text NOT NULL,
+	"thumbnail_s3_key" text,
+	"thumbnail_nonce" text,
 	"encrypted_symmetric_key" text NOT NULL,
 	"symmetric_key_nonce" text,
+	"admin_encrypted_symmetric_key" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -87,7 +92,9 @@ CREATE TABLE "workspace_members" (
 	"user_id" uuid NOT NULL,
 	"role" varchar(32) NOT NULL,
 	"encrypted_admin_private_key" text,
-	"encrypted_member_private_key" text NOT NULL,
+	"encrypted_member_private_key" text,
+	"status" varchar(32) DEFAULT 'active' NOT NULL,
+	"admin_encrypted_user_private_key" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "workspace_members_workspace_id_user_id_unique" UNIQUE("workspace_id","user_id")
@@ -95,15 +102,15 @@ CREATE TABLE "workspace_members" (
 --> statement-breakpoint
 CREATE TABLE "workspaces" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-	"encrypted_name" text NOT NULL,
+	"name" text NOT NULL,
 	"admin_public_key" text NOT NULL,
 	"member_public_key" text NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-ALTER TABLE "folder_members" ADD CONSTRAINT "folder_members_folder_id_folders_id_fkey" FOREIGN KEY ("folder_id") REFERENCES "folders"("id") ON DELETE CASCADE;--> statement-breakpoint
-ALTER TABLE "folder_members" ADD CONSTRAINT "folder_members_user_id_users_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "folder_acls" ADD CONSTRAINT "folder_acls_folder_id_folders_id_fkey" FOREIGN KEY ("folder_id") REFERENCES "folders"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "folder_acls" ADD CONSTRAINT "folder_acls_user_id_users_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "folders" ADD CONSTRAINT "folders_workspace_id_workspaces_id_fkey" FOREIGN KEY ("workspace_id") REFERENCES "workspaces"("id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "vaults" ADD CONSTRAINT "vaults_workspace_id_workspaces_id_fkey" FOREIGN KEY ("workspace_id") REFERENCES "workspaces"("id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "vaults" ADD CONSTRAINT "vaults_folder_id_folders_id_fkey" FOREIGN KEY ("folder_id") REFERENCES "folders"("id") ON DELETE CASCADE;--> statement-breakpoint

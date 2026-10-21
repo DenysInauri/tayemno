@@ -7,7 +7,9 @@ import { useGetFolderKeyAsMember } from "../../../api/hooks/useGetFolderKeyAsMem
 import { createThrottledProgress } from "../../../utils/createThrottledProgress";
 import { QueryKeyEnum } from "../../../enums/api/QueryKeyEnum";
 import { encryptAndUploadVault } from "../encryptAndUploadVault";
+import { AuditActionEnum } from "@tayemno/shared";
 import { buildVaultEncryptionKey } from "../buildVaultEncryptionKey";
+import { usePostAuditLog } from "../../../api/hooks/usePostAuditLog";
 import type { IUploadState } from "../useUploadState";
 
 export const useFileUpload = (state: IUploadState) => {
@@ -16,6 +18,7 @@ export const useFileUpload = (state: IUploadState) => {
   const presignVault = usePostPresignVault();
   const createVault = usePostCreateVault();
   const { getFolderKey } = useGetFolderKeyAsMember();
+  const { logAction } = usePostAuditLog();
 
   return useCallback(
     async (file: File, folderId: string | null) => {
@@ -49,7 +52,7 @@ export const useFileUpload = (state: IUploadState) => {
 
         tp.flush();
 
-        await createVault.mutateAsync({
+        const created = await createVault.mutateAsync({
           workspaceId: workspace.id,
           folderId,
           ...vaultData,
@@ -58,6 +61,8 @@ export const useFileUpload = (state: IUploadState) => {
           adminEncryptedSymmetricKey:
             encryptionKeyResult.adminEncryptedSymmetricKey,
         });
+
+        logAction({ action: AuditActionEnum.VAULT_CREATED, folderId: folderId ?? null, vaultId: created.vault.id, vaultName: file.name });
 
         queryClient.invalidateQueries({
           queryKey: [QueryKeyEnum.VAULTS, workspace.id, folderId],

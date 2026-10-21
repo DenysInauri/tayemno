@@ -42,7 +42,7 @@ export type WorkspaceMemberStatus = "invited" | "active";
 
 export interface Workspace {
   id: string;
-  encryptedName: string;
+  name: string;
   adminPublicKey: string;
   memberPublicKey: string;
   createdAt: string;
@@ -50,7 +50,7 @@ export interface Workspace {
 }
 
 export interface NewWorkspace {
-  encryptedName: string;
+  name: string;
   adminPublicKey: string;
   memberPublicKey: string;
 }
@@ -168,7 +168,7 @@ export interface ICheckPasswordBreachResponse {
 }
 
 export interface IRegisterRequest extends NewUser {
-  workspaceEncryptedName: string;
+  workspaceName: string;
   workspaceAdminPublicKey: string;
   workspaceMemberPublicKey: string;
   encryptedWorkspaceAdminPrivateKey: string;
@@ -187,7 +187,7 @@ export interface IVerifyEmailRequest {
 
 export interface IWorkspaceData {
   id: string;
-  encryptedName: string;
+  name: string;
   adminPublicKey: string;
   memberPublicKey: string;
   encryptedAdminPrivateKey: string | null;
@@ -491,5 +491,68 @@ export interface IChangePasswordRequest {
 
 export interface IChangePasswordResponse {
   message: string;
+}
+
+export enum AuditActionEnum {
+  FOLDER_OPENED = "folder.opened",
+  FOLDER_CREATED = "folder.created",
+  VAULT_CREATED = "vault.created",
+  VAULT_DELETED = "vault.deleted",
+  VAULT_MOVED_FROM = "vault.moved_from",
+  VAULT_MOVED_TO = "vault.moved_to",
+  FOLDER_MOVED_FROM = "folder.moved_from",
+  FOLDER_MOVED_TO = "folder.moved_to",
+  VAULT_PREVIEWED = "vault.previewed",
+  VAULT_DOWNLOADED = "vault.downloaded",
+  FOLDER_DOWNLOADED = "folder.downloaded",
+  FOLDER_ACL_CREATED = "folder_acl.created",
+}
+
+export type AuditAction = `${AuditActionEnum}`;
+
+export const ROOT_FOLDER_NAME = "Root";
+
+export interface IAuditLogPayload {
+  action: AuditAction;
+  actorName: string;
+  actorEmail: string;
+  context?: {
+    folderName?: string;
+    vaultName?: string;
+    targetFolderName?: string;
+    sourceFolderName?: string;
+    movedFolderName?: string;
+    memberName?: string;
+    memberEmail?: string;
+  };
+}
+
+export interface ICreateAuditLogRequest {
+  folderId: string | null;
+  vaultId?: string | null;
+  encryptedPayload: string;
+  payloadNonce: string;
+  encryptedKey: string;
+}
+
+export interface ICreateAuditLogResponse {
+  id: string;
+  createdAt: string;
+}
+
+export interface IAuditLogEntry {
+  id: string;
+  folderId: string | null;
+  vaultId: string | null;
+  ipAddress: string | null;
+  encryptedPayload: string;
+  payloadNonce: string;
+  encryptedKey: string;
+  createdAt: string;
+}
+
+export interface IGetAuditLogsResponse {
+  logs: IAuditLogEntry[];
+  nextCursor: string | null;
 }
 

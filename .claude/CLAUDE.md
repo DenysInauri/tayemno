@@ -29,6 +29,10 @@ All frontend files — components, contexts, hooks, and utility modules — must
 
 Use CSS modules for all component styles. Each component folder gets a co-located `index.module.css` file imported as `import classes from "./index.module.css";`. Do not use inline `style={{}}` for static styles — only use inline styles when the value is computed at runtime (e.g., dynamic transforms, virtualization heights). Use semantic class names (`.container`, `.stickyHeader`) not utility names. Mantine CSS variables (`var(--mantine-color-body)`, etc.) work in CSS module files via the configured `postcss-preset-mantine`.
 
+## No Nested Ternaries
+
+Do not nest ternary expressions. When a value depends on more than two branches, use a `useMemo` with `if`/`return` statements instead of chained ternaries.
+
 ## Desktop Only
 
 The frontend targets desktop and tablet viewports only. Mobile viewports show a full-screen block message (`MobileBlockScreen` component in `main.tsx`). Do not add mobile-specific responsive styles or breakpoints to pages and components.

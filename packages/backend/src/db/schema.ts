@@ -65,7 +65,7 @@ export const pendingRegistrations = pgTable("pending_registrations", {
   encryptedPrivateKey: text("encrypted_private_key").notNull(),
   privateKeyNonce: text("private_key_nonce").notNull(),
 
-  workspaceEncryptedName: text("workspace_encrypted_name").notNull(),
+  workspaceName: text("workspace_name").notNull(),
   workspaceAdminPublicKey: text("workspace_admin_public_key").notNull(),
   workspaceMemberPublicKey: text("workspace_member_public_key").notNull(),
   encryptedWorkspaceAdminPrivateKey: text("encrypted_workspace_admin_private_key").notNull(),
@@ -83,7 +83,7 @@ export const pendingRegistrations = pgTable("pending_registrations", {
 
 export const workspaces = pgTable("workspaces", {
   id: uuid("id").defaultRandom().primaryKey(),
-  encryptedName: text("encrypted_name").notNull(),
+  name: text("name").notNull(),
   adminPublicKey: text("admin_public_key").notNull(),
   memberPublicKey: text("member_public_key").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
@@ -196,4 +196,20 @@ export const vaults = pgTable("vaults", {
     .defaultNow()
     .notNull()
     .$onUpdate(() => new Date()),
+});
+
+export const auditLogs = pgTable("audit_logs", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  workspaceId: uuid("workspace_id")
+    .notNull()
+    .references(() => workspaces.id, { onDelete: "cascade" }),
+  folderId: uuid("folder_id"),
+  vaultId: uuid("vault_id"),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  encryptedPayload: text("encrypted_payload").notNull(),
+  payloadNonce: text("payload_nonce").notNull(),
+  encryptedKey: text("encrypted_key").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
 });

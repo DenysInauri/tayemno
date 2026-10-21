@@ -14,7 +14,6 @@ import { usePostVerifyEmail } from "../../api/hooks/usePostVerifyEmail";
 import { usePostResendVerification } from "../../api/hooks/usePostResendVerification";
 import { getApiErrorMessage } from "../../utils/getApiErrorMessage";
 import { useAuth } from "../../contexts/AuthContext";
-import { decryptWorkspaceName } from "../../utils/crypto/decryptWorkspaceName";
 
 const PIN_INPUT_LENGTH = 6;
 
@@ -46,7 +45,7 @@ export const VerifyEmailPage = () => {
     try {
       const data = await verify({ email, code });
       const keyPair = { publicKey, privateKey };
-      const workspaceName = await decryptWorkspaceName(data.workspace, keyPair);
+      const workspaceName = data.workspace.name;
       signIn({ token: data.token, user: data.user, keyPair, workspace: data.workspace, workspaceName });
       navigate(RouteEnum.HOME);
     } catch (err: any) {

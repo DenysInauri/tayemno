@@ -6,4 +6,5 @@ export enum QueryKeyEnum {
   FOLDER_TREE = "folderTree",
   MEMBERS = "members",
   FOLDER_MEMBERS = "folderMembers",
+  AUDIT_LOGS = "auditLogs",
 }

@@ -20,7 +20,6 @@ import { usePostSignInVerify } from "../../api/hooks/usePostSignInVerify";
 import { signInSchema } from "../../validations/signInSchema";
 import { getApiErrorMessage } from "../../utils/getApiErrorMessage";
 import { useAuth } from "../../contexts/AuthContext";
-import { decryptWorkspaceName } from "../../utils/crypto/decryptWorkspaceName";
 import { performSignIn } from "./performSignIn";
 
 interface ISignInFormValues {
@@ -59,10 +58,7 @@ export const SignInPage = () => {
           signInVerify,
         });
 
-        const workspaceName = await decryptWorkspaceName(
-          result.workspace,
-          result.keyPair,
-        );
+        const workspaceName = result.workspace.name;
         signIn({ ...result, workspaceName });
 
         navigate(

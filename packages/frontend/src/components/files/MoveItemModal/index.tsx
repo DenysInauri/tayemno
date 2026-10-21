@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Tree, useTree } from "@mantine/core";
+import type { ILocalFolder } from "../../../types/local";
 import {
   useLazyFolderTree,
   PLACEHOLDER_PREFIX,
@@ -21,7 +22,7 @@ interface IProps {
   currentFolderId: string | null;
   isMoving: boolean;
   onClose: () => void;
-  onConfirm: (targetFolderId: string | null) => void;
+  onConfirm: (targetFolder: ILocalFolder | null) => void;
   disabledFolders?: string[];
 }
 
@@ -34,7 +35,7 @@ export const MoveItemModal = ({
   disabledFolders,
 }: IProps) => {
   const { t } = useTranslation();
-  const { treeData: folderTree, expandNode } = useLazyFolderTree(opened);
+  const { treeData: folderTree, folderMap, expandNode } = useLazyFolderTree(opened);
 
   const treeData = useMemo(
     () => buildTreeData(folderTree, t("files.moveItem.rootFolder")),
@@ -67,8 +68,8 @@ export const MoveItemModal = ({
     const selected = tree.selectedState[0];
     if (!selected || selected.startsWith(PLACEHOLDER_PREFIX)) return;
 
-    const targetFolderId = selected === ROOT_VALUE ? null : selected;
-    onConfirm(targetFolderId);
+    const targetFolder = selected === ROOT_VALUE ? null : (folderMap[selected] ?? null);
+    onConfirm(targetFolder);
   };
 
   return (

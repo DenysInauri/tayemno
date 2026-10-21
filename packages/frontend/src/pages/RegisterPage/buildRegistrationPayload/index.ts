@@ -56,11 +56,6 @@ export const buildRegistrationPayload = async ({
     userKeyPair.publicKey,
   );
 
-  const workspaceEncryptedName = await AsymmetricCrypto.encrypt(
-    workspaceName,
-    workspaceMemberKeyPair.publicKey,
-  );
-
   return {
     userKeyPair,
     payload: {
@@ -76,7 +71,7 @@ export const buildRegistrationPayload = async ({
       publicKey: userKeyPair.publicKey,
       encryptedPrivateKey: encryptedPrivateKey.ciphertext,
       privateKeyNonce: encryptedPrivateKey.nonce,
-      workspaceEncryptedName,
+      workspaceName,
       workspaceAdminPublicKey: workspaceAdminKeyPair.publicKey,
       workspaceMemberPublicKey: workspaceMemberKeyPair.publicKey,
       encryptedWorkspaceAdminPrivateKey,

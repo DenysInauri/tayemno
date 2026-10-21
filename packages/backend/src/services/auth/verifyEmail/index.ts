@@ -67,7 +67,7 @@ export const verifyEmail = async (
   });
 
   const workspace = await workspacesRepo.create(db, {
-    encryptedName: pending.workspaceEncryptedName,
+    name: pending.workspaceName,
     adminPublicKey: pending.workspaceAdminPublicKey,
     memberPublicKey: pending.workspaceMemberPublicKey,
   });
@@ -100,7 +100,7 @@ export const verifyEmail = async (
     },
     workspace: {
       id: workspace.id,
-      encryptedName: workspace.encryptedName,
+      name: workspace.name,
       adminPublicKey: workspace.adminPublicKey,
       memberPublicKey: workspace.memberPublicKey,
       encryptedAdminPrivateKey: workspaceMember.encryptedAdminPrivateKey,

@@ -98,8 +98,23 @@ export const useLazyFolderTree = (enabled: boolean) => {
     return rootQuery.data.map(buildNode);
   }, [rootQuery.data, childrenByParent]);
 
+  const folderMap = useMemo(() => {
+    const map: Record<string, ILocalFolder> = {};
+    const addFolders = (folders: ILocalFolder[]) => {
+      for (const folder of folders) {
+        map[folder.id] = folder;
+      }
+    };
+    if (rootQuery.data) addFolders(rootQuery.data);
+    for (const children of Object.values(childrenByParent)) {
+      addFolders(children);
+    }
+    return map;
+  }, [rootQuery.data, childrenByParent]);
+
   return {
     treeData,
+    folderMap,
     isLoading: rootQuery.isLoading,
     expandNode,
     loadingNodes,

@@ -1,1 +1,0 @@
-ALTER TABLE "vaults" DROP COLUMN "encrypted_size_bytes";

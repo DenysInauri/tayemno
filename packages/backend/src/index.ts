@@ -13,6 +13,7 @@ import { authRoutes } from "./routes/auth";
 import { foldersRoutes } from "./routes/folders";
 import { vaultsRoutes } from "./routes/vaults";
 import { membersRoutes } from "./routes/members";
+import { auditLogsRoutes } from "./routes/auditLogs";
 import { createTransport } from "./services/email";
 import { deleteExpired } from "./repositories/pendingRegistrations";
 import { cleanupExpiredChallenges } from "./utils/srpChallengeStore";
@@ -75,6 +76,9 @@ await app.register(vaultsRoutes, {
 });
 await app.register(membersRoutes, {
   prefix: "/workspaces/:workspaceId/members",
+});
+await app.register(auditLogsRoutes, {
+  prefix: "/workspaces/:workspaceId/audit-logs",
 });
 
 const CLEANUP_INTERVAL_MS = 5 * 60 * 1000;

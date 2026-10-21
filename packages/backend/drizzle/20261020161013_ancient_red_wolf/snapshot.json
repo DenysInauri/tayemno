@@ -1,14 +1,20 @@
 {
   "version": "8",
   "dialect": "postgres",
-  "id": "71e41e41-ad49-4874-9b93-106a444b2581",
+  "id": "28678e4f-8d7f-4d2d-a9dd-e400e820fd88",
   "prevIds": [
-    "00000000-0000-0000-0000-000000000000"
+    "08fd4527-f7a3-4ee5-aeda-c87ceeccf5c9"
   ],
   "ddl": [
     {
       "isRlsEnabled": false,
-      "name": "folder_members",
+      "name": "audit_logs",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "folder_acls",
       "entityType": "tables",
       "schema": "public"
     },
@@ -59,12 +65,25 @@
       "name": "id",
       "entityType": "columns",
       "schema": "public",
-      "table": "folder_members"
+      "table": "audit_logs"
     },
     {
       "type": "uuid",
       "typeSchema": null,
       "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "workspace_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "audit_logs"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": false,
       "dimensions": 0,
       "default": null,
       "generated": null,
@@ -72,20 +91,33 @@
       "name": "folder_id",
       "entityType": "columns",
       "schema": "public",
-      "table": "folder_members"
+      "table": "audit_logs"
     },
     {
       "type": "uuid",
       "typeSchema": null,
-      "notNull": true,
+      "notNull": false,
       "dimensions": 0,
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "user_id",
+      "name": "vault_id",
       "entityType": "columns",
       "schema": "public",
-      "table": "folder_members"
+      "table": "audit_logs"
+    },
+    {
+      "type": "varchar(45)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "ip_address",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "audit_logs"
     },
     {
       "type": "text",
@@ -95,10 +127,36 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "encrypted_symmetric_key",
+      "name": "encrypted_payload",
       "entityType": "columns",
       "schema": "public",
-      "table": "folder_members"
+      "table": "audit_logs"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "payload_nonce",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "audit_logs"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "encrypted_key",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "audit_logs"
     },
     {
       "type": "timestamp with time zone",
@@ -111,7 +169,72 @@
       "name": "created_at",
       "entityType": "columns",
       "schema": "public",
-      "table": "folder_members"
+      "table": "audit_logs"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "folder_acls"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "folder_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "folder_acls"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "folder_acls"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "encrypted_folder_key",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "folder_acls"
+    },
+    {
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "folder_acls"
     },
     {
       "type": "timestamp with time zone",
@@ -124,7 +247,7 @@
       "name": "updated_at",
       "entityType": "columns",
       "schema": "public",
-      "table": "folder_members"
+      "table": "folder_acls"
     },
     {
       "type": "uuid",
@@ -200,6 +323,32 @@
       "generated": null,
       "identity": null,
       "name": "encrypted_symmetric_key",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "folders"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "wrapped_key",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "folders"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "wrapped_key_nonce",
       "entityType": "columns",
       "schema": "public",
       "table": "folders"
@@ -407,7 +556,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "workspace_encrypted_name",
+      "name": "workspace_name",
       "entityType": "columns",
       "schema": "public",
       "table": "pending_registrations"
@@ -712,6 +861,19 @@
       "table": "users"
     },
     {
+      "type": "boolean",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "name": "force_password_change",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
+    },
+    {
       "type": "timestamp with time zone",
       "typeSchema": null,
       "notNull": true,
@@ -829,19 +991,6 @@
       "table": "vaults"
     },
     {
-      "type": "bigint",
-      "typeSchema": null,
-      "notNull": true,
-      "dimensions": 0,
-      "default": "0",
-      "generated": null,
-      "identity": null,
-      "name": "encrypted_size_bytes",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "vaults"
-    },
-    {
       "type": "text",
       "typeSchema": null,
       "notNull": true,
@@ -870,6 +1019,32 @@
     {
       "type": "text",
       "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "thumbnail_s3_key",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "vaults"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "thumbnail_nonce",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "vaults"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
       "default": null,
@@ -889,6 +1064,19 @@
       "generated": null,
       "identity": null,
       "name": "symmetric_key_nonce",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "vaults"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "admin_encrypted_symmetric_key",
       "entityType": "columns",
       "schema": "public",
       "table": "vaults"
@@ -987,12 +1175,38 @@
     {
       "type": "text",
       "typeSchema": null,
-      "notNull": true,
+      "notNull": false,
       "dimensions": 0,
       "default": null,
       "generated": null,
       "identity": null,
       "name": "encrypted_member_private_key",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "workspace_members"
+    },
+    {
+      "type": "varchar(32)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'active'",
+      "generated": null,
+      "identity": null,
+      "name": "status",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "workspace_members"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "admin_encrypted_user_private_key",
       "entityType": "columns",
       "schema": "public",
       "table": "workspace_members"
@@ -1044,7 +1258,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "encrypted_name",
+      "name": "name",
       "entityType": "columns",
       "schema": "public",
       "table": "workspaces"
@@ -1104,6 +1318,23 @@
     {
       "nameExplicit": false,
       "columns": [
+        "workspace_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "workspaces",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "audit_logs_workspace_id_workspaces_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "audit_logs"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
         "folder_id"
       ],
       "schemaTo": "public",
@@ -1113,10 +1344,10 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
-      "name": "folder_members_folder_id_folders_id_fkey",
+      "name": "folder_acls_folder_id_folders_id_fkey",
       "entityType": "fks",
       "schema": "public",
-      "table": "folder_members"
+      "table": "folder_acls"
     },
     {
       "nameExplicit": false,
@@ -1130,10 +1361,10 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
-      "name": "folder_members_user_id_users_id_fkey",
+      "name": "folder_acls_user_id_users_id_fkey",
       "entityType": "fks",
       "schema": "public",
-      "table": "folder_members"
+      "table": "folder_acls"
     },
     {
       "nameExplicit": false,
@@ -1225,9 +1456,19 @@
         "id"
       ],
       "nameExplicit": false,
-      "name": "folder_members_pkey",
+      "name": "audit_logs_pkey",
       "schema": "public",
-      "table": "folder_members",
+      "table": "audit_logs",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "folder_acls_pkey",
+      "schema": "public",
+      "table": "folder_acls",
       "entityType": "pks"
     },
     {
@@ -1297,10 +1538,10 @@
         "user_id"
       ],
       "nullsNotDistinct": false,
-      "name": "folder_members_folder_id_user_id_unique",
+      "name": "folder_acls_folder_id_user_id_unique",
       "entityType": "uniques",
       "schema": "public",
-      "table": "folder_members"
+      "table": "folder_acls"
     },
     {
       "nameExplicit": false,

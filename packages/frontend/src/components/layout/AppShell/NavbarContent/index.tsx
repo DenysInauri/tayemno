@@ -1,8 +1,4 @@
-import {
-  AppShell as MantineAppShell,
-  NavLink,
-  Tooltip,
-} from "@mantine/core";
+import { AppShell as MantineAppShell, NavLink, Tooltip } from "@mantine/core";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { IconFolder, IconUsers } from "@tabler/icons-react";

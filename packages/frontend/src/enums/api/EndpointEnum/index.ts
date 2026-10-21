@@ -11,4 +11,5 @@ export enum EndpointEnum {
   FOLDERS = "/folders",
   MEMBERS = "/members",
   CHANGE_PASSWORD = "/auth/change-password",
+  AUDIT_LOGS = "/audit-logs",
 }

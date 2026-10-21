@@ -1,7 +1,9 @@
 import { useCallback } from "react";
 import { zipSync } from "fflate";
+import { AuditActionEnum } from "@tayemno/shared";
 import type { ILocalFolder } from "../../../types/local";
 import { useAuth } from "../../AuthContext";
+import { usePostAuditLog } from "../../../api/hooks/usePostAuditLog";
 import { useDecryptFolderAsMember } from "../../../api/hooks/useDecryptFolderAsMember";
 import { useDecryptVaultAsMember } from "../../../api/hooks/useDecryptVaultAsMember";
 import { createThrottledProgress } from "../../../utils/createThrottledProgress";
@@ -13,6 +15,7 @@ import type { IDownloadState } from "../useDownloadState";
 
 export const useFolderDownload = (state: IDownloadState) => {
   const { workspace } = useAuth();
+  const { logAction } = usePostAuditLog();
   const { decrypt: decryptFolder } = useDecryptFolderAsMember();
   const { decrypt: decryptVault } = useDecryptVaultAsMember();
 
@@ -42,6 +45,7 @@ export const useFolderDownload = (state: IDownloadState) => {
         if (totalFiles === 0) {
           const blob = zipEmptyTree(tree, folder.name);
           downloadBlob(blob, `${folder.name}.zip`, "application/zip");
+          logAction({ action: AuditActionEnum.FOLDER_DOWNLOADED, folder });
           tp.flush();
           return;
         }
@@ -79,6 +83,7 @@ export const useFolderDownload = (state: IDownloadState) => {
         const zipped = zipSync(zipEntries);
         const blob = new Blob([zipped], { type: "application/zip" });
         downloadBlob(blob, `${folder.name}.zip`, "application/zip");
+        logAction({ action: AuditActionEnum.FOLDER_DOWNLOADED, folder });
       } catch (err: any) {
         if (err?.name !== "AbortError") throw err;
       } finally {

@@ -8,6 +8,7 @@ import {
   IconFileZip,
   IconTrash,
 } from "@tabler/icons-react";
+import { AuditActionEnum } from "@tayemno/shared";
 import type { ILocalFolder } from "../../../types/local";
 
 import { FileListItem } from "../FileListItem";
@@ -16,19 +17,24 @@ import { ActionIcon } from "../../ui/ActionIcon";
 import { useDownload } from "../../../contexts/DownloadContext";
 import { useDeleteFolder } from "../../../api/hooks/useDeleteFolder";
 import { useMoveFolder } from "../../../api/hooks/useMoveFolder";
+import { usePostAuditLog } from "../../../api/hooks/usePostAuditLog";
 import { RouteEnum } from "../../../enums/routing/RouteEnum";
 import { MoveItemModal } from "../MoveItemModal";
 
 interface IProps {
   folder: ILocalFolder;
+  selected?: boolean;
+  onSelect: () => void;
+  currentFolderName: string;
 }
 
-export const FolderListItem = ({ folder }: IProps) => {
+export const FolderListItem = ({ folder, selected, onSelect, currentFolderName }: IProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { downloadFolder, isDownloading } = useDownload();
   const { deleteFolder, isDeleting } = useDeleteFolder(folder.id);
   const { move, isMoving } = useMoveFolder();
+  const { logAction } = usePostAuditLog();
   const [
     deleteModalOpened,
     { open: openDeleteModal, close: closeDeleteModal },
@@ -36,8 +42,10 @@ export const FolderListItem = ({ folder }: IProps) => {
   const [moveModalOpened, { open: openMoveModal, close: closeMoveModal }] =
     useDisclosure();
 
-  const handleMove = async (targetFolderId: string | null) => {
-    await move(folder, targetFolderId);
+  const handleMove = async (targetFolder: ILocalFolder | null) => {
+    await move(folder, targetFolder?.id ?? null);
+    logAction({ action: AuditActionEnum.FOLDER_MOVED_FROM, folder, currentFolderName, targetFolder });
+    logAction({ action: AuditActionEnum.FOLDER_MOVED_TO, folder, currentFolderName, targetFolder });
     closeMoveModal();
   };
 
@@ -47,7 +55,9 @@ export const FolderListItem = ({ folder }: IProps) => {
         name={folder.name}
         isFolder
         updatedAt={folder.updatedAt}
-        onClick={() =>
+        selected={selected}
+        onClick={onSelect}
+        onDoubleClick={() =>
           navigate(RouteEnum.FOLDER.replace(":folderId", folder.id))
         }
         actions={
