@@ -26,6 +26,8 @@ export const createAuditLog = async (
 
   const log = await auditLogsRepo.create(db, {
     workspaceId,
+    userId,
+    actionType: data.actionType,
     folderId: data.folderId,
     vaultId: data.vaultId ?? null,
     ipAddress,

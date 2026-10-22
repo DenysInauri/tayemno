@@ -203,6 +203,8 @@ export const auditLogs = pgTable("audit_logs", {
   workspaceId: uuid("workspace_id")
     .notNull()
     .references(() => workspaces.id, { onDelete: "cascade" }),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+  actionType: varchar("action_type", { length: 50 }),
   folderId: uuid("folder_id"),
   vaultId: uuid("vault_id"),
   ipAddress: varchar("ip_address", { length: 45 }),

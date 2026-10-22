@@ -506,6 +506,13 @@ export enum AuditActionEnum {
   VAULT_DOWNLOADED = "vault.downloaded",
   FOLDER_DOWNLOADED = "folder.downloaded",
   FOLDER_ACL_CREATED = "folder_acl.created",
+  FOLDER_ACL_REVOKED = "folder_acl.revoked",
+  MEMBER_INVITED = "member.invited",
+  MEMBER_REMOVED = "member.removed",
+  MEMBER_ROLE_CHANGED = "member.role_changed",
+  AUTH_SIGN_IN = "auth.sign_in",
+  AUTH_SIGN_OUT = "auth.sign_out",
+  AUTH_PASSWORD_CHANGED = "auth.password_changed",
 }
 
 export type AuditAction = `${AuditActionEnum}`;
@@ -524,12 +531,14 @@ export interface IAuditLogPayload {
     movedFolderName?: string;
     memberName?: string;
     memberEmail?: string;
+    role?: string;
   };
 }
 
 export interface ICreateAuditLogRequest {
   folderId: string | null;
   vaultId?: string | null;
+  actionType: AuditAction;
   encryptedPayload: string;
   payloadNonce: string;
   encryptedKey: string;
@@ -542,6 +551,8 @@ export interface ICreateAuditLogResponse {
 
 export interface IAuditLogEntry {
   id: string;
+  userId: string | null;
+  actionType: string | null;
   folderId: string | null;
   vaultId: string | null;
   ipAddress: string | null;

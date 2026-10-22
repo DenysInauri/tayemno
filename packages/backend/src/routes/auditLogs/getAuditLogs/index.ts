@@ -13,6 +13,10 @@ export const getAuditLogsRoute = async (app: FastifyInstance) => {
       vaultId?: string;
       cursor?: string;
       limit?: string;
+      dateFrom?: string;
+      dateTo?: string;
+      actionType?: string;
+      userId?: string;
     };
   }>("/", async (request, reply): Promise<IGetAuditLogsResponse> => {
     try {
@@ -23,6 +27,10 @@ export const getAuditLogsRoute = async (app: FastifyInstance) => {
         request.query.vaultId,
         request.query.cursor,
         request.query.limit ? parseInt(request.query.limit, 10) : undefined,
+        request.query.dateFrom,
+        request.query.dateTo,
+        request.query.actionType,
+        request.query.userId,
       );
     } catch (err: any) {
       return reply.status(err.statusCode || 500).send({

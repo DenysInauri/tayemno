@@ -4,6 +4,8 @@ import { auditLogs } from "../../db/schema.js";
 
 interface ICreateParams {
   workspaceId: string;
+  userId: string;
+  actionType: string;
   folderId: string | null;
   vaultId?: string | null;
   ipAddress: string | null;
@@ -12,7 +14,7 @@ interface ICreateParams {
   encryptedKey: string;
 }
 
-const paginate = (rows: unknown, limit: number) => {
+export const paginate = (rows: unknown, limit: number) => {
   const results = rows as any[];
   const hasMore = results.length > limit;
   const logs = hasMore ? results.slice(0, limit) : results;
@@ -29,6 +31,8 @@ export const create = async (db: Database, data: ICreateParams) => {
     .insert(auditLogs)
     .values({
       workspaceId: data.workspaceId,
+      userId: data.userId,
+      actionType: data.actionType,
       folderId: data.folderId,
       vaultId: data.vaultId ?? null,
       ipAddress: data.ipAddress,
@@ -67,7 +71,8 @@ export const findByFolderId = async (
 
   const rows = await db.execute(sql`
     ${folderCte}
-    SELECT al.id, al.folder_id AS "folderId", al.vault_id AS "vaultId",
+    SELECT al.id, al.user_id AS "userId", al.action_type AS "actionType",
+           al.folder_id AS "folderId", al.vault_id AS "vaultId",
            al.ip_address AS "ipAddress", al.encrypted_payload AS "encryptedPayload",
            al.payload_nonce AS "payloadNonce", al.encrypted_key AS "encryptedKey",
            al.created_at AS "createdAt"
@@ -94,7 +99,8 @@ export const findByVaultId = async (
     : sql``;
 
   const rows = await db.execute(sql`
-    SELECT al.id, al.folder_id AS "folderId", al.vault_id AS "vaultId",
+    SELECT al.id, al.user_id AS "userId", al.action_type AS "actionType",
+           al.folder_id AS "folderId", al.vault_id AS "vaultId",
            al.ip_address AS "ipAddress", al.encrypted_payload AS "encryptedPayload",
            al.payload_nonce AS "payloadNonce", al.encrypted_key AS "encryptedKey",
            al.created_at AS "createdAt"
