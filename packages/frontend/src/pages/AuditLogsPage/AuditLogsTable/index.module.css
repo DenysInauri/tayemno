@@ -1,0 +1,67 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: var(--mantine-radius-md);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 16px;
+  background: var(--mantine-color-body);
+  border-bottom: 1px solid var(--mantine-color-default-border);
+  font-size: var(--mantine-font-size-sm);
+  font-weight: 600;
+  color: var(--mantine-color-dimmed);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.body {
+  overflow-y: auto;
+  max-height: calc(100vh - 260px);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--mantine-color-default-border);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.colTimestamp {
+  width: 160px;
+  flex-shrink: 0;
+}
+
+.colActor {
+  width: 200px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.colAction {
+  width: 180px;
+  flex-shrink: 0;
+}
+
+.colDetails {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.colIp {
+  width: 130px;
+  flex-shrink: 0;
+  text-align: right;
+}

@@ -12,6 +12,10 @@ export type { IDecryptedAuditLog } from "./decryptEntries";
 interface IParams {
   folderId?: string | null;
   vaultId?: string | null;
+  dateFrom?: string | null;
+  dateTo?: string | null;
+  actionType?: string | null;
+  userId?: string | null;
 }
 
 interface IDecryptedPage {
@@ -19,7 +23,14 @@ interface IDecryptedPage {
   nextCursor: string | null;
 }
 
-export const useGetAuditLogs = ({ folderId, vaultId }: IParams) => {
+export const useGetAuditLogs = ({
+  folderId,
+  vaultId,
+  dateFrom,
+  dateTo,
+  actionType,
+  userId,
+}: IParams) => {
   const { workspace, keyPair } = useAuth();
 
   const query = useInfiniteQuery<
@@ -29,11 +40,24 @@ export const useGetAuditLogs = ({ folderId, vaultId }: IParams) => {
     unknown[],
     string | undefined
   >({
-    queryKey: [QueryKeyEnum.AUDIT_LOGS, workspace?.id, folderId, vaultId],
+    queryKey: [
+      QueryKeyEnum.AUDIT_LOGS,
+      workspace?.id,
+      folderId,
+      vaultId,
+      dateFrom,
+      dateTo,
+      actionType,
+      userId,
+    ],
     queryFn: async ({ pageParam }) => {
       const params = new URLSearchParams();
       if (vaultId) params.set("vaultId", vaultId);
       else if (folderId) params.set("folderId", folderId);
+      if (dateFrom) params.set("dateFrom", dateFrom);
+      if (dateTo) params.set("dateTo", dateTo);
+      if (actionType) params.set("actionType", actionType);
+      if (userId) params.set("userId", userId);
       if (pageParam) params.set("cursor", pageParam);
       params.set("limit", "50");
 

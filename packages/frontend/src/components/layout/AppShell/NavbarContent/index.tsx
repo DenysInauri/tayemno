@@ -1,7 +1,7 @@
 import { AppShell as MantineAppShell, NavLink, Tooltip } from "@mantine/core";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { IconFolder, IconUsers } from "@tabler/icons-react";
+import { IconFolder, IconFileAnalytics, IconUsers } from "@tabler/icons-react";
 
 import { RoleWrapper } from "../../../routing/RoleWrapper";
 import { RouteEnum } from "../../../../enums/routing/RouteEnum";
@@ -30,6 +30,13 @@ export const NavbarContent = () => {
             leftSection={<IconUsers size={20} />}
             active={location.pathname === RouteEnum.USERS}
             onClick={() => navigate(RouteEnum.USERS)}
+          />
+        </Tooltip>
+        <Tooltip label={t("nav.auditLogs")} position="right">
+          <NavLink
+            leftSection={<IconFileAnalytics size={20} />}
+            active={location.pathname === RouteEnum.AUDIT_LOGS}
+            onClick={() => navigate(RouteEnum.AUDIT_LOGS)}
           />
         </Tooltip>
       </RoleWrapper>

@@ -13,6 +13,7 @@ import { HomePage } from "./pages/HomePage";
 import { AppShellLayout } from "./components/layout/AppShell";
 import { SettingsPage } from "./pages/SettingsPage";
 import { UsersPage } from "./pages/UsersPage";
+import { AuditLogsPage } from "./pages/AuditLogsPage";
 import { ChangePasswordPage } from "./pages/ChangePasswordPage";
 import { TransferPanel } from "./components/files/TransferPanel";
 
@@ -41,6 +42,7 @@ export const App = () => (
                 <Route path={RouteEnum.FOLDER} element={<HomePage />} />
                 <Route path={RouteEnum.SETTINGS} element={<SettingsPage />} />
                 <Route path={RouteEnum.USERS} element={<UsersPage />} />
+                <Route path={RouteEnum.AUDIT_LOGS} element={<AuditLogsPage />} />
               </Route>
             </Route>
             <Route path="*" element={<Navigate to={RouteEnum.HOME} replace />} />

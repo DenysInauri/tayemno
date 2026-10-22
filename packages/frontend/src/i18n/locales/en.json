@@ -118,6 +118,7 @@
     "files": "Files",
     "settings": "Settings",
     "users": "Users",
+    "auditLogs": "Audit Logs",
     "signOut": "Sign out"
   },
   "aside": {
@@ -334,5 +335,54 @@
     },
     "loading": "Loading preview...",
     "counter": "{{current}} / {{total}}"
+  },
+  "auditLogs": {
+    "title": "Audit Logs",
+    "filters": {
+      "dateFrom": "From",
+      "dateTo": "To",
+      "actionType": "Action type",
+      "actor": "Actor",
+      "reset": "Reset filters",
+      "allActions": "All actions",
+      "allActors": "All members"
+    },
+    "export": {
+      "button": "Export CSV",
+      "loading": "Exporting..."
+    },
+    "table": {
+      "timestamp": "Time",
+      "actor": "Actor",
+      "action": "Action",
+      "details": "Details",
+      "ipAddress": "IP Address",
+      "noIp": "—"
+    },
+    "empty": {
+      "noResults": "No activity found for the selected filters.",
+      "noLogs": "No activity recorded yet. Actions by workspace members will appear here."
+    },
+    "actions": {
+      "folder.opened": "Opened folder",
+      "folder.created": "Created folder",
+      "vault.created": "Uploaded file",
+      "vault.deleted": "Deleted file",
+      "vault.moved_from": "Moved file away",
+      "vault.moved_to": "Received file",
+      "folder.moved_from": "Moved folder away",
+      "folder.moved_to": "Received folder",
+      "vault.previewed": "Previewed file",
+      "vault.downloaded": "Downloaded file",
+      "folder.downloaded": "Downloaded folder",
+      "folder_acl.created": "Added member to folder",
+      "folder_acl.revoked": "Revoked folder access",
+      "member.invited": "Invited member",
+      "member.removed": "Removed member",
+      "member.role_changed": "Changed member role",
+      "auth.sign_in": "Signed in",
+      "auth.sign_out": "Signed out",
+      "auth.password_changed": "Changed password"
+    }
   }
 }
