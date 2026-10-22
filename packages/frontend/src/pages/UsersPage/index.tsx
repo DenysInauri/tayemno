@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { IconPlus, IconSearch } from "@tabler/icons-react";
-import type { IMemberItem } from "@tayemno/shared";
+import { AuditActionEnum, type IMemberItem } from "@tayemno/shared";
 import { Title } from "../../components/ui/Title";
 import { Button } from "../../components/ui/Button";
 import { TextInput } from "../../components/ui/TextInput";
@@ -11,6 +11,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useGetMembers } from "../../api/hooks/useGetMembers";
 import { usePostReinviteMember } from "../../api/hooks/usePostReinviteMember";
 import { useDeleteMembers } from "../../api/hooks/useDeleteMember";
+import { usePostAuditLog } from "../../api/hooks/usePostAuditLog";
 import { generateTempPassword } from "../../utils/generateTempPassword";
 import { UsersTable } from "./UsersTable";
 import { InviteUserModal } from "./InviteUserModal";
@@ -28,6 +29,7 @@ export const UsersPage = () => {
 
   const reinviteMutation = usePostReinviteMember(reinvitingId ?? "");
   const { mutateAsync: deleteMembers, isPending: isDeleting } = useDeleteMembers();
+  const { logAction } = usePostAuditLog();
 
   const filteredMembers = useMemo(() => {
     if (!membersResponse?.members) return [];
@@ -61,7 +63,13 @@ export const UsersPage = () => {
 
   const handleDelete = async () => {
     if (!memberToDelete) return;
+    const { name, email } = memberToDelete;
     await deleteMembers({ memberIds: [memberToDelete.id] });
+    logAction({
+      action: AuditActionEnum.MEMBER_REMOVED,
+      memberName: name,
+      memberEmail: email,
+    });
     setMemberToDelete(null);
   };
 

@@ -164,7 +164,14 @@
         "vault.previewed": "Previewed file",
         "vault.downloaded": "Downloaded file",
         "folder.downloaded": "Downloaded folder",
-        "folder_acl.created": "Added member to folder"
+        "folder_acl.created": "Added member to folder",
+        "folder_acl.revoked": "Revoked folder access",
+        "member.invited": "Invited member",
+        "member.removed": "Removed member",
+        "member.role_changed": "Changed member role",
+        "auth.sign_in": "Signed in",
+        "auth.sign_out": "Signed out",
+        "auth.password_changed": "Changed password"
       }
     }
   },

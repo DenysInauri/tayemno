@@ -50,6 +50,12 @@ export const FolderMembersSection = ({ folderId }: IProps) => {
 
   const handleRevoke = async (member: IFolderMemberItem) => {
     await deleteMutation.mutateAsync(member.userId);
+    logAction({
+      action: AuditActionEnum.FOLDER_ACL_REVOKED,
+      folderId,
+      memberName: member.name,
+      memberEmail: member.email,
+    });
   };
 
   const handleAddMembers = async (members: IMemberItem[]) => {

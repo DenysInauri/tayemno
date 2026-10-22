@@ -1,103 +1,8 @@
-import {
-  AuditActionEnum,
-  ROOT_FOLDER_NAME,
-  type IAuditLogPayload,
-} from "@tayemno/shared";
-import type { ILocalFolder, ILocalVault } from "../../../../types/local";
+import { AuditActionEnum, ROOT_FOLDER_NAME } from "@tayemno/shared";
+import type { ILocalFolder } from "../../../../types/local";
+import type { LogActionParams, IBuildResult } from "./types";
 
-interface IFolderOpenedParams {
-  action: AuditActionEnum.FOLDER_OPENED;
-  folderId: string;
-  folderName: string;
-}
-
-interface IFolderCreatedParams {
-  action: AuditActionEnum.FOLDER_CREATED;
-  folderId: string | null;
-  folderName: string;
-}
-
-interface IVaultCreatedParams {
-  action: AuditActionEnum.VAULT_CREATED;
-  folderId: string | null;
-  vaultId: string;
-  vaultName: string;
-}
-
-interface IVaultDeletedParams {
-  action: AuditActionEnum.VAULT_DELETED;
-  vault: ILocalVault;
-}
-
-interface IVaultPreviewedParams {
-  action: AuditActionEnum.VAULT_PREVIEWED;
-  vault: ILocalVault;
-}
-
-interface IVaultDownloadedParams {
-  action: AuditActionEnum.VAULT_DOWNLOADED;
-  vault: ILocalVault;
-}
-
-interface IFolderDownloadedParams {
-  action: AuditActionEnum.FOLDER_DOWNLOADED;
-  folder: ILocalFolder;
-}
-
-interface IVaultMovedFromParams {
-  action: AuditActionEnum.VAULT_MOVED_FROM;
-  vault: ILocalVault;
-  currentFolderName: string;
-  targetFolder: ILocalFolder | null;
-}
-
-interface IVaultMovedToParams {
-  action: AuditActionEnum.VAULT_MOVED_TO;
-  vault: ILocalVault;
-  currentFolderName: string;
-  targetFolder: ILocalFolder | null;
-}
-
-interface IFolderMovedFromParams {
-  action: AuditActionEnum.FOLDER_MOVED_FROM;
-  folder: ILocalFolder;
-  currentFolderName: string;
-  targetFolder: ILocalFolder | null;
-}
-
-interface IFolderMovedToParams {
-  action: AuditActionEnum.FOLDER_MOVED_TO;
-  folder: ILocalFolder;
-  currentFolderName: string;
-  targetFolder: ILocalFolder | null;
-}
-
-interface IFolderAclCreatedParams {
-  action: AuditActionEnum.FOLDER_ACL_CREATED;
-  folderId: string;
-  memberName: string;
-  memberEmail: string;
-}
-
-export type LogActionParams =
-  | IFolderOpenedParams
-  | IFolderCreatedParams
-  | IVaultCreatedParams
-  | IVaultDeletedParams
-  | IVaultPreviewedParams
-  | IVaultDownloadedParams
-  | IFolderDownloadedParams
-  | IVaultMovedFromParams
-  | IVaultMovedToParams
-  | IFolderMovedFromParams
-  | IFolderMovedToParams
-  | IFolderAclCreatedParams;
-
-interface IBuildResult {
-  folderId: string | null;
-  vaultId: string | null;
-  context: IAuditLogPayload["context"];
-}
+export type { LogActionParams } from "./types";
 
 const targetName = (f: ILocalFolder | null) => f?.name ?? ROOT_FOLDER_NAME;
 
@@ -154,5 +59,19 @@ export const buildPayload = (params: LogActionParams): IBuildResult => {
 
     case AuditActionEnum.FOLDER_ACL_CREATED:
       return { folderId: params.folderId, vaultId: null, context: { memberName: params.memberName, memberEmail: params.memberEmail } };
+
+    case AuditActionEnum.FOLDER_ACL_REVOKED:
+      return { folderId: params.folderId, vaultId: null, context: { memberName: params.memberName, memberEmail: params.memberEmail } };
+
+    case AuditActionEnum.MEMBER_INVITED:
+      return { folderId: null, vaultId: null, context: { memberName: params.memberName, memberEmail: params.memberEmail, role: params.role } };
+
+    case AuditActionEnum.MEMBER_REMOVED:
+      return { folderId: null, vaultId: null, context: { memberName: params.memberName, memberEmail: params.memberEmail } };
+
+    case AuditActionEnum.AUTH_SIGN_IN:
+    case AuditActionEnum.AUTH_SIGN_OUT:
+    case AuditActionEnum.AUTH_PASSWORD_CHANGED:
+      return { folderId: null, vaultId: null, context: undefined };
   }
 };

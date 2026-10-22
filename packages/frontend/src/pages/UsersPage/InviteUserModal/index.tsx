@@ -7,8 +7,10 @@ import { Button } from "../../../components/ui/Button";
 import { Stack } from "../../../components/ui/Stack";
 import { Text } from "../../../components/ui/Text";
 import { TextInput } from "../../../components/ui/TextInput";
+import { AuditActionEnum } from "@tayemno/shared";
 import { useAuth } from "../../../contexts/AuthContext";
 import { usePostInviteMember } from "../../../api/hooks/usePostInviteMember";
+import { usePostAuditLog } from "../../../api/hooks/usePostAuditLog";
 import { inviteUserSchema } from "../../../validations/inviteUserSchema";
 import { generateTempPassword } from "../../../utils/generateTempPassword";
 import { buildInvitePayload } from "./buildInvitePayload";
@@ -28,6 +30,7 @@ export const InviteUserModal = ({
   const { t } = useTranslation();
   const { keyPair, workspace } = useAuth();
   const { mutateAsync } = usePostInviteMember();
+  const { logAction } = usePostAuditLog();
   const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -52,6 +55,12 @@ export const InviteUserModal = ({
         });
 
         await mutateAsync(payload);
+        logAction({
+          action: AuditActionEnum.MEMBER_INVITED,
+          memberName: values.name,
+          memberEmail: values.email,
+          role: values.role,
+        });
         handleClose();
       } catch (err: any) {
         const msg = err?.response?.data?.message || err?.message || "";

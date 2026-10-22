@@ -21,6 +21,7 @@ import { signInSchema } from "../../validations/signInSchema";
 import { getApiErrorMessage } from "../../utils/getApiErrorMessage";
 import { useAuth } from "../../contexts/AuthContext";
 import { performSignIn } from "./performSignIn";
+import { logSignInEvent } from "./logSignInEvent";
 
 interface ISignInFormValues {
   identifier: string;
@@ -60,6 +61,13 @@ export const SignInPage = () => {
 
         const workspaceName = result.workspace.name;
         signIn({ ...result, workspaceName });
+
+        logSignInEvent({
+          workspaceId: result.workspace.id,
+          adminPublicKey: result.workspace.adminPublicKey,
+          actorName: result.user.name,
+          actorEmail: result.user.email,
+        });
 
         navigate(
           result.user.forcePasswordChange

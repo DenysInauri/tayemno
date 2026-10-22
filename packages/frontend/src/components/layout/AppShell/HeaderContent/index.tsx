@@ -12,15 +12,23 @@ import {
   IconLogout,
   IconSettings,
 } from "@tabler/icons-react";
+import { AuditActionEnum } from "@tayemno/shared";
 
 import { useAuth } from "../../../../contexts/AuthContext";
+import { usePostAuditLog } from "../../../../api/hooks/usePostAuditLog";
 import { RouteEnum } from "../../../../enums/routing/RouteEnum";
 import classes from "./index.module.css";
 
 export const HeaderContent = () => {
   const { user, workspaceName, signOut } = useAuth();
+  const { logAction } = usePostAuditLog();
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  const handleSignOut = () => {
+    logAction({ action: AuditActionEnum.AUTH_SIGN_OUT });
+    signOut();
+  };
 
   if (!user) return null;
 
@@ -49,7 +57,7 @@ export const HeaderContent = () => {
             <Menu.Item
               color="red"
               leftSection={<IconLogout size={16} />}
-              onClick={signOut}
+              onClick={handleSignOut}
             >
               {t("nav.signOut")}
             </Menu.Item>

@@ -5,14 +5,17 @@ import { Paper } from "../../components/ui/Paper";
 import { Stack } from "../../components/ui/Stack";
 import { Text } from "../../components/ui/Text";
 import { Title } from "../../components/ui/Title";
+import { AuditActionEnum } from "@tayemno/shared";
 import { ChangePasswordForm } from "../../components/ChangePasswordForm";
 import { RouteEnum } from "../../enums/routing/RouteEnum";
 import { SizeEnum } from "../../enums/ui/SizeEnum";
 import { useAuth } from "../../contexts/AuthContext";
+import { usePostAuditLog } from "../../api/hooks/usePostAuditLog";
 
 export const ChangePasswordPage = () => {
   const { t } = useTranslation();
   const { user, updateUser } = useAuth();
+  const { logAction } = usePostAuditLog();
   const navigate = useNavigate();
 
   if (!user?.forcePasswordChange) {
@@ -20,6 +23,7 @@ export const ChangePasswordPage = () => {
   }
 
   const handleSuccess = () => {
+    logAction({ action: AuditActionEnum.AUTH_PASSWORD_CHANGED });
     updateUser({ forcePasswordChange: false });
     navigate(RouteEnum.HOME);
   };
