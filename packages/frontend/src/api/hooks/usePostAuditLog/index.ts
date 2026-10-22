@@ -25,7 +25,7 @@ export const usePostAuditLog = () => {
         .then((encrypted) =>
           axios.post(
             `${EndpointEnum.WORKSPACES}/${workspace.id}${EndpointEnum.AUDIT_LOGS}`,
-            { folderId, vaultId, ...encrypted },
+            { folderId, vaultId, actionType: params.action, ...encrypted },
           ),
         )
         .catch(() => {

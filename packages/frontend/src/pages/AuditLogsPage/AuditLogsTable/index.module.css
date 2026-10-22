@@ -22,8 +22,8 @@
 }
 
 .body {
+  height: calc(100vh - 340px);
   overflow-y: auto;
-  max-height: calc(100vh - 260px);
 }
 
 .row {
@@ -43,18 +43,7 @@
   flex-shrink: 0;
 }
 
-.colActor {
-  width: 200px;
-  flex-shrink: 0;
-  overflow: hidden;
-}
-
-.colAction {
-  width: 180px;
-  flex-shrink: 0;
-}
-
-.colDetails {
+.colEvent {
   flex: 1;
   min-width: 0;
   overflow: hidden;

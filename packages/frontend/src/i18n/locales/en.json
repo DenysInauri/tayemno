@@ -353,9 +353,7 @@
     },
     "table": {
       "timestamp": "Time",
-      "actor": "Actor",
-      "action": "Action",
-      "details": "Details",
+      "event": "Event",
       "ipAddress": "IP Address",
       "noIp": "—"
     },
@@ -383,6 +381,27 @@
       "auth.sign_in": "Signed in",
       "auth.sign_out": "Signed out",
       "auth.password_changed": "Changed password"
+    },
+    "descriptions": {
+      "folder.opened": "{{actorName}} opened {{folderName}}",
+      "folder.created": "{{actorName}} created folder {{folderName}}",
+      "vault.created": "{{actorName}} uploaded {{vaultName}}",
+      "vault.deleted": "{{actorName}} deleted {{vaultName}}",
+      "vault.moved_from": "{{actorName}} moved {{vaultName}} from {{source}} to {{target}}",
+      "vault.moved_to": "{{actorName}} received {{vaultName}} from {{source}}",
+      "folder.moved_from": "{{actorName}} moved {{itemName}} from {{source}} to {{target}}",
+      "folder.moved_to": "{{actorName}} received {{itemName}} from {{source}}",
+      "vault.previewed": "{{actorName}} previewed {{vaultName}}",
+      "vault.downloaded": "{{actorName}} downloaded {{vaultName}}",
+      "folder.downloaded": "{{actorName}} downloaded {{folderName}}",
+      "folder_acl.created": "{{actorName}} shared folder with {{memberName}} ({{memberEmail}})",
+      "folder_acl.revoked": "{{actorName}} revoked access for {{memberName}} ({{memberEmail}})",
+      "member.invited": "{{actorName}} invited {{memberName}} ({{memberEmail}})",
+      "member.removed": "{{actorName}} removed {{memberName}} ({{memberEmail}})",
+      "member.role_changed": "{{actorName}} changed role of {{memberName}} to {{role}}",
+      "auth.sign_in": "{{actorName}} signed in",
+      "auth.sign_out": "{{actorName}} signed out",
+      "auth.password_changed": "{{actorName}} changed password"
     }
   }
 }

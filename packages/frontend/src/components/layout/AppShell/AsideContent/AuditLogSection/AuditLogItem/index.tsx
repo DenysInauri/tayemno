@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
-import type { IAuditLogPayload } from "@tayemno/shared";
 import type { IDecryptedAuditLog } from "../../../../../../api/hooks/useGetAuditLogs";
+import { formatAuditContext } from "../../../../../../utils/formatAuditContext";
 import { Text } from "../../../../../ui/Text";
 import { Stack } from "../../../../../ui/Stack";
 import { Group } from "../../../../../ui/Group";
@@ -10,23 +10,10 @@ interface IProps {
   log: IDecryptedAuditLog;
 }
 
-const formatContext = (context?: IAuditLogPayload["context"]) => {
-  if (!context) return null;
-  const parts: string[] = [];
-  if (context.folderName) parts.push(context.folderName);
-  if (context.vaultName) parts.push(context.vaultName);
-  if (context.movedFolderName) parts.push(context.movedFolderName);
-  if (context.targetFolderName) parts.push(`→ ${context.targetFolderName}`);
-  if (context.sourceFolderName) parts.push(`← ${context.sourceFolderName}`);
-  if (context.memberName) parts.push(context.memberName);
-  if (context.memberEmail) parts.push(context.memberEmail);
-  return parts.join(" ");
-};
-
 export const AuditLogItem = ({ log }: IProps) => {
   const { t } = useTranslation();
 
-  const contextText = formatContext(log.payload.context);
+  const contextText = formatAuditContext(log.payload.context);
   const timestamp = new Date(log.createdAt).toLocaleString(undefined, {
     month: "short",
     day: "numeric",

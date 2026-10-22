@@ -2,13 +2,13 @@ import { useTranslation } from "react-i18next";
 import { Title } from "../../components/ui/Title";
 import { Text } from "../../components/ui/Text";
 import { Button } from "../../components/ui/Button";
-import { Stack } from "../../components/ui/Stack";
 import { useGetAuditLogs } from "../../api/hooks/useGetAuditLogs";
 import { useGetMembers } from "../../api/hooks/useGetMembers";
 import { useAuditLogsFilters } from "./useAuditLogsFilters";
 import { useExportCsv } from "./useExportCsv";
 import { AuditLogsFilters } from "./AuditLogsFilters";
 import { AuditLogsTable } from "./AuditLogsTable";
+import classes from "./index.module.css";
 
 export const AuditLogsPage = () => {
   const { t } = useTranslation();
@@ -34,7 +34,7 @@ export const AuditLogsPage = () => {
     : "auditLogs.empty.noLogs";
 
   return (
-    <Stack p="lg">
+    <div className={classes.page}>
       <Title order={2}>{t("auditLogs.title")}</Title>
       <AuditLogsFilters
         filters={filters}
@@ -64,6 +64,6 @@ export const AuditLogsPage = () => {
           )}
         </>
       )}
-    </Stack>
+    </div>
   );
 };

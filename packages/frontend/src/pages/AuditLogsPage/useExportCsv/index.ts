@@ -1,9 +1,11 @@
 import { useState, useCallback } from "react";
-import type { IAuditLogPayload, IGetAuditLogsResponse } from "@tayemno/shared";
+import { useTranslation } from "react-i18next";
+import type { IGetAuditLogsResponse } from "@tayemno/shared";
 import { axios } from "../../../api/axios";
 import { EndpointEnum } from "../../../enums/api/EndpointEnum";
 import { useAuth } from "../../../contexts/AuthContext";
 import { decryptEntries } from "../../../api/hooks/useGetAuditLogs/decryptEntries";
+import { formatAuditDescription } from "../../../utils/formatAuditDescription";
 import type { IDecryptedAuditLog } from "../../../api/hooks/useGetAuditLogs";
 
 interface IFilters {
@@ -13,20 +15,6 @@ interface IFilters {
   userId: string | null;
 }
 
-const formatContext = (context?: IAuditLogPayload["context"]): string => {
-  if (!context) return "";
-  const parts: string[] = [];
-  if (context.folderName) parts.push(context.folderName);
-  if (context.vaultName) parts.push(context.vaultName);
-  if (context.movedFolderName) parts.push(context.movedFolderName);
-  if (context.targetFolderName) parts.push(`→ ${context.targetFolderName}`);
-  if (context.sourceFolderName) parts.push(`← ${context.sourceFolderName}`);
-  if (context.memberName) parts.push(context.memberName);
-  if (context.memberEmail) parts.push(context.memberEmail);
-  if (context.role) parts.push(context.role);
-  return parts.join(" ");
-};
-
 const escapeCsv = (value: string): string => {
   if (value.includes(",") || value.includes('"') || value.includes("\n")) {
     return `"${value.replace(/"/g, '""')}"`;
@@ -34,15 +22,14 @@ const escapeCsv = (value: string): string => {
   return value;
 };
 
-const buildCsv = (logs: IDecryptedAuditLog[]): string => {
-  const header = "Timestamp,Actor Name,Actor Email,Action,Details,IP Address";
+type TFn = ReturnType<typeof useTranslation>["t"];
+
+const buildCsv = (logs: IDecryptedAuditLog[], t: TFn): string => {
+  const header = "Timestamp,Event,IP Address";
   const rows = logs.map((log) =>
     [
       log.createdAt,
-      escapeCsv(log.payload.actorName),
-      escapeCsv(log.payload.actorEmail),
-      log.payload.action,
-      escapeCsv(formatContext(log.payload.context)),
+      escapeCsv(formatAuditDescription(log.payload, t)),
       log.ipAddress ?? "",
     ].join(","),
   );
@@ -61,6 +48,7 @@ const downloadBlob = (csv: string) => {
 
 export const useExportCsv = () => {
   const { workspace, keyPair } = useAuth();
+  const { t } = useTranslation();
   const [isExporting, setIsExporting] = useState(false);
 
   const exportCsv = useCallback(
@@ -98,12 +86,12 @@ export const useExportCsv = () => {
           userPrivateKey: keyPair.privateKey,
         });
 
-        downloadBlob(buildCsv(decrypted));
+        downloadBlob(buildCsv(decrypted, t));
       } finally {
         setIsExporting(false);
       }
     },
-    [workspace, keyPair],
+    [workspace, keyPair, t],
   );
 
   return { exportCsv, isExporting };
