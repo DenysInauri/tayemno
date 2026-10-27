@@ -1,4 +1,4 @@
-const NAVBAR_WIDTH = 70;
+const NAVBAR_WIDTH = 270;
 
 export const useAppShellLayout = () => {
   return {

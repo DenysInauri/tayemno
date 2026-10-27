@@ -1,4 +1,4 @@
-import { AppShell as MantineAppShell, NavLink, Tooltip } from "@mantine/core";
+import { AppShell as MantineAppShell, NavLink } from "@mantine/core";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { IconFolder, IconFileAnalytics, IconUsers } from "@tabler/icons-react";
@@ -14,31 +14,28 @@ export const NavbarContent = () => {
 
   return (
     <MantineAppShell.Section grow className={classes.navItems}>
-      <Tooltip label={t("nav.files")} position="right">
-        <NavLink
-          leftSection={<IconFolder size={20} />}
-          active={
-            location.pathname === RouteEnum.HOME ||
-            location.pathname.startsWith(RouteEnum.FOLDERS)
-          }
-          onClick={() => navigate(RouteEnum.HOME)}
-        />
-      </Tooltip>
+      <NavLink
+        label={t("nav.files")}
+        leftSection={<IconFolder size={20} />}
+        active={
+          location.pathname === RouteEnum.HOME ||
+          location.pathname.startsWith(RouteEnum.FOLDERS)
+        }
+        onClick={() => navigate(RouteEnum.HOME)}
+      />
       <RoleWrapper allowedFor={["owner", "admin"]}>
-        <Tooltip label={t("nav.users")} position="right">
-          <NavLink
-            leftSection={<IconUsers size={20} />}
-            active={location.pathname === RouteEnum.USERS}
-            onClick={() => navigate(RouteEnum.USERS)}
-          />
-        </Tooltip>
-        <Tooltip label={t("nav.auditLogs")} position="right">
-          <NavLink
-            leftSection={<IconFileAnalytics size={20} />}
-            active={location.pathname === RouteEnum.AUDIT_LOGS}
-            onClick={() => navigate(RouteEnum.AUDIT_LOGS)}
-          />
-        </Tooltip>
+        <NavLink
+          label={t("nav.users")}
+          leftSection={<IconUsers size={20} />}
+          active={location.pathname === RouteEnum.USERS}
+          onClick={() => navigate(RouteEnum.USERS)}
+        />
+        <NavLink
+          label={t("nav.auditLogs")}
+          leftSection={<IconFileAnalytics size={20} />}
+          active={location.pathname === RouteEnum.AUDIT_LOGS}
+          onClick={() => navigate(RouteEnum.AUDIT_LOGS)}
+        />
       </RoleWrapper>
     </MantineAppShell.Section>
   );
