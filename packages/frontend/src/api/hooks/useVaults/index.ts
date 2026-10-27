@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import type { IGetVaultsByFolderResponse } from "@tayemno/shared";
+import type { IGetVaultsByFolderResponse, IFolderPermissions } from "@tayemno/shared";
 import { axios } from "../../axios";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useDecryptVaultAsMember } from "../useDecryptVaultAsMember";
@@ -12,13 +12,18 @@ interface IUseListOptions {
   searchQuery?: string;
 }
 
+interface IVaultQueryData {
+  vaults: ILocalVault[];
+  permissions: IFolderPermissions | null;
+}
+
 const collator = new Intl.Collator(undefined, { numeric: true });
 
 export const useVaults = (folderId: string | null, options?: IUseListOptions) => {
   const { workspace } = useAuth();
   const { decrypt: decryptVault } = useDecryptVaultAsMember();
 
-  const query = useQuery<ILocalVault[]>({
+  const query = useQuery<IVaultQueryData>({
     queryKey: [QueryKeyEnum.VAULTS, workspace?.id, folderId],
     queryFn: async () => {
       const params = folderId ? `?folderId=${folderId}` : "";
@@ -31,12 +36,15 @@ export const useVaults = (folderId: string | null, options?: IUseListOptions) =>
         vaultsRes.data.vaults.map(decryptVault),
       );
 
-      return decrypted.sort((a, b) => collator.compare(a.name, b.name));
+      return {
+        vaults: decrypted.sort((a, b) => collator.compare(a.name, b.name)),
+        permissions: vaultsRes.data.permissions ?? null,
+      };
     },
     enabled: !!workspace,
   });
 
-  const all = query.data ?? [];
+  const all = query.data?.vaults ?? [];
 
   const data = useMemo(() => {
     if (!options?.searchQuery || !options.searchQuery.length) return all;
@@ -47,6 +55,7 @@ export const useVaults = (folderId: string | null, options?: IUseListOptions) =>
 
   return {
     data,
+    permissions: query.data?.permissions ?? null,
     isLoading: query.isLoading,
     isFetching: query.isFetching,
   };

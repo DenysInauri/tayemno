@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { AppShell as MantineAppShell } from "@mantine/core";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -6,10 +7,10 @@ import { Tabs, TabsList, TabsTab, TabsPanel } from "../../../ui/Tabs";
 import { Text } from "../../../ui/Text";
 import { SizeEnum } from "../../../../enums/ui/SizeEnum";
 import { useSelectedItem } from "../../../../hooks/useSelectedItem";
+import { useFolders } from "../../../../api/hooks/useFolders";
 import { FolderMembersSection } from "./FolderMembersSection";
 import { AuditLogSection } from "./AuditLogSection";
 import classes from "./index.module.css";
-import { useMemo } from "react";
 import { SelectedClaudeTreeItemTypeEnum } from "../../../../enums/routing/SelectedClaudeTreeItemTypeEnum";
 
 export const AsideContent = () => {
@@ -35,6 +36,8 @@ export const AsideContent = () => {
       ? selectedItem.id
       : routeFolderId;
 
+  const { permissions } = useFolders(membersFolderId ?? null);
+
   return (
     <MantineAppShell.Aside p={SizeEnum.MD} className={classes.aside}>
       <Tabs defaultValue="members" className={classes.tabs}>
@@ -44,7 +47,7 @@ export const AsideContent = () => {
         </TabsList>
         <TabsPanel value="members" className={classes.tabPanel}>
           {membersFolderId ? (
-            <FolderMembersSection folderId={membersFolderId} />
+            <FolderMembersSection folderId={membersFolderId} permissions={permissions} />
           ) : (
             <Text size="sm" c="dimmed" mt={SizeEnum.SM}>
               {t("aside.members.emptyRoot")}

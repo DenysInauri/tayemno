@@ -14,3 +14,8 @@
 .noWrapText {
   white-space: nowrap;
 }
+
+.roleSelect {
+  width: 100px;
+  flex-shrink: 0;
+}

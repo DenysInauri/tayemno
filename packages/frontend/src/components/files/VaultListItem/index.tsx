@@ -7,7 +7,7 @@ import {
   IconFolderSymlink,
   IconTrash,
 } from "@tabler/icons-react";
-import { AuditActionEnum } from "@tayemno/shared";
+import { AuditActionEnum, type IFolderPermissions } from "@tayemno/shared";
 import type { ILocalFolder, ILocalVault } from "../../../types/local";
 
 import { FileListItem } from "../FileListItem";
@@ -21,13 +21,14 @@ import { useThumbnail } from "../../../hooks/useThumbnail";
 
 interface IProps {
   vault: ILocalVault;
+  permissions: IFolderPermissions;
   onPreview: (vault: ILocalVault) => void;
   selected?: boolean;
   onSelect: () => void;
   currentFolderName: string;
 }
 
-export const VaultListItem = ({ vault, onPreview, selected, onSelect, currentFolderName }: IProps) => {
+export const VaultListItem = ({ vault, permissions, onPreview, selected, onSelect, currentFolderName }: IProps) => {
   const { t } = useTranslation();
   const thumbnailUrl = useThumbnail(vault);
   const { download, isDownloading } = useDownload();
@@ -80,19 +81,23 @@ export const VaultListItem = ({ vault, onPreview, selected, onSelect, currentFol
               >
                 {t("files.actions.download")}
               </Menu.Item>
-              <Menu.Item
-                leftSection={<IconFolderSymlink size={16} />}
-                onClick={openMoveModal}
-              >
-                {t("files.actions.move")}
-              </Menu.Item>
-              <Menu.Item
-                color="red"
-                leftSection={<IconTrash size={16} />}
-                onClick={handleDelete}
-              >
-                {t("files.actions.delete")}
-              </Menu.Item>
+              {permissions.canDelete && (
+                <Menu.Item
+                  leftSection={<IconFolderSymlink size={16} />}
+                  onClick={openMoveModal}
+                >
+                  {t("files.actions.move")}
+                </Menu.Item>
+              )}
+              {permissions.canDelete && (
+                <Menu.Item
+                  color="red"
+                  leftSection={<IconTrash size={16} />}
+                  onClick={handleDelete}
+                >
+                  {t("files.actions.delete")}
+                </Menu.Item>
+              )}
             </Menu.Dropdown>
           </Menu>
         }

@@ -35,7 +35,7 @@ export const MoveItemModal = ({
   disabledFolders,
 }: IProps) => {
   const { t } = useTranslation();
-  const { treeData: folderTree, folderMap, expandNode } = useLazyFolderTree(opened);
+  const { treeData: folderTree, folderMap, expandNode, rootCanAdd, noAddFolderIds } = useLazyFolderTree(opened);
 
   const treeData = useMemo(
     () => buildTreeData(folderTree, t("files.moveItem.rootFolder")),
@@ -56,6 +56,8 @@ export const MoveItemModal = ({
 
   const isDisabled = (value: string) => {
     if (currentFolderId === null && value === ROOT_VALUE) return true;
+    if (value === ROOT_VALUE && !rootCanAdd) return true;
+    if (noAddFolderIds.has(value)) return true;
     return disabledFolderIds.has(value);
   };
 

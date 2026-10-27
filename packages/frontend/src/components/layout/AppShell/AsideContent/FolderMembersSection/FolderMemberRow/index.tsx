@@ -1,8 +1,8 @@
-import { Table, Menu, Badge } from "@mantine/core";
+import { Table, Menu, Badge, NativeSelect } from "@mantine/core";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { IconDotsVertical, IconUserMinus } from "@tabler/icons-react";
-import type { IFolderMemberItem } from "@tayemno/shared";
+import type { IFolderMemberItem, FolderRole } from "@tayemno/shared";
 import type { IDecryptedAncestor } from "../../../../../../api/hooks/useDecryptAncestorFolderNames";
 import { ActionIcon } from "../../../../../ui/ActionIcon";
 import { Anchor } from "../../../../../ui/Anchor";
@@ -15,18 +15,35 @@ import classes from "./index.module.css";
 interface IProps {
   member: IFolderMemberItem;
   isCurrentUser: boolean;
+  canManageMembers: boolean;
+  isAdmin: boolean;
+  folderId: string;
   ancestor?: IDecryptedAncestor;
   onRevoke: (member: IFolderMemberItem) => void;
+  onRoleChange: (member: IFolderMemberItem, role: FolderRole) => void;
 }
 
 export const FolderMemberRow = ({
   member,
   isCurrentUser,
+  canManageMembers,
+  isAdmin,
   ancestor,
   onRevoke,
+  onRoleChange,
 }: IProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const isMemberAdmin = member.workspaceRole === "owner" || member.workspaceRole === "admin";
+
+  const roleOptions = [
+    { value: "viewer", label: t("files.roles.viewer") },
+    { value: "editor", label: t("files.roles.editor") },
+    ...(isAdmin ? [{ value: "manager", label: t("files.roles.manager") }] : []),
+  ];
+
+  const isDropdownDisabled = !canManageMembers || member.inherited || isCurrentUser;
 
   return (
     <Table.Tr>
@@ -42,6 +59,20 @@ export const FolderMemberRow = ({
                   {t("aside.members.you")}
                 </Badge>
               )}
+              {canManageMembers && !isMemberAdmin ? (
+                <NativeSelect
+                  size="xs"
+                  data={roleOptions}
+                  value={member.role}
+                  onChange={(e) => onRoleChange(member, e.currentTarget.value as FolderRole)}
+                  disabled={isDropdownDisabled}
+                  className={classes.roleSelect}
+                />
+              ) : (
+                <Badge variant={isMemberAdmin ? "light" : "outline"} size="xs">
+                  {isMemberAdmin ? t(`members.roles.${member.workspaceRole}`) : t(`files.roles.${member.role}`)}
+                </Badge>
+              )}
             </Group>
             <Group gap={4} wrap="nowrap" className={classes.detailsGroup}>
               <Text size="xs" c="dimmed" truncate>
@@ -49,9 +80,7 @@ export const FolderMemberRow = ({
               </Text>
               {member.inherited && ancestor && (
                 <>
-                  <Text size="xs" c="dimmed">
-                    ·
-                  </Text>
+                  <Text size="xs" c="dimmed">·</Text>
                   <Text size="xs" c="dimmed" className={classes.noWrapText}>
                     {t("aside.members.accessThrough")}
                   </Text>
@@ -60,9 +89,7 @@ export const FolderMemberRow = ({
                     component="button"
                     type="button"
                     onClick={() =>
-                      navigate(
-                        RouteEnum.FOLDER.replace(":folderId", ancestor.folderId),
-                      )
+                      navigate(RouteEnum.FOLDER.replace(":folderId", ancestor.folderId))
                     }
                     truncate
                   >
@@ -72,7 +99,7 @@ export const FolderMemberRow = ({
               )}
             </Group>
           </Stack>
-          {!isCurrentUser && (
+          {!isCurrentUser && canManageMembers && (
             <Menu position="bottom-end">
               <Menu.Target>
                 <ActionIcon variant="subtle" color="gray">

@@ -83,6 +83,14 @@ export interface IFolderAclRevokedParams {
   memberEmail: string;
 }
 
+export interface IFolderAclRoleChangedParams {
+  action: AuditActionEnum.FOLDER_ACL_ROLE_CHANGED;
+  folderId: string;
+  memberName: string;
+  memberEmail: string;
+  role: string;
+}
+
 export interface IMemberInvitedParams {
   action: AuditActionEnum.MEMBER_INVITED;
   memberName: string;
@@ -122,6 +130,7 @@ export type LogActionParams =
   | IFolderMovedToParams
   | IFolderAclCreatedParams
   | IFolderAclRevokedParams
+  | IFolderAclRoleChangedParams
   | IMemberInvitedParams
   | IMemberRemovedParams
   | IAuthSignInParams

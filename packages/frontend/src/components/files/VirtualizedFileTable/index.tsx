@@ -4,13 +4,13 @@ import { useParams } from "react-router-dom";
 import { Table } from "@mantine/core";
 import { useVirtualizer } from "@tanstack/react-virtual";
 
+import { AuditActionEnum, type IFolderPermissions } from "@tayemno/shared";
 import type { ILocalFolder, ILocalVault } from "../../../types/local";
 import { FolderListItem } from "../FolderListItem";
 import { VaultListItem } from "../VaultListItem";
 import { PreviewOverlay, type IPreviewOverlayHandle } from "../PreviewOverlay";
 import { TableSkeleton } from "../TableSkeleton";
 import { useSelectedItem } from "../../../hooks/useSelectedItem";
-import { AuditActionEnum } from "@tayemno/shared";
 import { usePostAuditLog } from "../../../api/hooks/usePostAuditLog";
 import classes from "./index.module.css";
 
@@ -21,16 +21,14 @@ const ROW_HEIGHT = 48;
 interface IProps {
   folders: ILocalFolder[];
   vaults: ILocalVault[];
+  permissions: IFolderPermissions;
   isLoading: boolean;
   currentFolderName: string;
 }
 
-export const VirtualizedFileTable = ({
-  folders,
-  vaults,
-  isLoading,
-  currentFolderName,
-}: IProps) => {
+export const VirtualizedFileTable = (
+  { folders, vaults, permissions, isLoading, currentFolderName }: IProps,
+) => {
   const { t } = useTranslation();
   const { folderId } = useParams<{ folderId: string }>();
   const parentRef = useRef<HTMLDivElement>(null);
@@ -109,6 +107,7 @@ export const VirtualizedFileTable = ({
                       <VaultListItem
                         key={item.id}
                         vault={item}
+                        permissions={permissions}
                         onPreview={handlePreview}
                         selected={selectedItem?.id === item.id}
                         onSelect={() => selectVault(item.id)}
@@ -121,6 +120,7 @@ export const VirtualizedFileTable = ({
                     <FolderListItem
                       key={item.id}
                       folder={item}
+                      permissions={permissions}
                       selected={selectedItem?.id === item.id}
                       onSelect={() => selectFolder(item.id)}
                       currentFolderName={currentFolderName}

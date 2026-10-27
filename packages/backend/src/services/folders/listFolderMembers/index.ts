@@ -1,4 +1,4 @@
-import type { IListFolderMembersResponse } from "@tayemno/shared";
+import type { IListFolderMembersResponse, WorkspaceRole } from "@tayemno/shared";
 import { getFolderRoleFromPermissions } from "@tayemno/shared";
 import type { Database } from "../../../db";
 import * as foldersRepo from "../../../repositories/folders";
@@ -25,6 +25,7 @@ export const listFolderMembers = async (
         userId: row.userId,
         name: row.name,
         email: row.email,
+        workspaceRole: row.workspaceRole as WorkspaceRole,
         role: getFolderRoleFromPermissions({
           canView: row.canView,
           canDownload: row.canDownload,

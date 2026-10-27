@@ -63,6 +63,9 @@ export const buildPayload = (params: LogActionParams): IBuildResult => {
     case AuditActionEnum.FOLDER_ACL_REVOKED:
       return { folderId: params.folderId, vaultId: null, context: { memberName: params.memberName, memberEmail: params.memberEmail } };
 
+    case AuditActionEnum.FOLDER_ACL_ROLE_CHANGED:
+      return { folderId: params.folderId, vaultId: null, context: { memberName: params.memberName, memberEmail: params.memberEmail, role: params.role } };
+
     case AuditActionEnum.MEMBER_INVITED:
       return { folderId: null, vaultId: null, context: { memberName: params.memberName, memberEmail: params.memberEmail, role: params.role } };
 

@@ -430,6 +430,7 @@ export interface IFolderMemberItem {
   userId: string;
   name: string;
   email: string;
+  workspaceRole: WorkspaceRole;
   role: FolderRole;
   inherited: boolean;
   ancestorFolderId?: string;

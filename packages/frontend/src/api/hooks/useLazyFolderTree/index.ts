@@ -4,6 +4,7 @@ import type { IGetFoldersByParentResponse } from "@tayemno/shared";
 import { axios } from "../../axios";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useDecryptFolderAsMember } from "../useDecryptFolderAsMember";
+import { resolvePermissions } from "../resolvePermissions";
 import { QueryKeyEnum } from "../../../enums/api/QueryKeyEnum";
 import { EndpointEnum } from "../../../enums/api/EndpointEnum";
 import type { ILocalFolder } from "../../../types/local";
@@ -18,6 +19,11 @@ export interface IFolderTreeNode {
   children: IFolderTreeNode[];
 }
 
+interface IRootData {
+  folders: ILocalFolder[];
+  rootCanAdd: boolean;
+}
+
 export const useLazyFolderTree = (enabled: boolean) => {
   const { workspace } = useAuth();
   const { decrypt } = useDecryptFolderAsMember();
@@ -26,16 +32,20 @@ export const useLazyFolderTree = (enabled: boolean) => {
     Record<string, ILocalFolder[]>
   >({});
   const [loadingNodes, setLoadingNodes] = useState<Set<string>>(new Set());
+  const [noAddFolderIds, setNoAddFolderIds] = useState<Set<string>>(new Set());
   const fetchedRef = useRef<Set<string>>(new Set());
 
-  const rootQuery = useQuery<ILocalFolder[]>({
+  const rootQuery = useQuery<IRootData>({
     queryKey: [QueryKeyEnum.FOLDER_TREE, workspace?.id, "root"],
     queryFn: async () => {
       const { data } = await axios.get<IGetFoldersByParentResponse>(
         `${EndpointEnum.WORKSPACES}/${workspace!.id}${EndpointEnum.FOLDERS}`,
       );
       const decrypted = await Promise.all(data.folders.map(decrypt));
-      return decrypted.sort((a, b) => collator.compare(a.name, b.name));
+      return {
+        folders: decrypted.sort((a, b) => collator.compare(a.name, b.name)),
+        rootCanAdd: resolvePermissions(workspace!.role, data.permissions).canAdd,
+      };
     },
     enabled: enabled && !!workspace,
   });
@@ -55,6 +65,13 @@ export const useLazyFolderTree = (enabled: boolean) => {
           collator.compare(a.name, b.name),
         );
         setChildrenByParent((prev) => ({ ...prev, [folderId]: sorted }));
+        if (!resolvePermissions(workspace!.role, data.permissions).canAdd) {
+          setNoAddFolderIds((prev) => {
+            const next = new Set(prev);
+            next.add(folderId);
+            return next;
+          });
+        }
       } catch {
         fetchedRef.current.delete(folderId);
       } finally {
@@ -69,7 +86,7 @@ export const useLazyFolderTree = (enabled: boolean) => {
   );
 
   const treeData = useMemo((): IFolderTreeNode[] => {
-    if (!rootQuery.data) return [];
+    if (!rootQuery.data?.folders) return [];
 
     const buildNode = (folder: ILocalFolder): IFolderTreeNode => {
       const loadedChildren = childrenByParent[folder.id];
@@ -95,7 +112,7 @@ export const useLazyFolderTree = (enabled: boolean) => {
       };
     };
 
-    return rootQuery.data.map(buildNode);
+    return rootQuery.data.folders.map(buildNode);
   }, [rootQuery.data, childrenByParent]);
 
   const folderMap = useMemo(() => {
@@ -105,7 +122,7 @@ export const useLazyFolderTree = (enabled: boolean) => {
         map[folder.id] = folder;
       }
     };
-    if (rootQuery.data) addFolders(rootQuery.data);
+    if (rootQuery.data) addFolders(rootQuery.data.folders);
     for (const children of Object.values(childrenByParent)) {
       addFolders(children);
     }
@@ -118,5 +135,7 @@ export const useLazyFolderTree = (enabled: boolean) => {
     isLoading: rootQuery.isLoading,
     expandNode,
     loadingNodes,
+    rootCanAdd: rootQuery.data?.rootCanAdd ?? true,
+    noAddFolderIds,
   };
 };

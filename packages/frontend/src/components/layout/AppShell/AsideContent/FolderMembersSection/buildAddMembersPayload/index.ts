@@ -1,14 +1,16 @@
-import type { IBulkCreateFolderAclRequest, IMemberItem } from "@tayemno/shared";
+import type { IBulkCreateFolderAclRequest, IMemberItem, FolderRole } from "@tayemno/shared";
 import { AsymmetricCrypto } from "../../../../../../utils/crypto/AsymmetricCrypto";
 
 interface IParams {
   selectedMembers: IMemberItem[];
   folderKey: string;
+  role: FolderRole;
 }
 
 export const buildAddMembersPayload = async ({
   selectedMembers,
   folderKey,
+  role,
 }: IParams): Promise<IBulkCreateFolderAclRequest> => {
   const acls = await Promise.all(
     selectedMembers.map(async (member) => ({
@@ -17,6 +19,7 @@ export const buildAddMembersPayload = async ({
         folderKey,
         member.publicKey,
       ),
+      role,
     })),
   );
 

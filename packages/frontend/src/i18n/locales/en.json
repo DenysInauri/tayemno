@@ -166,6 +166,7 @@
         "folder.downloaded": "Downloaded folder",
         "folder_acl.created": "Added member to folder",
         "folder_acl.revoked": "Revoked folder access",
+        "folder_acl.role_changed": "Changed folder role",
         "member.invited": "Invited member",
         "member.removed": "Removed member",
         "member.role_changed": "Changed member role",
@@ -321,6 +322,11 @@
     },
     "emptySearch": {
       "title": "No matching files or folders"
+    },
+    "roles": {
+      "viewer": "Viewer",
+      "editor": "Editor",
+      "manager": "Manager"
     }
   },
   "preview": {
@@ -382,6 +388,7 @@
       "folder.downloaded": "Downloaded folder",
       "folder_acl.created": "Added member to folder",
       "folder_acl.revoked": "Revoked folder access",
+      "folder_acl.role_changed": "Changed folder role",
       "member.invited": "Invited member",
       "member.removed": "Removed member",
       "member.role_changed": "Changed member role",
@@ -403,6 +410,7 @@
       "folder.downloaded": "{{actorName}} downloaded {{folderName}}",
       "folder_acl.created": "{{actorName}} shared folder with {{memberName}} ({{memberEmail}})",
       "folder_acl.revoked": "{{actorName}} revoked access for {{memberName}} ({{memberEmail}})",
+      "folder_acl.role_changed": "{{actorName}} changed role of {{memberName}} to {{role}}",
       "member.invited": "{{actorName}} invited {{memberName}} ({{memberEmail}})",
       "member.removed": "{{actorName}} removed {{memberName}} ({{memberEmail}})",
       "member.role_changed": "{{actorName}} changed role of {{memberName}} to {{role}}",

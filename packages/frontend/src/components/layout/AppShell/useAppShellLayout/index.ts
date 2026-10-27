@@ -10,9 +10,6 @@ export const useAppShellLayout = () => {
   const { workspace } = useAuth();
   const location = useLocation();
 
-  const isAdminOrOwner =
-    !!workspace && (workspace.role === "owner" || workspace.role === "admin");
-
   const isFilesRoute =
     location.pathname === RouteEnum.HOME ||
     location.pathname.startsWith(RouteEnum.FOLDERS);
@@ -20,6 +17,6 @@ export const useAppShellLayout = () => {
   return {
     navbarWidth: NAVBAR_WIDTH,
     asideWidth: ASIDE_WIDTH,
-    showAside: isAdminOrOwner && isFilesRoute,
+    showAside: !!workspace && isFilesRoute,
   };
 };

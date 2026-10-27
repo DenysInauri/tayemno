@@ -26,7 +26,7 @@ export const HomePage = () => {
     setSearchQuery("");
   }, [folderId]);
 
-  const { data: folders, isLoading: foldersLoading } = useFolders(folderId, { searchQuery });
+  const { data: folders, permissions, isLoading: foldersLoading } = useFolders(folderId, { searchQuery });
   const { data: vaults, isLoading: vaultsLoading } = useVaults(folderId, { searchQuery });
   const { data: breadcrumbs, isLoading: breadcrumbsLoading } =
     useBreadcrumbs(folderId);
@@ -49,6 +49,7 @@ export const HomePage = () => {
     <div className={classes.page}>
       <FileToolbar
         folderId={folderId}
+        permissions={permissions}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
       />
@@ -69,6 +70,7 @@ export const HomePage = () => {
         <VirtualizedFileTable
           folders={folders}
           vaults={vaults}
+          permissions={permissions}
           isLoading={isLoading}
           currentFolderName={breadcrumbs[breadcrumbs.length - 1]?.name ?? ROOT_FOLDER_NAME}
         />

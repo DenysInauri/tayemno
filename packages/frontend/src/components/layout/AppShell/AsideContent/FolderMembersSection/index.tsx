@@ -1,7 +1,13 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { IconSearch, IconPlus } from "@tabler/icons-react";
-import { AuditActionEnum, type IFolderMemberItem, type IMemberItem } from "@tayemno/shared";
+import {
+  AuditActionEnum,
+  type IFolderMemberItem,
+  type IFolderPermissions,
+  type IMemberItem,
+  type FolderRole,
+} from "@tayemno/shared";
 import { TextInput } from "../../../../ui/TextInput";
 import { Text } from "../../../../ui/Text";
 import { Stack } from "../../../../ui/Stack";
@@ -11,6 +17,7 @@ import { ActionIcon } from "../../../../ui/ActionIcon";
 import { useGetFolderMembers } from "../../../../../api/hooks/useGetFolderMembers";
 import { useDeleteFolderAcl } from "../../../../../api/hooks/useDeleteFolderAcl";
 import { usePostBulkFolderAcl } from "../../../../../api/hooks/usePostBulkFolderAcl";
+import { usePatchFolderAclRole } from "../../../../../api/hooks/usePatchFolderAclRole";
 import { useDecryptAncestorFolderNames } from "../../../../../api/hooks/useDecryptAncestorFolderNames";
 import { useAuth } from "../../../../../contexts/AuthContext";
 import { useGetFolderKeyAsAdmin } from "../../../../../api/hooks/useGetFolderKeyAsAdmin";
@@ -23,15 +30,19 @@ import classes from "./index.module.css";
 
 interface IProps {
   folderId: string;
+  permissions: IFolderPermissions | null;
 }
 
-export const FolderMembersSection = ({ folderId }: IProps) => {
+export const FolderMembersSection = ({ folderId, permissions }: IProps) => {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, workspace } = useAuth();
+  const isAdmin = workspace?.role === "owner" || workspace?.role === "admin";
+  const canManageMembers = isAdmin || (permissions?.canManageMembers ?? false);
   const { data } = useGetFolderMembers(folderId);
   const deleteMutation = useDeleteFolderAcl(folderId);
   const { getFolderKey } = useGetFolderKeyAsAdmin();
   const bulkAddMutation = usePostBulkFolderAcl(folderId);
+  const roleMutation = usePatchFolderAclRole(folderId);
   const { logAction } = usePostAuditLog();
   const { ancestorMap } = useDecryptAncestorFolderNames(data?.members ?? []);
   const [searchQuery, setSearchQuery] = useState("");
@@ -58,13 +69,25 @@ export const FolderMembersSection = ({ folderId }: IProps) => {
     });
   };
 
-  const handleAddMembers = async (members: IMemberItem[]) => {
+  const handleRoleChange = async (member: IFolderMemberItem, role: FolderRole) => {
+    await roleMutation.mutateAsync({ userId: member.userId, role });
+    logAction({
+      action: AuditActionEnum.FOLDER_ACL_ROLE_CHANGED,
+      folderId,
+      memberName: member.name,
+      memberEmail: member.email,
+      role,
+    });
+  };
+
+  const handleAddMembers = async (members: IMemberItem[], role: FolderRole) => {
     setIsSubmitting(true);
     try {
       const folderKey = await getFolderKey(folderId);
       const payload = await buildAddMembersPayload({
         selectedMembers: members,
         folderKey,
+        role,
       });
       await bulkAddMutation.mutateAsync(payload);
       members.forEach((member) => {
@@ -91,17 +114,20 @@ export const FolderMembersSection = ({ folderId }: IProps) => {
           size="sm"
           className={classes.searchInput}
         />
-        <ActionIcon
-          variant="default"
-          size="input-sm"
-          onClick={() => setShowAddMember(true)}
-        >
-          <IconPlus size={16} />
-        </ActionIcon>
+        {canManageMembers && (
+          <ActionIcon
+            variant="default"
+            size="input-sm"
+            onClick={() => setShowAddMember(true)}
+          >
+            <IconPlus size={16} />
+          </ActionIcon>
+        )}
       </Group>
       {showAddMember && (
         <AddMemberSelect
           folderMembers={data?.members ?? []}
+          isAdmin={isAdmin}
           isSubmitting={isSubmitting}
           onAdd={handleAddMembers}
           onCancel={() => setShowAddMember(false)}
@@ -110,8 +136,12 @@ export const FolderMembersSection = ({ folderId }: IProps) => {
       <FolderMembersList
         members={filteredMembers}
         currentUserId={user!.id}
+        canManageMembers={canManageMembers}
+        isAdmin={isAdmin}
+        folderId={folderId}
         ancestorMap={ancestorMap}
         onRevoke={handleRevoke}
+        onRoleChange={handleRoleChange}
       />
     </Stack>
   );

@@ -75,6 +75,7 @@ export const findAllByFolderIdWithAncestors = async (
       u.email,
       f.encrypted_name AS "encryptedName",
       f.name_nonce AS "nameNonce",
+      wm.role AS "workspaceRole",
       fa.can_view AS "canView",
       fa.can_download AS "canDownload",
       fa.can_add AS "canAdd",
@@ -84,6 +85,9 @@ export const findAllByFolderIdWithAncestors = async (
     FROM folder_acls fa
     INNER JOIN users u ON fa.user_id = u.id
     INNER JOIN folders f ON fa.folder_id = f.id
+    INNER JOIN workspace_members wm
+      ON wm.user_id = fa.user_id
+      AND wm.workspace_id = f.workspace_id
     WHERE fa.folder_id IN (SELECT id FROM ancestors)
     ORDER BY fa.user_id, fa.created_at ASC
   `);
@@ -95,6 +99,7 @@ export const findAllByFolderIdWithAncestors = async (
     email: string;
     encryptedName: string;
     nameNonce: string;
+    workspaceRole: string;
     canView: boolean;
     canDownload: boolean;
     canAdd: boolean;

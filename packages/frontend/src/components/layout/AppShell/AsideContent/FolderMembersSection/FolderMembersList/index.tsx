@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { Table } from "@mantine/core";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import type { IFolderMemberItem } from "@tayemno/shared";
+import type { IFolderMemberItem, FolderRole } from "@tayemno/shared";
 import type { IDecryptedAncestor } from "../../../../../../api/hooks/useDecryptAncestorFolderNames";
 import { FolderMemberRow } from "../FolderMemberRow";
 import classes from "./index.module.css";
@@ -11,15 +11,23 @@ const ROW_HEIGHT = 64;
 interface IProps {
   members: IFolderMemberItem[];
   currentUserId: string;
+  canManageMembers: boolean;
+  isAdmin: boolean;
+  folderId: string;
   ancestorMap: Record<string, IDecryptedAncestor>;
   onRevoke: (member: IFolderMemberItem) => void;
+  onRoleChange: (member: IFolderMemberItem, role: FolderRole) => void;
 }
 
 export const FolderMembersList = ({
   members,
   currentUserId,
+  canManageMembers,
+  isAdmin,
+  folderId,
   ancestorMap,
   onRevoke,
+  onRoleChange,
 }: IProps) => {
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -56,8 +64,12 @@ export const FolderMembersList = ({
                 key={member.userId}
                 member={member}
                 isCurrentUser={member.userId === currentUserId}
+                canManageMembers={canManageMembers}
+                isAdmin={isAdmin}
+                folderId={folderId}
                 ancestor={ancestorMap[member.userId]}
                 onRevoke={onRevoke}
+                onRoleChange={onRoleChange}
               />
             );
           })}

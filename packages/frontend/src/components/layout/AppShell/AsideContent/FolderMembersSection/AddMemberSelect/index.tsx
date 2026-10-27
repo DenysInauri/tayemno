@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
-import { MultiSelect } from "@mantine/core";
+import { MultiSelect, NativeSelect } from "@mantine/core";
 import { useTranslation } from "react-i18next";
 import { IconPlus } from "@tabler/icons-react";
-import type { IFolderMemberItem, IMemberItem } from "@tayemno/shared";
+import type { IFolderMemberItem, IMemberItem, FolderRole } from "@tayemno/shared";
 import { Button } from "../../../../../ui/Button";
 import { Group } from "../../../../../ui/Group";
 import { Stack } from "../../../../../ui/Stack";
@@ -11,13 +11,15 @@ import { SizeEnum } from "../../../../../../enums/ui/SizeEnum";
 
 interface IProps {
   folderMembers: IFolderMemberItem[];
+  isAdmin: boolean;
   isSubmitting: boolean;
-  onAdd: (members: IMemberItem[]) => void;
+  onAdd: (members: IMemberItem[], role: FolderRole) => void;
   onCancel: () => void;
 }
 
 export const AddMemberSelect = ({
   folderMembers,
+  isAdmin,
   isSubmitting,
   onAdd,
   onCancel,
@@ -25,6 +27,7 @@ export const AddMemberSelect = ({
   const { t } = useTranslation();
   const { data: membersResponse } = useGetMembers();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedRole, setSelectedRole] = useState<FolderRole>("viewer");
 
   const existingUserIds = useMemo(
     () => new Set(folderMembers.map((m) => m.userId)),
@@ -33,19 +36,27 @@ export const AddMemberSelect = ({
 
   const options = useMemo(() => {
     if (!membersResponse?.members) return [];
-    return membersResponse.members.map((m) => ({
-      value: m.userId,
-      label: `${m.name} (${m.email})`,
-      disabled: existingUserIds.has(m.userId),
-    }));
+    return membersResponse.members
+      .filter((m) => m.role !== "owner" && m.role !== "admin")
+      .map((m) => ({
+        value: m.userId,
+        label: `${m.name} (${m.email})`,
+        disabled: existingUserIds.has(m.userId),
+      }));
   }, [membersResponse?.members, existingUserIds]);
+
+  const roleOptions = [
+    { value: "viewer", label: t("files.roles.viewer") },
+    { value: "editor", label: t("files.roles.editor") },
+    ...(isAdmin ? [{ value: "manager", label: t("files.roles.manager") }] : []),
+  ];
 
   const handleSubmit = () => {
     if (!membersResponse?.members) return;
     const selected = membersResponse.members.filter((m) =>
       selectedIds.includes(m.userId),
     );
-    onAdd(selected);
+    onAdd(selected, selectedRole);
   };
 
   return (
@@ -59,6 +70,12 @@ export const AddMemberSelect = ({
         size="sm"
       />
       <Group gap={SizeEnum.SM} justify="flex-end">
+        <NativeSelect
+          size="sm"
+          data={roleOptions}
+          value={selectedRole}
+          onChange={(e) => setSelectedRole(e.currentTarget.value as FolderRole)}
+        />
         <Button variant="default" size="sm" onClick={onCancel}>
           {t("aside.members.add.cancel")}
         </Button>

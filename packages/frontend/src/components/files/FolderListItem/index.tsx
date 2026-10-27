@@ -8,7 +8,7 @@ import {
   IconFileZip,
   IconTrash,
 } from "@tabler/icons-react";
-import { AuditActionEnum } from "@tayemno/shared";
+import { AuditActionEnum, type IFolderPermissions } from "@tayemno/shared";
 import type { ILocalFolder } from "../../../types/local";
 
 import { FileListItem } from "../FileListItem";
@@ -23,12 +23,13 @@ import { MoveItemModal } from "../MoveItemModal";
 
 interface IProps {
   folder: ILocalFolder;
+  permissions: IFolderPermissions;
   selected?: boolean;
   onSelect: () => void;
   currentFolderName: string;
 }
 
-export const FolderListItem = ({ folder, selected, onSelect, currentFolderName }: IProps) => {
+export const FolderListItem = ({ folder, permissions, selected, onSelect, currentFolderName }: IProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { downloadFolder, isDownloading } = useDownload();
@@ -78,19 +79,23 @@ export const FolderListItem = ({ folder, selected, onSelect, currentFolderName }
               >
                 {t("files.actions.downloadAsZip")}
               </Menu.Item>
-              <Menu.Item
-                leftSection={<IconArrowsMove size={14} />}
-                onClick={openMoveModal}
-              >
-                {t("files.actions.move")}
-              </Menu.Item>
-              <Menu.Item
-                color="red"
-                leftSection={<IconTrash size={16} />}
-                onClick={openDeleteModal}
-              >
-                {t("files.actions.delete")}
-              </Menu.Item>
+              {permissions.canDelete && (
+                <Menu.Item
+                  leftSection={<IconArrowsMove size={14} />}
+                  onClick={openMoveModal}
+                >
+                  {t("files.actions.move")}
+                </Menu.Item>
+              )}
+              {permissions.canDelete && (
+                <Menu.Item
+                  color="red"
+                  leftSection={<IconTrash size={16} />}
+                  onClick={openDeleteModal}
+                >
+                  {t("files.actions.delete")}
+                </Menu.Item>
+              )}
             </Menu.Dropdown>
           </Menu>
         }
