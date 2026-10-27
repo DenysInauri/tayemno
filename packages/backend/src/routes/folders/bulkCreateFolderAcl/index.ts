@@ -4,7 +4,6 @@ import type {
   IBulkCreateFolderAclResponse,
 } from "@tayemno/shared";
 import { bulkCreateFolderAcl } from "../../../services/folders";
-import { authorizeAdmin } from "../../../utils/authorizeAdmin";
 
 export const bulkCreateFolderAclRoute = async (app: FastifyInstance) => {
   app.post<{
@@ -12,7 +11,6 @@ export const bulkCreateFolderAclRoute = async (app: FastifyInstance) => {
     Body: IBulkCreateFolderAclRequest;
   }>(
     "/:folderId/acl/bulk",
-    { preHandler: [authorizeAdmin] },
     async (request, reply): Promise<IBulkCreateFolderAclResponse> => {
       try {
         return await bulkCreateFolderAcl(

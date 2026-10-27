@@ -1,6 +1,7 @@
 import type { IGetFolderResponse } from "@tayemno/shared";
 import type { Database } from "../../../db";
 import * as foldersRepo from "../../../repositories/folders";
+import * as folderAclsRepo from "../../../repositories/folderAcls";
 import { HttpError } from "../../../utils/httpError";
 import { mapTimestamps } from "../../../utils/mapTimestamps";
 
@@ -15,5 +16,10 @@ export const getFolder = async (
     throw new HttpError(404, "Folder not found");
   }
 
-  return { folder: mapTimestamps(folder) as IGetFolderResponse["folder"] };
+  const permissions = await folderAclsRepo.getPermissionsForFolder(db, folderId, userId);
+
+  return {
+    folder: mapTimestamps(folder) as IGetFolderResponse["folder"],
+    permissions: permissions!,
+  };
 };

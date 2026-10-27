@@ -1,6 +1,7 @@
 import type { IMoveFolderRequest, IMoveFolderResponse } from "@tayemno/shared";
 import type { Database } from "../../../db";
 import * as foldersRepo from "../../../repositories/folders";
+import * as folderAclsRepo from "../../../repositories/folderAcls";
 import * as workspaceMembersRepo from "../../../repositories/workspaceMembers";
 import { HttpError } from "../../../utils/httpError";
 import { mapTimestamps } from "../../../utils/mapTimestamps";
@@ -17,14 +18,19 @@ export const moveFolder = async (
     throw new HttpError(404, "Folder not found");
   }
 
+  const sourcePermissions = await folderAclsRepo.getPermissionsForFolder(db, folderId, userId);
+  if (!sourcePermissions || !sourcePermissions.canDelete) {
+    throw new HttpError(403, "Access denied");
+  }
+
   // Verify access to target location
   if (data.newParentFolderId) {
-    const targetFolder = await foldersRepo.findByIdAndUserId(
+    const targetPermissions = await folderAclsRepo.getPermissionsForFolder(
       db,
       data.newParentFolderId,
       userId,
     );
-    if (!targetFolder) {
+    if (!targetPermissions || !targetPermissions.canAdd) {
       throw new HttpError(403, "Access denied to target folder");
     }
   } else {

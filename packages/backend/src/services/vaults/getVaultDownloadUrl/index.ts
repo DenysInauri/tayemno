@@ -22,13 +22,13 @@ export const getVaultDownloadUrl = async (
   }
 
   if (vault.folderId) {
-    const hasAccess = await folderAclsRepo.hasAccessToFolder(
+    const permissions = await folderAclsRepo.getPermissionsForFolder(
       db,
       vault.folderId,
       userId,
     );
 
-    if (!hasAccess) {
+    if (!permissions || !permissions.canDownload) {
       throw new HttpError(403, "Access denied");
     }
   } else {

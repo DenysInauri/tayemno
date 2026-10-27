@@ -154,6 +154,12 @@ export const folderAcls = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     encryptedFolderKey: text("encrypted_folder_key").notNull(),
+    canView: boolean("can_view").default(true).notNull(),
+    canDownload: boolean("can_download").default(true).notNull(),
+    canAdd: boolean("can_add").default(true).notNull(),
+    canEdit: boolean("can_edit").default(true).notNull(),
+    canDelete: boolean("can_delete").default(true).notNull(),
+    canManageMembers: boolean("can_manage_members").default(false).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),

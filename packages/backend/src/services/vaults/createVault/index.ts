@@ -15,13 +15,13 @@ export const createVault = async (
   data: ICreateVaultRequest,
 ): Promise<ICreateVaultResponse> => {
   if (data.folderId) {
-    const hasAccess = await folderAclsRepo.hasAccessToFolder(
+    const permissions = await folderAclsRepo.getPermissionsForFolder(
       db,
       data.folderId,
       userId,
     );
 
-    if (!hasAccess) {
+    if (!permissions || !permissions.canAdd) {
       throw new HttpError(403, "Access denied");
     }
   } else {

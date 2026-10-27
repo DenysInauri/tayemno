@@ -1,4 +1,5 @@
 import type { IListFolderMembersResponse } from "@tayemno/shared";
+import { getFolderRoleFromPermissions } from "@tayemno/shared";
 import type { Database } from "../../../db";
 import * as foldersRepo from "../../../repositories/folders";
 import * as folderAclsRepo from "../../../repositories/folderAcls";
@@ -24,6 +25,14 @@ export const listFolderMembers = async (
         userId: row.userId,
         name: row.name,
         email: row.email,
+        role: getFolderRoleFromPermissions({
+          canView: row.canView,
+          canDownload: row.canDownload,
+          canAdd: row.canAdd,
+          canEdit: row.canEdit,
+          canDelete: row.canDelete,
+          canManageMembers: row.canManageMembers,
+        }),
         inherited,
         ...(inherited && {
           ancestorFolderId: row.folderId,

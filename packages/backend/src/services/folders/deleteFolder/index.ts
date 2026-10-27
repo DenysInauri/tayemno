@@ -3,6 +3,7 @@ import type { IDeleteFolderResponse } from "@tayemno/shared";
 import type { Database } from "../../../db";
 import type { S3 } from "../../../utils/s3";
 import * as foldersRepo from "../../../repositories/folders";
+import * as folderAclsRepo from "../../../repositories/folderAcls";
 import { HttpError } from "../../../utils/httpError";
 
 export const deleteFolder = async (
@@ -16,6 +17,11 @@ export const deleteFolder = async (
 
   if (!folder) {
     throw new HttpError(404, "Folder not found");
+  }
+
+  const permissions = await folderAclsRepo.getPermissionsForFolder(db, folderId, userId);
+  if (!permissions || !permissions.canDelete) {
+    throw new HttpError(403, "Access denied");
   }
 
   const s3Keys = await foldersRepo.findDescendantVaultS3Keys(db, folderId);

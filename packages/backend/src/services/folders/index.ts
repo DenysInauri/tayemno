@@ -9,3 +9,4 @@ export { createFolderAcl } from "./createFolderAcl";
 export { bulkCreateFolderAcl } from "./bulkCreateFolderAcl";
 export { deleteFolderAcl } from "./deleteFolderAcl";
 export { listFolderMembers } from "./listFolderMembers";
+export { updateFolderAclRole } from "./updateFolderAclRole";

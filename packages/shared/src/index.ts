@@ -40,6 +40,29 @@ export type WorkspaceRole = "owner" | "admin" | "member" | "external_member";
 
 export type WorkspaceMemberStatus = "invited" | "active";
 
+export type FolderRole = "viewer" | "editor" | "manager";
+
+export interface IFolderPermissions {
+  canView: boolean;
+  canDownload: boolean;
+  canAdd: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
+  canManageMembers: boolean;
+}
+
+export const FOLDER_ROLE_PERMISSIONS: Record<FolderRole, IFolderPermissions> = {
+  viewer: { canView: true, canDownload: true, canAdd: false, canEdit: false, canDelete: false, canManageMembers: false },
+  editor: { canView: true, canDownload: true, canAdd: true, canEdit: true, canDelete: true, canManageMembers: false },
+  manager: { canView: true, canDownload: true, canAdd: true, canEdit: true, canDelete: true, canManageMembers: true },
+};
+
+export const getFolderRoleFromPermissions = (p: IFolderPermissions): FolderRole => {
+  if (p.canManageMembers) return "manager";
+  if (p.canAdd) return "editor";
+  return "viewer";
+};
+
 export interface Workspace {
   id: string;
   name: string;
@@ -107,6 +130,12 @@ export interface FolderAcl {
   folderId: string;
   userId: string;
   encryptedFolderKey: string;
+  canView: boolean;
+  canDownload: boolean;
+  canAdd: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
+  canManageMembers: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -347,10 +376,12 @@ export interface IGetAllVaultsResponse {
 
 export interface IGetFoldersByParentResponse {
   folders: Folder[];
+  permissions: IFolderPermissions;
 }
 
 export interface IGetFolderResponse {
   folder: Folder;
+  permissions: IFolderPermissions;
 }
 
 export interface IGetBreadcrumbsResponse {
@@ -359,6 +390,7 @@ export interface IGetBreadcrumbsResponse {
 
 export interface IGetVaultsByFolderResponse {
   vaults: Vault[];
+  permissions: IFolderPermissions;
 }
 
 export interface IMoveFolderRequest {
@@ -375,6 +407,7 @@ export interface IMoveFolderResponse {
 export interface ICreateFolderAclRequest {
   userId: string;
   encryptedFolderKey: string;
+  role?: FolderRole;
 }
 
 export interface ICreateFolderAclResponse {
@@ -385,10 +418,19 @@ export interface IDeleteFolderAclResponse {
   message: string;
 }
 
+export interface IUpdateFolderAclRoleRequest {
+  role: FolderRole;
+}
+
+export interface IUpdateFolderAclRoleResponse {
+  message: string;
+}
+
 export interface IFolderMemberItem {
   userId: string;
   name: string;
   email: string;
+  role: FolderRole;
   inherited: boolean;
   ancestorFolderId?: string;
   ancestorEncryptedName?: string;
@@ -507,6 +549,7 @@ export enum AuditActionEnum {
   FOLDER_DOWNLOADED = "folder.downloaded",
   FOLDER_ACL_CREATED = "folder_acl.created",
   FOLDER_ACL_REVOKED = "folder_acl.revoked",
+  FOLDER_ACL_ROLE_CHANGED = "folder_acl.role_changed",
   MEMBER_INVITED = "member.invited",
   MEMBER_REMOVED = "member.removed",
   MEMBER_ROLE_CHANGED = "member.role_changed",

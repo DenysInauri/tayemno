@@ -12,6 +12,7 @@ import { createFolderAclRoute } from "./createFolderAcl";
 import { bulkCreateFolderAclRoute } from "./bulkCreateFolderAcl";
 import { deleteFolderAclRoute } from "./deleteFolderAcl";
 import { listFolderMembersRoute } from "./listFolderMembers";
+import { updateFolderAclRoleRoute } from "./updateFolderAclRole";
 
 export const foldersRoutes = async (app: FastifyInstance) => {
   app.addHook("onRequest", authenticate);
@@ -28,4 +29,5 @@ export const foldersRoutes = async (app: FastifyInstance) => {
   await app.register(deleteFolderAclRoute);
   await app.register(listFolderMembersRoute);
   await app.register(bulkCreateFolderAclRoute);
+  await app.register(updateFolderAclRoleRoute);
 };

@@ -26,13 +26,13 @@ export const createFolder = async (
   }
 
   if (data.parentFolderId) {
-    const hasParentAccess = await folderAclsRepo.hasAccessToFolder(
+    const parentPermissions = await folderAclsRepo.getPermissionsForFolder(
       db,
       data.parentFolderId,
       userId,
     );
 
-    if (!hasParentAccess && membership.role === "member") {
+    if (!parentPermissions || !parentPermissions.canAdd) {
       throw new HttpError(403, "Access denied to parent folder");
     }
   }

@@ -21,13 +21,13 @@ export const deleteVault = async (
   }
 
   if (vault.folderId) {
-    const hasAccess = await folderAclsRepo.hasAccessToFolder(
+    const permissions = await folderAclsRepo.getPermissionsForFolder(
       db,
       vault.folderId,
       userId,
     );
 
-    if (!hasAccess) {
+    if (!permissions || !permissions.canDelete) {
       throw new HttpError(403, "Access denied");
     }
   } else {

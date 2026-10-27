@@ -2,9 +2,11 @@ import type {
   IBulkCreateFolderAclRequest,
   IBulkCreateFolderAclResponse,
 } from "@tayemno/shared";
+import { FOLDER_ROLE_PERMISSIONS } from "@tayemno/shared";
 import type { Database } from "../../../db";
 import * as foldersRepo from "../../../repositories/folders";
 import * as folderAclsRepo from "../../../repositories/folderAcls";
+import * as workspaceMembersRepo from "../../../repositories/workspaceMembers";
 import { HttpError } from "../../../utils/httpError";
 import { mapTimestamps } from "../../../utils/mapTimestamps";
 
@@ -18,6 +20,21 @@ export const bulkCreateFolderAcl = async (
 
   if (!folder) {
     throw new HttpError(403, "Access denied");
+  }
+
+  const permissions = await folderAclsRepo.getPermissionsForFolder(db, folderId, requestingUserId);
+  if (!permissions || !permissions.canManageMembers) {
+    throw new HttpError(403, "Access denied");
+  }
+
+  const hasManager = data.acls.some((acl) => acl.role === "manager");
+  if (hasManager) {
+    const member = await workspaceMembersRepo.findByWorkspaceIdAndUserId(
+      db, folder.workspaceId, requestingUserId,
+    );
+    if (!member || (member.role !== "owner" && member.role !== "admin")) {
+      throw new HttpError(403, "Only admins can assign Manager role");
+    }
   }
 
   const existing = await folderAclsRepo.findAllByFolderId(db, folderId);
@@ -35,6 +52,7 @@ export const bulkCreateFolderAcl = async (
       folderId,
       userId: acl.userId,
       encryptedFolderKey: acl.encryptedFolderKey,
+      ...FOLDER_ROLE_PERMISSIONS[acl.role ?? "editor"],
     })),
   );
 
