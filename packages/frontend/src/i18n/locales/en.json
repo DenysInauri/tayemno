@@ -123,6 +123,7 @@
   },
   "aside": {
     "title": "Details",
+    "settingsButton": "Folder settings",
     "tabs": {
       "members": "Members",
       "activity": "Activity"

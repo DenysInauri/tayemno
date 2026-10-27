@@ -1,19 +1,23 @@
 import { useMemo } from "react";
-import { AppShell as MantineAppShell } from "@mantine/core";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import type { IFolderPermissions } from "@tayemno/shared";
 
 import { Tabs, TabsList, TabsTab, TabsPanel } from "../../../ui/Tabs";
 import { Text } from "../../../ui/Text";
 import { SizeEnum } from "../../../../enums/ui/SizeEnum";
 import { useSelectedItem } from "../../../../hooks/useSelectedItem";
-import { useFolders } from "../../../../api/hooks/useFolders";
 import { FolderMembersSection } from "./FolderMembersSection";
 import { AuditLogSection } from "./AuditLogSection";
 import classes from "./index.module.css";
 import { SelectedClaudeTreeItemTypeEnum } from "../../../../enums/routing/SelectedClaudeTreeItemTypeEnum";
 
-export const AsideContent = () => {
+interface IProps {
+  isAdmin: boolean;
+  permissions: IFolderPermissions;
+}
+
+export const AsideContent = ({ isAdmin, permissions }: IProps) => {
   const { t } = useTranslation();
   const { folderId: routeFolderId } = useParams<{ folderId: string }>();
   const { selectedItem } = useSelectedItem();
@@ -36,31 +40,35 @@ export const AsideContent = () => {
       ? selectedItem.id
       : routeFolderId;
 
-  const { permissions } = useFolders(membersFolderId ?? null);
+  const membersContent = membersFolderId ? (
+    <FolderMembersSection folderId={membersFolderId} permissions={permissions} />
+  ) : (
+    <Text size="sm" c="dimmed" mt={SizeEnum.SM}>
+      {t("aside.members.emptyRoot")}
+    </Text>
+  );
 
   return (
-    <MantineAppShell.Aside p={SizeEnum.MD} className={classes.aside}>
-      <Tabs defaultValue="members" className={classes.tabs}>
-        <TabsList>
-          <TabsTab value="members">{t("aside.tabs.members")}</TabsTab>
-          <TabsTab value="activity">{t("aside.tabs.activity")}</TabsTab>
-        </TabsList>
-        <TabsPanel value="members" className={classes.tabPanel}>
-          {membersFolderId ? (
-            <FolderMembersSection folderId={membersFolderId} permissions={permissions} />
-          ) : (
-            <Text size="sm" c="dimmed" mt={SizeEnum.SM}>
-              {t("aside.members.emptyRoot")}
-            </Text>
-          )}
-        </TabsPanel>
-        <TabsPanel value="activity" className={classes.tabPanel}>
-          <AuditLogSection
-            folderId={effectiveFolderId}
-            vaultId={effectiveVaultId}
-          />
-        </TabsPanel>
-      </Tabs>
-    </MantineAppShell.Aside>
+    <div className={classes.aside}>
+      {isAdmin ? (
+        <Tabs defaultValue="members" className={classes.tabs}>
+          <TabsList>
+            <TabsTab value="members">{t("aside.tabs.members")}</TabsTab>
+            <TabsTab value="activity">{t("aside.tabs.activity")}</TabsTab>
+          </TabsList>
+          <TabsPanel value="members" className={classes.tabPanel}>
+            {membersContent}
+          </TabsPanel>
+          <TabsPanel value="activity" className={classes.tabPanel}>
+            <AuditLogSection
+              folderId={effectiveFolderId}
+              vaultId={effectiveVaultId}
+            />
+          </TabsPanel>
+        </Tabs>
+      ) : (
+        membersContent
+      )}
+    </div>
   );
 };

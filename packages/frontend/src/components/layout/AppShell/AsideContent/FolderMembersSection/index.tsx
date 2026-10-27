@@ -30,14 +30,13 @@ import classes from "./index.module.css";
 
 interface IProps {
   folderId: string;
-  permissions: IFolderPermissions | null;
+  permissions: IFolderPermissions;
 }
 
 export const FolderMembersSection = ({ folderId, permissions }: IProps) => {
   const { t } = useTranslation();
   const { user, workspace } = useAuth();
   const isAdmin = workspace?.role === "owner" || workspace?.role === "admin";
-  const canManageMembers = isAdmin || (permissions?.canManageMembers ?? false);
   const { data } = useGetFolderMembers(folderId);
   const deleteMutation = useDeleteFolderAcl(folderId);
   const { getFolderKey } = useGetFolderKeyAsAdmin();
@@ -114,7 +113,7 @@ export const FolderMembersSection = ({ folderId, permissions }: IProps) => {
           size="sm"
           className={classes.searchInput}
         />
-        {canManageMembers && (
+        {permissions.canManageMembers && (
           <ActionIcon
             variant="default"
             size="input-sm"
@@ -136,7 +135,7 @@ export const FolderMembersSection = ({ folderId, permissions }: IProps) => {
       <FolderMembersList
         members={filteredMembers}
         currentUserId={user!.id}
-        canManageMembers={canManageMembers}
+        canManageMembers={permissions.canManageMembers}
         isAdmin={isAdmin}
         folderId={folderId}
         ancestorMap={ancestorMap}
