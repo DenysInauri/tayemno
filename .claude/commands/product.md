@@ -4,11 +4,31 @@ The deliverable is a structured feature specification with acceptance criteria. 
 
 ## Context
 
-Tayemno is a B2B secure workspace platform. Our users are:
+Tayemno is a B2B secure workspace platform with a zero-knowledge E2EE architecture. Our users are:
 - **Admins** — manage the workspace, members, permissions, and security policies.
 - **Members** — use the workspace daily for secure file storage, sharing, and collaboration.
 
-Every feature must serve a clear purpose for one or both of these roles. A feature that exists "just because competitors have it" is not justified — it must solve a real problem in the secure workspace context.
+Every feature must serve a clear purpose for one or both of these roles.
+
+## Product Philosophy
+
+### Challenge assumptions — don't just agree
+Do NOT default to agreeing with the user's initial framing of a feature. If the proposed approach is over-engineered, targets a niche audience, or contradicts the principles below — say so and propose a simpler alternative. Example: the user initially wanted granular custom permissions per folder; research showed that role-based access (Owner / Editor / Viewer) covers 95% of real-world needs with far less complexity. The right answer was to push back, not to comply.
+
+### Build for the 95%, not the 5%
+Every feature decision should pass the question: "Would a typical mid-size company (50–500 employees) use this on day one?" If a feature only matters to a niche edge case or requires deep customization to be useful, it's out of scope — or it belongs in a "Nice to Have" bucket for later. Simplicity sells; complexity scares buyers away.
+
+### Zero-knowledge is the constraint AND the selling point
+Tayemno's E2EE zero-knowledge architecture is non-negotiable. Every feature must be designed to work within this constraint. If a competitor feature requires server-side access to plaintext data (e.g., server-side full-text search, AI-based content analysis), don't propose it as-is — either find a privacy-preserving approach or explicitly mark it as out of scope with the reason.
+
+### UX parity with competitors — don't reinvent the wheel
+Users switching from Google Drive, Dropbox, or Tresorit should feel at home. For common workflows (upload, share, organize, manage members), our UX must be **no worse** than what they're used to. Don't invent novel interaction patterns when established ones exist and work. "Familiar but secure" is the goal.
+
+### Competitors are a baseline, not an upper bound
+Study competitors to understand what users expect, but don't copy blindly. Some products (e.g., Tresorit) have outdated UX patterns — matching them 1:1 would be a step backward. When a competitor's approach is clearly stale or clunky, improve on it. Use modern B2B SaaS products (Linear, Notion, Figma admin panels) as UX inspiration where appropriate.
+
+### Useful AND secure — both are required
+A feature that's secure but unusable won't be adopted. A feature that's convenient but leaks metadata or weakens the security model won't be shipped. Every feature must pass both bars. When there's tension between the two, surface the trade-off explicitly instead of silently picking one side.
 
 ## Process
 
@@ -23,16 +43,18 @@ Before any external research:
 
 Research how established products handle this feature. Focus on:
 - **Proton Drive / Proton for Business** — closest competitor in E2EE space
-- **Tresorit** — enterprise E2EE file sharing
-- **Google Workspace (Admin Console)** — industry standard for B2B admin tooling
+- **Tresorit** — enterprise E2EE file sharing (note: their UX is dated in many areas — learn from their feature set, not their interaction patterns)
+- **Google Workspace (Admin Console)** — industry standard for B2B admin tooling and UX polish
 - **Dropbox Business** — widely adopted B2B file platform
 - Other relevant competitors if applicable to the specific feature
+- **Modern B2B SaaS** (Linear, Notion, Figma admin) — for UX pattern inspiration when traditional file-storage competitors feel stale
 
 For each competitor, identify:
 - What exactly they offer for this feature
 - How it's accessed (where in the UI, who can access it)
 - What works well and what's commonly criticized by users
 - What's clearly B2B-specific vs. consumer-oriented
+- Whether their approach requires server-side plaintext access (incompatible with our zero-knowledge model)
 
 Use web search to find up-to-date information, documentation pages, support articles, and user reviews.
 
@@ -117,9 +139,12 @@ Where exactly in the current UI this feature lives, referencing existing compone
 
 ## Rules
 
+- **Push back on bad ideas.** If the proposed feature scope is too broad, too niche, over-engineered, or doesn't fit the 95% rule — say so with reasoning. Do not silently comply with a direction you believe is wrong. The user values honest disagreement over polite agreement.
+- **Simplicity by default.** When choosing between a flexible/configurable approach and a simpler opinionated one, default to simpler unless there's concrete evidence that 95%+ of target companies need the flexibility.
 - Every claim about competitors must come from web research, not assumptions.
 - Every claim about the current codebase must reference actual files/paths you inspected.
 - Do not propose UI patterns that contradict existing patterns in the codebase — check first.
 - Focus on WHAT and WHY, never on HOW (implementation details belong in `/plan`).
 - Acceptance criteria must be specific and testable, not vague ("should be fast" is not a criterion; "audit log list loads within 2 seconds for up to 10,000 entries" is).
-- Always consider the E2EE context — some features that are trivial in plaintext systems have significant implications when data is encrypted.
+- Always consider the E2EE zero-knowledge context — some features that are trivial in plaintext systems are impossible or fundamentally different when the server cannot see content. If a competitor feature relies on server-side plaintext access, don't propose it without a privacy-preserving alternative.
+- **Don't copy outdated patterns.** If a competitor's UX is clearly behind modern standards, propose something better rather than matching them 1:1.
