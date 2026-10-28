@@ -122,12 +122,6 @@
     "signOut": "Sign out"
   },
   "aside": {
-    "title": "Details",
-    "settingsButton": "Folder settings",
-    "tabs": {
-      "members": "Members",
-      "activity": "Activity"
-    },
     "members": {
       "title": "Members",
       "description": "Users with access to this folder.",
@@ -248,6 +242,12 @@
       "cancel": "Cancel"
     }
   },
+  "members": {
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin"
+    }
+  },
   "files": {
     "breadcrumb": {
       "root": "Files"
@@ -303,7 +303,9 @@
       "download": "Download",
       "downloadAsZip": "Download as ZIP",
       "delete": "Delete",
-      "move": "Move"
+      "move": "Move",
+      "auditLogs": "Audit logs",
+      "manageAccess": "Manage access"
     },
     "moveItem": {
       "title": "Move item",
@@ -328,6 +330,12 @@
       "viewer": "Viewer",
       "editor": "Editor",
       "manager": "Manager"
+    },
+    "auditLogs": {
+      "drawerTitle": "Audit logs"
+    },
+    "manageAccess": {
+      "drawerTitle": "Manage access"
     }
   },
   "preview": {

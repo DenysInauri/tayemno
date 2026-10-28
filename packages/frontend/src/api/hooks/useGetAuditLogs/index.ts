@@ -78,6 +78,8 @@ export const useGetAuditLogs = ({
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     enabled: !!workspace?.encryptedAdminPrivateKey && !!keyPair,
     initialPageParam: undefined,
+    staleTime: 0,
+    gcTime: 0,
   });
 
   const logs = useMemo(

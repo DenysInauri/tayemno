@@ -3,10 +3,7 @@ import { useState, useEffect } from "react";
 import type { ILocalVault } from "../../../types/local";
 import { useAuth } from "../../../contexts/AuthContext";
 import { getVaultDownloadUrl } from "../../../api/hooks/useGetVaultDownloadUrl";
-import {
-  registerPreview,
-  getPreviewUrl,
-} from "../../../utils/serviceWorker";
+import { registerPreview, getPreviewUrl } from "../../../utils/serviceWorker";
 
 interface IUsePreviewResult {
   url: string | null;

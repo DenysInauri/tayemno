@@ -68,7 +68,10 @@ export const FolderMembersSection = ({ folderId, permissions }: IProps) => {
     });
   };
 
-  const handleRoleChange = async (member: IFolderMemberItem, role: FolderRole) => {
+  const handleRoleChange = async (
+    member: IFolderMemberItem,
+    role: FolderRole,
+  ) => {
     await roleMutation.mutateAsync({ userId: member.userId, role });
     logAction({
       action: AuditActionEnum.FOLDER_ACL_ROLE_CHANGED,
@@ -90,7 +93,12 @@ export const FolderMembersSection = ({ folderId, permissions }: IProps) => {
       });
       await bulkAddMutation.mutateAsync(payload);
       members.forEach((member) => {
-        logAction({ action: AuditActionEnum.FOLDER_ACL_CREATED, folderId, memberName: member.name, memberEmail: member.email });
+        logAction({
+          action: AuditActionEnum.FOLDER_ACL_CREATED,
+          folderId,
+          memberName: member.name,
+          memberEmail: member.email,
+        });
       });
       setShowAddMember(false);
     } finally {

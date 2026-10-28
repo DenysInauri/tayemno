@@ -13,8 +13,6 @@ interface IProps {
   sizeBytes?: number;
   updatedAt: string;
   onClick: () => void;
-  onDoubleClick?: () => void;
-  selected?: boolean;
   actions?: ReactNode;
   thumbnailUrl?: string | null;
 }
@@ -25,15 +23,12 @@ export const FileListItem = ({
   sizeBytes,
   updatedAt,
   onClick,
-  onDoubleClick,
-  selected,
   actions,
   thumbnailUrl,
 }: IProps) => (
   <Table.Tr
     onClick={onClick}
-    onDoubleClick={onDoubleClick}
-    className={`${classes.row} ${selected ? classes.selected : ""}`}
+    className={classes.row}
   >
     <Table.Td className={classes.nameCell}>
       <Group gap="sm">

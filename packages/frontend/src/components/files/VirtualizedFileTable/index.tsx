@@ -1,6 +1,5 @@
-import { useRef, useMemo, useCallback, useEffect } from "react";
+import { useRef, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 import { Table } from "@mantine/core";
 import { useVirtualizer } from "@tanstack/react-virtual";
 
@@ -10,7 +9,6 @@ import { FolderListItem } from "../FolderListItem";
 import { VaultListItem } from "../VaultListItem";
 import { PreviewOverlay, type IPreviewOverlayHandle } from "../PreviewOverlay";
 import { TableSkeleton } from "../TableSkeleton";
-import { useSelectedItem } from "../../../hooks/useSelectedItem";
 import { usePostAuditLog } from "../../../api/hooks/usePostAuditLog";
 import classes from "./index.module.css";
 
@@ -30,13 +28,9 @@ export const VirtualizedFileTable = (
   { folders, vaults, permissions, isLoading, currentFolderName }: IProps,
 ) => {
   const { t } = useTranslation();
-  const { folderId } = useParams<{ folderId: string }>();
   const parentRef = useRef<HTMLDivElement>(null);
   const previewRef = useRef<IPreviewOverlayHandle>(null);
-  const { selectedItem, selectFolder, selectVault, clearSelection } =
-    useSelectedItem();
   const { logAction } = usePostAuditLog();
-  const prevFolderIdRef = useRef(folderId);
 
   const handlePreview = useCallback(
     (vault: ILocalVault) => {
@@ -45,13 +39,6 @@ export const VirtualizedFileTable = (
     },
     [logAction],
   );
-
-  useEffect(() => {
-    if (prevFolderIdRef.current !== folderId) {
-      prevFolderIdRef.current = folderId;
-      clearSelection();
-    }
-  }, [folderId, clearSelection]);
 
   const items = useMemo<ListItem[]>(
     () => [...folders, ...vaults],
@@ -109,8 +96,6 @@ export const VirtualizedFileTable = (
                         vault={item}
                         permissions={permissions}
                         onPreview={handlePreview}
-                        selected={selectedItem?.id === item.id}
-                        onSelect={() => selectVault(item.id)}
                         currentFolderName={currentFolderName}
                       />
                     );
@@ -121,8 +106,6 @@ export const VirtualizedFileTable = (
                       key={item.id}
                       folder={item}
                       permissions={permissions}
-                      selected={selectedItem?.id === item.id}
-                      onSelect={() => selectFolder(item.id)}
                       currentFolderName={currentFolderName}
                     />
                   );

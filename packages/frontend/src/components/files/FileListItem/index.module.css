@@ -2,10 +2,6 @@
   cursor: pointer;
 }
 
-.selected {
-  background-color: var(--mantine-color-default-hover);
-}
-
 .nameCell {
   position: relative;
 }

@@ -5,6 +5,7 @@ import {
   IconDotsVertical,
   IconDownload,
   IconFolderSymlink,
+  IconHistory,
   IconTrash,
 } from "@tabler/icons-react";
 import { AuditActionEnum, type IFolderPermissions } from "@tayemno/shared";
@@ -17,26 +18,28 @@ import { useDownload } from "../../../contexts/DownloadContext";
 import { useDeleteVault } from "../../../api/hooks/useDeleteVault";
 import { useMoveVault } from "../../../api/hooks/useMoveVault";
 import { usePostAuditLog } from "../../../api/hooks/usePostAuditLog";
+import { useAuth } from "../../../contexts/AuthContext";
 import { useThumbnail } from "../../../hooks/useThumbnail";
+import { AuditLogsDrawer } from "../AuditLogsDrawer";
 
 interface IProps {
   vault: ILocalVault;
   permissions: IFolderPermissions;
   onPreview: (vault: ILocalVault) => void;
-  selected?: boolean;
-  onSelect: () => void;
   currentFolderName: string;
 }
 
-export const VaultListItem = ({ vault, permissions, onPreview, selected, onSelect, currentFolderName }: IProps) => {
+export const VaultListItem = ({ vault, permissions, onPreview, currentFolderName }: IProps) => {
   const { t } = useTranslation();
   const thumbnailUrl = useThumbnail(vault);
   const { download, isDownloading } = useDownload();
   const { deleteVault, isDeleting } = useDeleteVault(vault.id);
   const { move, isMoving } = useMoveVault();
   const { logAction } = usePostAuditLog();
-  const [moveModalOpened, { open: openMoveModal, close: closeMoveModal }] =
-    useDisclosure();
+  const { workspace } = useAuth();
+  const isAdmin = workspace?.role === "owner" || workspace?.role === "admin";
+  const [moveModalOpened, { open: openMoveModal, close: closeMoveModal }] = useDisclosure();
+  const [auditOpened, { open: openAudit, close: closeAudit }] = useDisclosure();
 
   const handleMove = async (targetFolder: ILocalFolder | null) => {
     await move(vault, targetFolder?.id ?? null);
@@ -60,9 +63,7 @@ export const VaultListItem = ({ vault, permissions, onPreview, selected, onSelec
         sizeBytes={vault.sizeBytes}
         updatedAt={vault.updatedAt}
         thumbnailUrl={thumbnailUrl}
-        selected={selected}
-        onClick={onSelect}
-        onDoubleClick={() => onPreview(vault)}
+        onClick={() => onPreview(vault)}
         actions={
           <Menu position="bottom-end">
             <Menu.Target>
@@ -98,6 +99,12 @@ export const VaultListItem = ({ vault, permissions, onPreview, selected, onSelec
                   {t("files.actions.delete")}
                 </Menu.Item>
               )}
+              {isAdmin && <Menu.Divider />}
+              {isAdmin && (
+                <Menu.Item leftSection={<IconHistory size={16} />} onClick={openAudit}>
+                  {t("files.actions.auditLogs")}
+                </Menu.Item>
+              )}
             </Menu.Dropdown>
           </Menu>
         }
@@ -109,6 +116,7 @@ export const VaultListItem = ({ vault, permissions, onPreview, selected, onSelec
         onClose={closeMoveModal}
         onConfirm={handleMove}
       />
+      <AuditLogsDrawer opened={auditOpened} onClose={closeAudit} folderId={null} vaultId={vault.id} />
     </>
   );
 };

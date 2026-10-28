@@ -6,7 +6,9 @@ import {
   IconArrowsMove,
   IconDotsVertical,
   IconFileZip,
+  IconHistory,
   IconTrash,
+  IconUsers,
 } from "@tabler/icons-react";
 import { AuditActionEnum, type IFolderPermissions } from "@tayemno/shared";
 import type { ILocalFolder } from "../../../types/local";
@@ -18,30 +20,31 @@ import { useDownload } from "../../../contexts/DownloadContext";
 import { useDeleteFolder } from "../../../api/hooks/useDeleteFolder";
 import { useMoveFolder } from "../../../api/hooks/useMoveFolder";
 import { usePostAuditLog } from "../../../api/hooks/usePostAuditLog";
+import { useAuth } from "../../../contexts/AuthContext";
 import { RouteEnum } from "../../../enums/routing/RouteEnum";
+import { AuditLogsDrawer } from "../AuditLogsDrawer";
+import { ManageAccessDrawer } from "../ManageAccessDrawer";
 import { MoveItemModal } from "../MoveItemModal";
 
 interface IProps {
   folder: ILocalFolder;
   permissions: IFolderPermissions;
-  selected?: boolean;
-  onSelect: () => void;
   currentFolderName: string;
 }
 
-export const FolderListItem = ({ folder, permissions, selected, onSelect, currentFolderName }: IProps) => {
+export const FolderListItem = ({ folder, permissions, currentFolderName }: IProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { downloadFolder, isDownloading } = useDownload();
   const { deleteFolder, isDeleting } = useDeleteFolder(folder.id);
   const { move, isMoving } = useMoveFolder();
   const { logAction } = usePostAuditLog();
-  const [
-    deleteModalOpened,
-    { open: openDeleteModal, close: closeDeleteModal },
-  ] = useDisclosure();
-  const [moveModalOpened, { open: openMoveModal, close: closeMoveModal }] =
-    useDisclosure();
+  const { workspace } = useAuth();
+  const isAdmin = workspace?.role === "owner" || workspace?.role === "admin";
+  const [deleteModalOpened, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure();
+  const [moveModalOpened, { open: openMoveModal, close: closeMoveModal }] = useDisclosure();
+  const [auditOpened, { open: openAudit, close: closeAudit }] = useDisclosure();
+  const [accessOpened, { open: openAccess, close: closeAccess }] = useDisclosure();
 
   const handleMove = async (targetFolder: ILocalFolder | null) => {
     await move(folder, targetFolder?.id ?? null);
@@ -56,11 +59,7 @@ export const FolderListItem = ({ folder, permissions, selected, onSelect, curren
         name={folder.name}
         isFolder
         updatedAt={folder.updatedAt}
-        selected={selected}
-        onClick={onSelect}
-        onDoubleClick={() =>
-          navigate(RouteEnum.FOLDER.replace(":folderId", folder.id))
-        }
+        onClick={() => navigate(RouteEnum.FOLDER.replace(":folderId", folder.id))}
         actions={
           <Menu position="bottom-end">
             <Menu.Target>
@@ -96,6 +95,17 @@ export const FolderListItem = ({ folder, permissions, selected, onSelect, curren
                   {t("files.actions.delete")}
                 </Menu.Item>
               )}
+              {(isAdmin || permissions.canManageMembers) && <Menu.Divider />}
+              {isAdmin && (
+                <Menu.Item leftSection={<IconHistory size={16} />} onClick={openAudit}>
+                  {t("files.actions.auditLogs")}
+                </Menu.Item>
+              )}
+              {permissions.canManageMembers && (
+                <Menu.Item leftSection={<IconUsers size={16} />} onClick={openAccess}>
+                  {t("files.actions.manageAccess")}
+                </Menu.Item>
+              )}
             </Menu.Dropdown>
           </Menu>
         }
@@ -115,6 +125,8 @@ export const FolderListItem = ({ folder, permissions, selected, onSelect, curren
         onClose={closeMoveModal}
         onConfirm={handleMove}
       />
+      <AuditLogsDrawer opened={auditOpened} onClose={closeAudit} folderId={folder.id} vaultId={null} />
+      <ManageAccessDrawer opened={accessOpened} onClose={closeAccess} folderId={folder.id} permissions={permissions} />
     </>
   );
 };
