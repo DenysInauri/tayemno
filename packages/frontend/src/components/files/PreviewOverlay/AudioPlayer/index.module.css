@@ -1,0 +1,12 @@
+.container {
+  flex: 1;
+}
+
+.icon {
+  color: var(--mantine-color-dimmed);
+}
+
+.audio {
+  width: 100%;
+  max-width: 500px;
+}

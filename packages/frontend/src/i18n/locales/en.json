@@ -345,7 +345,7 @@
     "next": "Next",
     "unsupported": {
       "title": "Preview not available",
-      "description": "This file type cannot be previewed. Download it to view."
+      "description": "Preview is not available for .{{extension}} files. Download to view."
     },
     "tooLarge": {
       "title": "File too large to preview",
@@ -356,7 +356,13 @@
       "description": "Something went wrong while loading the preview."
     },
     "loading": "Loading preview...",
-    "counter": "{{current}} / {{total}}"
+    "counter": "{{current}} / {{total}}",
+    "video": {
+      "unsupported": "This video format is not supported by your browser. Download to play it locally."
+    },
+    "audio": {
+      "unsupported": "This audio format is not supported by your browser. Download to play it locally."
+    }
   },
   "auditLogs": {
     "title": "Audit Logs",

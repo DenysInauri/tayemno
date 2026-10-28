@@ -21,7 +21,9 @@ export const UnsupportedPreview = ({ vault }: IProps) => {
       <Text size="lg" fw={500}>
         {t("preview.unsupported.title")}
       </Text>
-      <Text c="dimmed">{t("preview.unsupported.description")}</Text>
+      <Text c="dimmed">
+        {t("preview.unsupported.description", { extension: vault.extension })}
+      </Text>
       <Button
         leftSection={<IconDownload size={16} />}
         onClick={() => download(vault)}
