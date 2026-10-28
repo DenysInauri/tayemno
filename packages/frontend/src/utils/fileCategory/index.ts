@@ -17,6 +17,8 @@ const TEXT_EXTENSIONS = new Set([
   "log", "md", "html", "htm", "css", "scss", "less", "js", "jsx", "ts",
   "tsx", "mjs", "cjs", "py", "rb", "go", "rs", "java", "kt", "c", "cpp",
   "h", "hpp", "cs", "php", "sh", "bash", "zsh", "sql", "graphql",
+  "swift", "r", "lua", "pl", "pm", "m", "vb", "diff", "patch",
+  "mk", "makefile", "env", "gitignore", "dockerignore", "editorconfig",
 ]);
 
 export const getFileCategory = (extension: string): FileCategoryEnum => {

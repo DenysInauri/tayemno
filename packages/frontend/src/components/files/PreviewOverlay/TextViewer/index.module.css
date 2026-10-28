@@ -1,0 +1,39 @@
+.container {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.lineNumbers {
+  flex-shrink: 0;
+  padding: 16px 12px 16px 16px;
+  text-align: right;
+  user-select: none;
+  color: var(--mantine-color-dimmed);
+  font-family: monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  border-right: 1px solid var(--mantine-color-default-border);
+}
+
+.lineNumber {
+  height: 21px;
+}
+
+.pre {
+  flex: 1;
+  margin: 0;
+  padding: 16px;
+  overflow: auto;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.code {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+.centered {
+  flex: 1;
+}

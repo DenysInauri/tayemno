@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { Loader } from "@mantine/core";
 
@@ -12,6 +13,9 @@ import { AudioPlayer } from "../AudioPlayer";
 import { UnsupportedPreview } from "../UnsupportedPreview";
 import { TooLargePreview } from "../TooLargePreview";
 import classes from "./index.module.css";
+
+const PdfViewer = lazy(() => import("../PdfViewer"));
+const TextViewer = lazy(() => import("../TextViewer"));
 
 const MAX_PREVIEW_SIZE = 100 * 1024 * 1024;
 const MAX_TEXT_PREVIEW_SIZE = 1024 * 1024;
@@ -36,11 +40,7 @@ export const PreviewBody = ({ vault, url, isLoading, error }: IProps) => {
     return <TooLargePreview vault={vault} />;
   }
 
-  if (
-    category === FileCategoryEnum.OTHER ||
-    category === FileCategoryEnum.PDF ||
-    category === FileCategoryEnum.TEXT
-  ) {
+  if (category === FileCategoryEnum.OTHER) {
     return <UnsupportedPreview vault={vault} />;
   }
 
@@ -64,7 +64,25 @@ export const PreviewBody = ({ vault, url, isLoading, error }: IProps) => {
     );
   }
 
+  const suspenseFallback = (
+    <Stack align="center" justify="center" className={classes.centered}>
+      <Loader />
+    </Stack>
+  );
+
   switch (category) {
+    case FileCategoryEnum.PDF:
+      return (
+        <Suspense fallback={suspenseFallback}>
+          <PdfViewer url={url} vault={vault} />
+        </Suspense>
+      );
+    case FileCategoryEnum.TEXT:
+      return (
+        <Suspense fallback={suspenseFallback}>
+          <TextViewer url={url} vault={vault} />
+        </Suspense>
+      );
     case FileCategoryEnum.VIDEO:
       return <VideoPlayer url={url} vault={vault} />;
     case FileCategoryEnum.AUDIO:

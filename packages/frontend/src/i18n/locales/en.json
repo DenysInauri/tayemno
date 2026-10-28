@@ -362,6 +362,13 @@
     },
     "audio": {
       "unsupported": "This audio format is not supported by your browser. Download to play it locally."
+    },
+    "pdf": {
+      "error": "Failed to load PDF",
+      "pageCounter": "{{current}} / {{total}}"
+    },
+    "text": {
+      "binaryError": "This file contains binary data and cannot be displayed as text."
     }
   },
   "auditLogs": {
